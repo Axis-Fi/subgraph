@@ -29,6 +29,8 @@ dataSources:
       abis:
         - name: AuctionHouse
           file: ./abis/AuctionHouse.json
+        - name: ERC20
+          file: ./abis/ERC20.json
       eventHandlers:
         - event: AuctionCancelled(indexed uint96,indexed bytes7)
           handler: handleAuctionCancelled
