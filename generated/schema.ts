@@ -54,17 +54,17 @@ export class AuctionCancelled extends Entity {
     this.set("id", Value.fromBytes(value));
   }
 
-  get lotId(): BigInt {
-    const value = this.get("lotId");
+  get lot(): string {
+    const value = this.get("lot");
     if (!value || value.kind == ValueKind.NULL) {
       throw new Error("Cannot return null for a required field.");
     } else {
-      return value.toBigInt();
+      return value.toString();
     }
   }
 
-  set lotId(value: BigInt) {
-    this.set("lotId", Value.fromBigInt(value));
+  set lot(value: string) {
+    this.set("lot", Value.fromString(value));
   }
 
   get auctionRef(): Bytes {
@@ -121,9 +121,9 @@ export class AuctionCancelled extends Entity {
 }
 
 export class AuctionCreated extends Entity {
-  constructor(id: Bytes) {
+  constructor(id: string) {
     super();
-    this.set("id", Value.fromBytes(id));
+    this.set("id", Value.fromString(id));
   }
 
   save(): void {
@@ -131,36 +131,34 @@ export class AuctionCreated extends Entity {
     assert(id != null, "Cannot save AuctionCreated entity without an ID");
     if (id) {
       assert(
-        id.kind == ValueKind.BYTES,
-        `Entities of type AuctionCreated must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+        id.kind == ValueKind.STRING,
+        `Entities of type AuctionCreated must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`,
       );
-      store.set("AuctionCreated", id.toBytes().toHexString(), this);
+      store.set("AuctionCreated", id.toString(), this);
     }
   }
 
-  static loadInBlock(id: Bytes): AuctionCreated | null {
+  static loadInBlock(id: string): AuctionCreated | null {
     return changetype<AuctionCreated | null>(
-      store.get_in_block("AuctionCreated", id.toHexString()),
+      store.get_in_block("AuctionCreated", id),
     );
   }
 
-  static load(id: Bytes): AuctionCreated | null {
-    return changetype<AuctionCreated | null>(
-      store.get("AuctionCreated", id.toHexString()),
-    );
+  static load(id: string): AuctionCreated | null {
+    return changetype<AuctionCreated | null>(store.get("AuctionCreated", id));
   }
 
-  get id(): Bytes {
+  get id(): string {
     const value = this.get("id");
     if (!value || value.kind == ValueKind.NULL) {
       throw new Error("Cannot return null for a required field.");
     } else {
-      return value.toBytes();
+      return value.toString();
     }
   }
 
-  set id(value: Bytes) {
-    this.set("id", Value.fromBytes(value));
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
   }
 
   get lotId(): BigInt {
@@ -305,12 +303,56 @@ export class AuctionCreated extends Entity {
   set wrapDerivative(value: boolean) {
     this.set("wrapDerivative", Value.fromBoolean(value));
   }
+
+  get cancelled(): AuctionCancelledLoader {
+    return new AuctionCancelledLoader(
+      "AuctionCreated",
+      this.get("id")!.toString(),
+      "cancelled",
+    );
+  }
+
+  get bids(): BidLoader {
+    return new BidLoader("AuctionCreated", this.get("id")!.toString(), "bids");
+  }
+
+  get cancelledBids(): CancelBidLoader {
+    return new CancelBidLoader(
+      "AuctionCreated",
+      this.get("id")!.toString(),
+      "cancelledBids",
+    );
+  }
+
+  get purchases(): PurchaseLoader {
+    return new PurchaseLoader(
+      "AuctionCreated",
+      this.get("id")!.toString(),
+      "purchases",
+    );
+  }
+
+  get settle(): SettleLoader {
+    return new SettleLoader(
+      "AuctionCreated",
+      this.get("id")!.toString(),
+      "settle",
+    );
+  }
+
+  get curated(): CuratedLoader {
+    return new CuratedLoader(
+      "AuctionCreated",
+      this.get("id")!.toString(),
+      "curated",
+    );
+  }
 }
 
 export class Bid extends Entity {
-  constructor(id: Bytes) {
+  constructor(id: string) {
     super();
-    this.set("id", Value.fromBytes(id));
+    this.set("id", Value.fromString(id));
   }
 
   save(): void {
@@ -318,45 +360,45 @@ export class Bid extends Entity {
     assert(id != null, "Cannot save Bid entity without an ID");
     if (id) {
       assert(
-        id.kind == ValueKind.BYTES,
-        `Entities of type Bid must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+        id.kind == ValueKind.STRING,
+        `Entities of type Bid must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`,
       );
-      store.set("Bid", id.toBytes().toHexString(), this);
+      store.set("Bid", id.toString(), this);
     }
   }
 
-  static loadInBlock(id: Bytes): Bid | null {
-    return changetype<Bid | null>(store.get_in_block("Bid", id.toHexString()));
+  static loadInBlock(id: string): Bid | null {
+    return changetype<Bid | null>(store.get_in_block("Bid", id));
   }
 
-  static load(id: Bytes): Bid | null {
-    return changetype<Bid | null>(store.get("Bid", id.toHexString()));
+  static load(id: string): Bid | null {
+    return changetype<Bid | null>(store.get("Bid", id));
   }
 
-  get id(): Bytes {
+  get id(): string {
     const value = this.get("id");
     if (!value || value.kind == ValueKind.NULL) {
       throw new Error("Cannot return null for a required field.");
     } else {
-      return value.toBytes();
+      return value.toString();
     }
   }
 
-  set id(value: Bytes) {
-    this.set("id", Value.fromBytes(value));
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
   }
 
-  get lotId(): BigInt {
-    const value = this.get("lotId");
+  get lot(): string {
+    const value = this.get("lot");
     if (!value || value.kind == ValueKind.NULL) {
       throw new Error("Cannot return null for a required field.");
     } else {
-      return value.toBigInt();
+      return value.toString();
     }
   }
 
-  set lotId(value: BigInt) {
-    this.set("lotId", Value.fromBigInt(value));
+  set lot(value: string) {
+    this.set("lot", Value.fromString(value));
   }
 
   get bidId(): BigInt {
@@ -436,6 +478,14 @@ export class Bid extends Entity {
   set transactionHash(value: Bytes) {
     this.set("transactionHash", Value.fromBytes(value));
   }
+
+  get cancelledBids(): CancelBidLoader {
+    return new CancelBidLoader(
+      "Bid",
+      this.get("id")!.toString(),
+      "cancelledBids",
+    );
+  }
 }
 
 export class CancelBid extends Entity {
@@ -481,30 +531,30 @@ export class CancelBid extends Entity {
     this.set("id", Value.fromBytes(value));
   }
 
-  get lotId(): BigInt {
-    const value = this.get("lotId");
+  get lot(): string {
+    const value = this.get("lot");
     if (!value || value.kind == ValueKind.NULL) {
       throw new Error("Cannot return null for a required field.");
     } else {
-      return value.toBigInt();
+      return value.toString();
     }
   }
 
-  set lotId(value: BigInt) {
-    this.set("lotId", Value.fromBigInt(value));
+  set lot(value: string) {
+    this.set("lot", Value.fromString(value));
   }
 
-  get bidId(): BigInt {
-    const value = this.get("bidId");
+  get bid(): string {
+    const value = this.get("bid");
     if (!value || value.kind == ValueKind.NULL) {
       throw new Error("Cannot return null for a required field.");
     } else {
-      return value.toBigInt();
+      return value.toString();
     }
   }
 
-  set bidId(value: BigInt) {
-    this.set("bidId", Value.fromBigInt(value));
+  set bid(value: string) {
+    this.set("bid", Value.fromString(value));
   }
 
   get bidder(): Bytes {
@@ -601,17 +651,17 @@ export class Curated extends Entity {
     this.set("id", Value.fromBytes(value));
   }
 
-  get lotId(): BigInt {
-    const value = this.get("lotId");
+  get lot(): string {
+    const value = this.get("lot");
     if (!value || value.kind == ValueKind.NULL) {
       throw new Error("Cannot return null for a required field.");
     } else {
-      return value.toBigInt();
+      return value.toString();
     }
   }
 
-  set lotId(value: BigInt) {
-    this.set("lotId", Value.fromBigInt(value));
+  set lot(value: string) {
+    this.set("lot", Value.fromString(value));
   }
 
   get curator(): Bytes {
@@ -1035,17 +1085,17 @@ export class Purchase extends Entity {
     this.set("id", Value.fromBytes(value));
   }
 
-  get lotId(): BigInt {
-    const value = this.get("lotId");
+  get lot(): string {
+    const value = this.get("lot");
     if (!value || value.kind == ValueKind.NULL) {
       throw new Error("Cannot return null for a required field.");
     } else {
-      return value.toBigInt();
+      return value.toString();
     }
   }
 
-  set lotId(value: BigInt) {
-    this.set("lotId", Value.fromBigInt(value));
+  set lot(value: string) {
+    this.set("lot", Value.fromString(value));
   }
 
   get buyer(): Bytes {
@@ -1181,17 +1231,17 @@ export class Settle extends Entity {
     this.set("id", Value.fromBytes(value));
   }
 
-  get lotId(): BigInt {
-    const value = this.get("lotId");
+  get lot(): string {
+    const value = this.get("lot");
     if (!value || value.kind == ValueKind.NULL) {
       throw new Error("Cannot return null for a required field.");
     } else {
-      return value.toBigInt();
+      return value.toString();
     }
   }
 
-  set lotId(value: BigInt) {
-    this.set("lotId", Value.fromBigInt(value));
+  set lot(value: string) {
+    this.set("lot", Value.fromString(value));
   }
 
   get blockNumber(): BigInt {
@@ -1325,5 +1375,113 @@ export class Token extends Entity {
 
   set decimals(value: i32) {
     this.set("decimals", Value.fromI32(value));
+  }
+}
+
+export class AuctionCancelledLoader extends Entity {
+  _entity: string;
+  _field: string;
+  _id: string;
+
+  constructor(entity: string, id: string, field: string) {
+    super();
+    this._entity = entity;
+    this._id = id;
+    this._field = field;
+  }
+
+  load(): AuctionCancelled[] {
+    const value = store.loadRelated(this._entity, this._id, this._field);
+    return changetype<AuctionCancelled[]>(value);
+  }
+}
+
+export class BidLoader extends Entity {
+  _entity: string;
+  _field: string;
+  _id: string;
+
+  constructor(entity: string, id: string, field: string) {
+    super();
+    this._entity = entity;
+    this._id = id;
+    this._field = field;
+  }
+
+  load(): Bid[] {
+    const value = store.loadRelated(this._entity, this._id, this._field);
+    return changetype<Bid[]>(value);
+  }
+}
+
+export class CancelBidLoader extends Entity {
+  _entity: string;
+  _field: string;
+  _id: string;
+
+  constructor(entity: string, id: string, field: string) {
+    super();
+    this._entity = entity;
+    this._id = id;
+    this._field = field;
+  }
+
+  load(): CancelBid[] {
+    const value = store.loadRelated(this._entity, this._id, this._field);
+    return changetype<CancelBid[]>(value);
+  }
+}
+
+export class PurchaseLoader extends Entity {
+  _entity: string;
+  _field: string;
+  _id: string;
+
+  constructor(entity: string, id: string, field: string) {
+    super();
+    this._entity = entity;
+    this._id = id;
+    this._field = field;
+  }
+
+  load(): Purchase[] {
+    const value = store.loadRelated(this._entity, this._id, this._field);
+    return changetype<Purchase[]>(value);
+  }
+}
+
+export class SettleLoader extends Entity {
+  _entity: string;
+  _field: string;
+  _id: string;
+
+  constructor(entity: string, id: string, field: string) {
+    super();
+    this._entity = entity;
+    this._id = id;
+    this._field = field;
+  }
+
+  load(): Settle[] {
+    const value = store.loadRelated(this._entity, this._id, this._field);
+    return changetype<Settle[]>(value);
+  }
+}
+
+export class CuratedLoader extends Entity {
+  _entity: string;
+  _field: string;
+  _id: string;
+
+  constructor(entity: string, id: string, field: string) {
+    super();
+    this._entity = entity;
+    this._id = id;
+    this._field = field;
+  }
+
+  load(): Curated[] {
+    const value = store.loadRelated(this._entity, this._id, this._field);
+    return changetype<Curated[]>(value);
   }
 }

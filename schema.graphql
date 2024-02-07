@@ -1,6 +1,6 @@
 type AuctionCancelled @entity(immutable: true) {
   id: Bytes!
-  lotId: BigInt! # uint96
+  lot: AuctionCreated!
   auctionRef: Bytes! # bytes7
   blockNumber: BigInt!
   blockTimestamp: BigInt!
@@ -8,7 +8,7 @@ type AuctionCancelled @entity(immutable: true) {
 }
 
 type AuctionCreated @entity(immutable: true) {
-  id: Bytes!
+  id: String! # uint96
   lotId: BigInt! # uint96
   auctionRef: Bytes! # bytes7
   baseToken: Token! # address
@@ -20,23 +20,34 @@ type AuctionCreated @entity(immutable: true) {
   curator: Bytes! # address
   derivativeRef: Bytes! # bytes7
   wrapDerivative: Boolean!
+
+  # Reverse lookups
+  cancelled: [AuctionCancelled!]! @derivedFrom(field: "lot")
+  bids: [Bid!]! @derivedFrom(field: "lot")
+  cancelledBids: [CancelBid!]! @derivedFrom(field: "lot")
+  purchases: [Purchase!]! @derivedFrom(field: "lot")
+  settle: [Settle!]! @derivedFrom(field: "lot")
+  curated: [Curated!]! @derivedFrom(field: "lot")
 }
 
 type Bid @entity(immutable: true) {
-  id: Bytes!
-  lotId: BigInt! # uint96
+  id: String!
+  lot: AuctionCreated!
   bidId: BigInt! # uint96
   bidder: Bytes! # address
   amount: BigInt! # uint256
   blockNumber: BigInt!
   blockTimestamp: BigInt!
   transactionHash: Bytes!
+
+  # Reverse lookups
+  cancelledBids: [CancelBid!]! @derivedFrom(field: "bid")
 }
 
 type CancelBid @entity(immutable: true) {
   id: Bytes!
-  lotId: BigInt! # uint96
-  bidId: BigInt! # uint96
+  lot: AuctionCreated!
+  bid: Bid!
   bidder: Bytes! # address
   blockNumber: BigInt!
   blockTimestamp: BigInt!
@@ -45,7 +56,7 @@ type CancelBid @entity(immutable: true) {
 
 type Curated @entity(immutable: true) {
   id: Bytes!
-  lotId: BigInt! # uint96
+  lot: AuctionCreated!
   curator: Bytes! # address
   blockNumber: BigInt!
   blockTimestamp: BigInt!
@@ -81,7 +92,7 @@ type OwnershipTransferred @entity(immutable: true) {
 
 type Purchase @entity(immutable: true) {
   id: Bytes!
-  lotId: BigInt! # uint96
+  lot: AuctionCreated!
   buyer: Bytes! # address
   referrer: Bytes! # address
   amount: BigInt! # uint256
@@ -93,7 +104,7 @@ type Purchase @entity(immutable: true) {
 
 type Settle @entity(immutable: true) {
   id: Bytes!
-  lotId: BigInt! # uint96
+  lot: AuctionCreated!
   blockNumber: BigInt!
   blockTimestamp: BigInt!
   transactionHash: Bytes!

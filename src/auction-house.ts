@@ -1,4 +1,4 @@
-import { Address, Bytes } from "@graphprotocol/graph-ts";
+import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
 import {
   AuctionCancelled as AuctionCancelledEvent,
   AuctionCreated as AuctionCreatedEvent,
@@ -61,19 +61,19 @@ export function handleAuctionCancelled(event: AuctionCancelledEvent): void {
   let entity = new AuctionCancelled(
     event.transaction.hash.concatI32(event.logIndex.toI32())
   )
-  entity.lotId = event.params.id
-  entity.auctionRef = event.params.auctionRef
+  entity.lot = event.params.id.toString();
+  entity.auctionRef = event.params.auctionRef;
 
-  entity.blockNumber = event.block.number
-  entity.blockTimestamp = event.block.timestamp
-  entity.transactionHash = event.transaction.hash
+  entity.blockNumber = event.block.number;
+  entity.blockTimestamp = event.block.timestamp;
+  entity.transactionHash = event.transaction.hash;
 
-  entity.save()
+  entity.save();
 }
 
 export function handleAuctionCreated(event: AuctionCreatedEvent): void {
   const entity = new AuctionCreated(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
+    event.params.id.toString()
   );
   entity.lotId = event.params.id;
   entity.auctionRef = event.params.auctionRef;
@@ -98,9 +98,13 @@ export function handleAuctionCreated(event: AuctionCreatedEvent): void {
   entity.save();
 }
 
+function _getBidId(lotId: BigInt, bidId: BigInt): string {
+  return lotId.toString().concat("-").concat(bidId.toString());
+}
+
 export function handleBid(event: BidEvent): void {
-  let entity = new Bid(event.transaction.hash.concatI32(event.logIndex.toI32()));
-  entity.lotId = event.params.lotId_;
+  let entity = new Bid(_getBidId(event.params.lotId_, event.params.bidId_));
+  entity.lot = event.params.lotId_.toString();
   entity.bidId = event.params.bidId_;
   entity.bidder = event.params.bidder;
   entity.amount = event.params.amount;
@@ -116,8 +120,8 @@ export function handleCancelBid(event: CancelBidEvent): void {
   let entity = new CancelBid(
     event.transaction.hash.concatI32(event.logIndex.toI32())
   );
-  entity.lotId = event.params.lotId_;
-  entity.bidId = event.params.bidId_;
+  entity.lot = event.params.lotId_.toString();
+  entity.bid = _getBidId(event.params.lotId_, event.params.bidId_);
   entity.bidder = event.params.bidder;
 
   entity.blockNumber = event.block.number;
@@ -131,7 +135,7 @@ export function handleCurated(event: CuratedEvent): void {
   let entity = new Curated(
     event.transaction.hash.concatI32(event.logIndex.toI32())
   );
-  entity.lotId = event.params.id;
+  entity.lot = event.params.id.toString();
   entity.curator = event.params.curator;
 
   entity.blockNumber = event.block.number;
@@ -189,7 +193,7 @@ export function handlePurchase(event: PurchaseEvent): void {
   let entity = new Purchase(
     event.transaction.hash.concatI32(event.logIndex.toI32())
   );
-  entity.lotId = event.params.lotId_;
+  entity.lot = event.params.lotId_.toString();
   entity.buyer = event.params.buyer;
   entity.referrer = event.params.referrer;
   entity.amount = event.params.amount;
@@ -206,7 +210,7 @@ export function handleSettle(event: SettleEvent): void {
   let entity = new Settle(
     event.transaction.hash.concatI32(event.logIndex.toI32())
   );
-  entity.lotId = event.params.lotId_;
+  entity.lot = event.params.lotId_.toString();
 
   entity.blockNumber = event.block.number;
   entity.blockTimestamp = event.block.timestamp;
