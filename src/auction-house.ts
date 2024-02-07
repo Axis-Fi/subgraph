@@ -86,13 +86,14 @@ export function handleAuctionCreated(event: AuctionCreatedEvent): void {
 
   // Get the auction routing
   const auctionHouse = _getAuctionHouse();
-  const auctionRouting = auctionHouse.lotRouting(entity.lotId);
 
+  const auctionRouting = auctionHouse.lotRouting(entity.lotId);
   entity.owner = auctionRouting.getOwner();
   entity.derivativeRef = auctionRouting.getDerivativeReference();
   entity.wrapDerivative = auctionRouting.getWrapDerivative();
 
-  // TODO curator and accepted status
+  const auctionCuration = auctionHouse.lotCuration(entity.lotId);
+  entity.curator = auctionCuration.getCurator();
 
   entity.save();
 }

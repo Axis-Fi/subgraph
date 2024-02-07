@@ -267,6 +267,19 @@ export class AuctionCreated extends Entity {
     this.set("owner", Value.fromBytes(value));
   }
 
+  get curator(): Bytes {
+    const value = this.get("curator");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set curator(value: Bytes) {
+    this.set("curator", Value.fromBytes(value));
+  }
+
   get derivativeRef(): Bytes {
     const value = this.get("derivativeRef");
     if (!value || value.kind == ValueKind.NULL) {

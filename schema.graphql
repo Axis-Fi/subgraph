@@ -17,6 +17,7 @@ type AuctionCreated @entity(immutable: true) {
   blockTimestamp: BigInt!
   transactionHash: Bytes!
   owner: Bytes! # address
+  curator: Bytes! # address
   derivativeRef: Bytes! # bytes7
   wrapDerivative: Boolean!
 }
