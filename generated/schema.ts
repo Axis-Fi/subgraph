@@ -253,6 +253,45 @@ export class AuctionCreated extends Entity {
   set transactionHash(value: Bytes) {
     this.set("transactionHash", Value.fromBytes(value));
   }
+
+  get owner(): Bytes {
+    const value = this.get("owner");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set owner(value: Bytes) {
+    this.set("owner", Value.fromBytes(value));
+  }
+
+  get derivativeRef(): Bytes {
+    const value = this.get("derivativeRef");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set derivativeRef(value: Bytes) {
+    this.set("derivativeRef", Value.fromBytes(value));
+  }
+
+  get wrapDerivative(): boolean {
+    const value = this.get("wrapDerivative");
+    if (!value || value.kind == ValueKind.NULL) {
+      return false;
+    } else {
+      return value.toBoolean();
+    }
+  }
+
+  set wrapDerivative(value: boolean) {
+    this.set("wrapDerivative", Value.fromBoolean(value));
+  }
 }
 
 export class Bid extends Entity {

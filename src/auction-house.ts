@@ -2,6 +2,7 @@ import { Address, Bytes } from "@graphprotocol/graph-ts";
 import {
   AuctionCancelled as AuctionCancelledEvent,
   AuctionCreated as AuctionCreatedEvent,
+  AuctionHouse,
   Bid as BidEvent,
   CancelBid as CancelBidEvent,
   Curated as CuratedEvent,
@@ -25,6 +26,12 @@ import {
 } from "../generated/schema";
 import { Token } from "../generated/schema";
 import { ERC20 } from "../generated/AuctionHouse/ERC20";
+
+const AUCTION_HOUSE = "0x6837fa8E3aF4C82f5EA7ac6ecBEcFE65dae8877f";
+
+function _getAuctionHouse(): AuctionHouse {
+  return AuctionHouse.bind(Address.fromString(AUCTION_HOUSE));
+}
 
 function _getERC20Contract(address: Bytes): ERC20 {
   return ERC20.bind(Address.fromBytes(address));
@@ -76,6 +83,16 @@ export function handleAuctionCreated(event: AuctionCreatedEvent): void {
   entity.blockNumber = event.block.number;
   entity.blockTimestamp = event.block.timestamp;
   entity.transactionHash = event.transaction.hash;
+
+  // Get the auction routing
+  const auctionHouse = _getAuctionHouse();
+  const auctionRouting = auctionHouse.lotRouting(entity.lotId);
+
+  entity.owner = auctionRouting.getOwner();
+  entity.derivativeRef = auctionRouting.getDerivativeReference();
+  entity.wrapDerivative = auctionRouting.getWrapDerivative();
+
+  // TODO curator and accepted status
 
   entity.save();
 }

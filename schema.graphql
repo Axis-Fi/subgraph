@@ -16,6 +16,9 @@ type AuctionCreated @entity(immutable: true) {
   blockNumber: BigInt!
   blockTimestamp: BigInt!
   transactionHash: Bytes!
+  owner: Bytes! # address
+  derivativeRef: Bytes! # bytes7
+  wrapDerivative: Boolean!
 }
 
 type Bid @entity(immutable: true) {
