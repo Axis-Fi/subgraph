@@ -1,0 +1,31 @@
+{
+  "name": "subgraph",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "scripts": {
+    "codegen": "rm -rf generated/ && graph codegen && yarn eslint --config ./.eslintrc.json --fix generated/",
+    "build": "graph build",
+    "deploy:studio": "source .subgraph-version && source .env && graph deploy --product subgraph-studio --version-label $SUBGRAPH_VERSION --deploy-key $GRAPH_STUDIO_TOKEN axis-subgraph",
+    "test": "graph test --version 0.5.3",
+    "test:force": "yarn test --recompile"
+  },
+  "dependencies": {
+    "@graphprotocol/graph-cli": "^0.67.0",
+    "@graphprotocol/graph-ts": "^0.32.0",
+    "assemblyscript-json": "^1.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
+    "eslint": "^8.16.0",
+    "eslint-plugin-simple-import-sort": "^10.0.0",
+    "matchstick-as": "^0.6.0",
+    "prettier": "^3.2.0",
+    "typescript": "^4.6.4"
+  }
+}
