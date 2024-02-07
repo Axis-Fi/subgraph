@@ -10,6 +10,7 @@
     "codegen": "rm -rf generated/ && graph codegen && yarn eslint --config ./.eslintrc.json --fix generated/",
     "build": "graph build",
     "deploy:studio": "source .subgraph-version && source .env && graph deploy --product subgraph-studio --version-label $SUBGRAPH_VERSION --deploy-key $GRAPH_STUDIO_TOKEN axisfi-auctions",
+    "lint": "yarn eslint --config ./.eslintrc.json --fix",
     "test": "graph test --version 0.5.3",
     "test:force": "yarn test --recompile"
   },
