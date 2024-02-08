@@ -1,4 +1,4 @@
-import { Address, BigInt, Bytes, ethereum } from "@graphprotocol/graph-ts";
+import { Address, BigDecimal, BigInt, Bytes, ethereum } from "@graphprotocol/graph-ts";
 
 import {
   AuctionCancelled as AuctionCancelledEvent,
@@ -70,26 +70,34 @@ function _getOrCreateToken(address: Bytes): Token {
   return token as Token;
 }
 
+function _toDecimal(value: BigInt, decimals: number): BigDecimal {
+  const precision = BigInt.fromI32(10)
+    .pow(<u8>decimals)
+    .toBigDecimal();
+
+  return value.divDecimal(precision);
+}
+
 function _saveLotSnapshot(
   lotId: BigInt,
   block: ethereum.Block,
   transactionHash: Bytes,
   logIndex: BigInt
 ): void {
-  const lotData = _getAuctionLot(lotId);
+  const auctionLot = _getAuctionLot(lotId);
 
-  const record = new AuctionLotSnapshot(transactionHash.concatI32(logIndex.toI32()));
-  record.lot = lotId.toString();
+  const entity = new AuctionLotSnapshot(transactionHash.concatI32(logIndex.toI32()));
+  entity.lot = lotId.toString();
 
-  record.blockNumber = block.number;
-  record.blockTimestamp = block.timestamp;
-  record.transactionHash = transactionHash;
+  entity.blockNumber = block.number;
+  entity.blockTimestamp = block.timestamp;
+  entity.transactionHash = transactionHash;
 
-  record.capacity = lotData.getCapacity();
-  record.sold = lotData.getSold();
-  record.purchased = lotData.getPurchased();
+  entity.capacity = _toDecimal(auctionLot.getCapacity(), auctionLot.getCapacityInQuote() ? auctionLot.getQuoteTokenDecimals() : auctionLot.getBaseTokenDecimals());
+  entity.sold = _toDecimal(auctionLot.getSold(), auctionLot.getBaseTokenDecimals());
+  entity.purchased = _toDecimal(auctionLot.getPurchased(), auctionLot.getQuoteTokenDecimals());
 
-  record.save();
+  entity.save();
 }
 
 export function handleAuctionCancelled(event: AuctionCancelledEvent): void {
@@ -136,7 +144,7 @@ export function handleAuctionCreated(event: AuctionCreatedEvent): void {
   entity.start = auctionLot.getStart();
   entity.conclusion = auctionLot.getConclusion();
   entity.capacityInQuote = auctionLot.getCapacityInQuote();
-  entity.capacity = auctionLot.getCapacity();
+  entity.capacity = _toDecimal(auctionLot.getCapacity(), auctionLot.getCapacityInQuote() ? auctionLot.getQuoteTokenDecimals() : auctionLot.getBaseTokenDecimals());
   entity.save();
 
   _saveLotSnapshot(event.params.id, event.block, event.transaction.hash, event.logIndex);
@@ -151,11 +159,13 @@ export function handleBid(event: BidEvent): void {
   entity.lot = event.params.lotId_.toString();
   entity.bidId = event.params.bidId_;
   entity.bidder = event.params.bidder;
-  entity.amount = event.params.amount;
   entity.blockNumber = event.block.number;
   entity.blockTimestamp = event.block.timestamp;
   entity.transactionHash = event.transaction.hash;
   entity.save();
+
+  const auctionLot = _getAuctionLot(event.params.lotId_);
+  entity.amount = _toDecimal(event.params.amount, auctionLot.getQuoteTokenDecimals());
 
   _saveLotSnapshot(event.params.lotId_, event.block, event.transaction.hash, event.logIndex);
 }
@@ -196,11 +206,14 @@ export function handlePurchase(event: PurchaseEvent): void {
   entity.lot = event.params.lotId_.toString();
   entity.buyer = event.params.buyer;
   entity.referrer = event.params.referrer;
-  entity.amount = event.params.amount;
-  entity.payout = event.params.payout;
   entity.blockNumber = event.block.number;
   entity.blockTimestamp = event.block.timestamp;
   entity.transactionHash = event.transaction.hash;
+
+  const auctionLot = _getAuctionLot(event.params.lotId_);
+  entity.amount = _toDecimal(event.params.amount, auctionLot.getQuoteTokenDecimals());
+  entity.payout = _toDecimal(event.params.payout, auctionLot.getBaseTokenDecimals());
+
   entity.save();
 
   _saveLotSnapshot(event.params.lotId_, event.block, event.transaction.hash, event.logIndex);

@@ -106,43 +106,43 @@ export class AuctionLotSnapshot extends Entity {
     this.set("transactionHash", Value.fromBytes(value));
   }
 
-  get capacity(): BigInt {
+  get capacity(): BigDecimal {
     const value = this.get("capacity");
     if (!value || value.kind == ValueKind.NULL) {
       throw new Error("Cannot return null for a required field.");
     } else {
-      return value.toBigInt();
+      return value.toBigDecimal();
     }
   }
 
-  set capacity(value: BigInt) {
-    this.set("capacity", Value.fromBigInt(value));
+  set capacity(value: BigDecimal) {
+    this.set("capacity", Value.fromBigDecimal(value));
   }
 
-  get sold(): BigInt {
+  get sold(): BigDecimal {
     const value = this.get("sold");
     if (!value || value.kind == ValueKind.NULL) {
       throw new Error("Cannot return null for a required field.");
     } else {
-      return value.toBigInt();
+      return value.toBigDecimal();
     }
   }
 
-  set sold(value: BigInt) {
-    this.set("sold", Value.fromBigInt(value));
+  set sold(value: BigDecimal) {
+    this.set("sold", Value.fromBigDecimal(value));
   }
 
-  get purchased(): BigInt {
+  get purchased(): BigDecimal {
     const value = this.get("purchased");
     if (!value || value.kind == ValueKind.NULL) {
       throw new Error("Cannot return null for a required field.");
     } else {
-      return value.toBigInt();
+      return value.toBigDecimal();
     }
   }
 
-  set purchased(value: BigInt) {
-    this.set("purchased", Value.fromBigInt(value));
+  set purchased(value: BigDecimal) {
+    this.set("purchased", Value.fromBigDecimal(value));
   }
 }
 
@@ -478,17 +478,17 @@ export class AuctionCreated extends Entity {
     this.set("capacityInQuote", Value.fromBoolean(value));
   }
 
-  get capacity(): BigInt {
+  get capacity(): BigDecimal {
     const value = this.get("capacity");
     if (!value || value.kind == ValueKind.NULL) {
       throw new Error("Cannot return null for a required field.");
     } else {
-      return value.toBigInt();
+      return value.toBigDecimal();
     }
   }
 
-  set capacity(value: BigInt) {
-    this.set("capacity", Value.fromBigInt(value));
+  set capacity(value: BigDecimal) {
+    this.set("capacity", Value.fromBigDecimal(value));
   }
 
   get cancelled(): AuctionCancelledLoader {
@@ -622,17 +622,17 @@ export class Bid extends Entity {
     this.set("bidder", Value.fromBytes(value));
   }
 
-  get amount(): BigInt {
+  get amount(): BigDecimal {
     const value = this.get("amount");
     if (!value || value.kind == ValueKind.NULL) {
       throw new Error("Cannot return null for a required field.");
     } else {
-      return value.toBigInt();
+      return value.toBigDecimal();
     }
   }
 
-  set amount(value: BigInt) {
-    this.set("amount", Value.fromBigInt(value));
+  set amount(value: BigDecimal) {
+    this.set("amount", Value.fromBigDecimal(value));
   }
 
   get blockNumber(): BigInt {
@@ -1319,30 +1319,30 @@ export class Purchase extends Entity {
     this.set("referrer", Value.fromBytes(value));
   }
 
-  get amount(): BigInt {
+  get amount(): BigDecimal {
     const value = this.get("amount");
     if (!value || value.kind == ValueKind.NULL) {
       throw new Error("Cannot return null for a required field.");
     } else {
-      return value.toBigInt();
+      return value.toBigDecimal();
     }
   }
 
-  set amount(value: BigInt) {
-    this.set("amount", Value.fromBigInt(value));
+  set amount(value: BigDecimal) {
+    this.set("amount", Value.fromBigDecimal(value));
   }
 
-  get payout(): BigInt {
+  get payout(): BigDecimal {
     const value = this.get("payout");
     if (!value || value.kind == ValueKind.NULL) {
       throw new Error("Cannot return null for a required field.");
     } else {
-      return value.toBigInt();
+      return value.toBigDecimal();
     }
   }
 
-  set payout(value: BigInt) {
-    this.set("payout", Value.fromBigInt(value));
+  set payout(value: BigDecimal) {
+    this.set("payout", Value.fromBigDecimal(value));
   }
 
   get blockNumber(): BigInt {
