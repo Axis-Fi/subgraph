@@ -1,4 +1,4 @@
-import { Address, BigDecimal, BigInt, Bytes, ethereum } from "@graphprotocol/graph-ts";
+import { Address, BigDecimal, BigInt, Bytes, dataSource, ethereum } from "@graphprotocol/graph-ts";
 
 import {
   AuctionCancelled as AuctionCancelledEvent,
@@ -127,6 +127,7 @@ export function handleAuctionCreated(event: AuctionCreatedEvent): void {
   entity.blockNumber = event.block.number;
   entity.blockTimestamp = event.block.timestamp;
   entity.transactionHash = event.transaction.hash;
+  entity.chain = dataSource.network();
 
   // Get the auction routing
   const auctionHouse = _getAuctionHouse();

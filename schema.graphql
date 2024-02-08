@@ -33,6 +33,7 @@ type AuctionCreated @entity(immutable: true) {
   curator: Bytes! # address
   derivativeRef: Bytes! # bytes7
   wrapDerivative: Boolean!
+  chain: String!
 
   # Auction details
   start: BigInt! # timestamp

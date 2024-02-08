@@ -439,6 +439,19 @@ export class AuctionCreated extends Entity {
     this.set("wrapDerivative", Value.fromBoolean(value));
   }
 
+  get chain(): string {
+    const value = this.get("chain");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set chain(value: string) {
+    this.set("chain", Value.fromString(value));
+  }
+
   get start(): BigInt {
     const value = this.get("start");
     if (!value || value.kind == ValueKind.NULL) {
