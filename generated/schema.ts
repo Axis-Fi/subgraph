@@ -11,6 +11,141 @@ import {
   ValueKind,
 } from "@graphprotocol/graph-ts";
 
+export class AuctionLotSnapshot extends Entity {
+  constructor(id: Bytes) {
+    super();
+    this.set("id", Value.fromBytes(id));
+  }
+
+  save(): void {
+    const id = this.get("id");
+    assert(id != null, "Cannot save AuctionLotSnapshot entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.BYTES,
+        `Entities of type AuctionLotSnapshot must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+      );
+      store.set("AuctionLotSnapshot", id.toBytes().toHexString(), this);
+    }
+  }
+
+  static loadInBlock(id: Bytes): AuctionLotSnapshot | null {
+    return changetype<AuctionLotSnapshot | null>(
+      store.get_in_block("AuctionLotSnapshot", id.toHexString()),
+    );
+  }
+
+  static load(id: Bytes): AuctionLotSnapshot | null {
+    return changetype<AuctionLotSnapshot | null>(
+      store.get("AuctionLotSnapshot", id.toHexString()),
+    );
+  }
+
+  get id(): Bytes {
+    const value = this.get("id");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set id(value: Bytes) {
+    this.set("id", Value.fromBytes(value));
+  }
+
+  get lot(): string {
+    const value = this.get("lot");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set lot(value: string) {
+    this.set("lot", Value.fromString(value));
+  }
+
+  get blockNumber(): BigInt {
+    const value = this.get("blockNumber");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set blockNumber(value: BigInt) {
+    this.set("blockNumber", Value.fromBigInt(value));
+  }
+
+  get blockTimestamp(): BigInt {
+    const value = this.get("blockTimestamp");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set blockTimestamp(value: BigInt) {
+    this.set("blockTimestamp", Value.fromBigInt(value));
+  }
+
+  get transactionHash(): Bytes {
+    const value = this.get("transactionHash");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set transactionHash(value: Bytes) {
+    this.set("transactionHash", Value.fromBytes(value));
+  }
+
+  get capacity(): BigInt {
+    const value = this.get("capacity");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set capacity(value: BigInt) {
+    this.set("capacity", Value.fromBigInt(value));
+  }
+
+  get sold(): BigInt {
+    const value = this.get("sold");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set sold(value: BigInt) {
+    this.set("sold", Value.fromBigInt(value));
+  }
+
+  get purchased(): BigInt {
+    const value = this.get("purchased");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set purchased(value: BigInt) {
+    this.set("purchased", Value.fromBigInt(value));
+  }
+}
+
 export class AuctionCancelled extends Entity {
   constructor(id: Bytes) {
     super();
@@ -304,6 +439,58 @@ export class AuctionCreated extends Entity {
     this.set("wrapDerivative", Value.fromBoolean(value));
   }
 
+  get start(): BigInt {
+    const value = this.get("start");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set start(value: BigInt) {
+    this.set("start", Value.fromBigInt(value));
+  }
+
+  get conclusion(): BigInt {
+    const value = this.get("conclusion");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set conclusion(value: BigInt) {
+    this.set("conclusion", Value.fromBigInt(value));
+  }
+
+  get capacityInQuote(): boolean {
+    const value = this.get("capacityInQuote");
+    if (!value || value.kind == ValueKind.NULL) {
+      return false;
+    } else {
+      return value.toBoolean();
+    }
+  }
+
+  set capacityInQuote(value: boolean) {
+    this.set("capacityInQuote", Value.fromBoolean(value));
+  }
+
+  get capacity(): BigInt {
+    const value = this.get("capacity");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set capacity(value: BigInt) {
+    this.set("capacity", Value.fromBigInt(value));
+  }
+
   get cancelled(): AuctionCancelledLoader {
     return new AuctionCancelledLoader(
       "AuctionCreated",
@@ -345,6 +532,14 @@ export class AuctionCreated extends Entity {
       "AuctionCreated",
       this.get("id")!.toString(),
       "curated",
+    );
+  }
+
+  get snapshots(): AuctionLotSnapshotLoader {
+    return new AuctionLotSnapshotLoader(
+      "AuctionCreated",
+      this.get("id")!.toString(),
+      "snapshots",
     );
   }
 }
@@ -1483,5 +1678,23 @@ export class CuratedLoader extends Entity {
   load(): Curated[] {
     const value = store.loadRelated(this._entity, this._id, this._field);
     return changetype<Curated[]>(value);
+  }
+}
+
+export class AuctionLotSnapshotLoader extends Entity {
+  _entity: string;
+  _field: string;
+  _id: string;
+
+  constructor(entity: string, id: string, field: string) {
+    super();
+    this._entity = entity;
+    this._id = id;
+    this._field = field;
+  }
+
+  load(): AuctionLotSnapshot[] {
+    const value = store.loadRelated(this._entity, this._id, this._field);
+    return changetype<AuctionLotSnapshot[]>(value);
   }
 }

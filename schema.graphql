@@ -1,3 +1,16 @@
+type AuctionLotSnapshot @entity(immutable: true) {
+  id: Bytes! # transaction hash + log index
+  lot: AuctionCreated!
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+
+  # Lot details
+  capacity: BigInt! # uint256
+  sold: BigInt! # uint256
+  purchased: BigInt! # uint256
+}
+
 type AuctionCancelled @entity(immutable: true) {
   id: Bytes!
   lot: AuctionCreated!
@@ -21,6 +34,12 @@ type AuctionCreated @entity(immutable: true) {
   derivativeRef: Bytes! # bytes7
   wrapDerivative: Boolean!
 
+  # Auction details
+  start: BigInt! # timestamp
+  conclusion: BigInt! # timestamp
+  capacityInQuote: Boolean!
+  capacity: BigInt! # uint256
+
   # Reverse lookups
   cancelled: [AuctionCancelled!]! @derivedFrom(field: "lot")
   bids: [Bid!]! @derivedFrom(field: "lot")
@@ -28,6 +47,7 @@ type AuctionCreated @entity(immutable: true) {
   purchases: [Purchase!]! @derivedFrom(field: "lot")
   settle: [Settle!]! @derivedFrom(field: "lot")
   curated: [Curated!]! @derivedFrom(field: "lot")
+  snapshots: [AuctionLotSnapshot!]! @derivedFrom(field: "lot")
 }
 
 type Bid @entity(immutable: true) {

@@ -1,4 +1,5 @@
-import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
+import { Address, BigInt, Bytes, ethereum } from "@graphprotocol/graph-ts";
+
 import {
   AuctionCancelled as AuctionCancelledEvent,
   AuctionCreated as AuctionCreatedEvent,
@@ -12,9 +13,12 @@ import {
   Purchase as PurchaseEvent,
   Settle as SettleEvent
 } from "../generated/AuctionHouse/AuctionHouse";
+import { AuctionModule, AuctionModule__lotDataResult } from "../generated/AuctionHouse/AuctionModule";
+import { ERC20 } from "../generated/AuctionHouse/ERC20";
 import {
   AuctionCancelled,
   AuctionCreated,
+  AuctionLotSnapshot,
   Bid,
   CancelBid,
   Curated,
@@ -25,7 +29,6 @@ import {
   Settle
 } from "../generated/schema";
 import { Token } from "../generated/schema";
-import { ERC20 } from "../generated/AuctionHouse/ERC20";
 
 const AUCTION_HOUSE = "0x6837fa8E3aF4C82f5EA7ac6ecBEcFE65dae8877f";
 
@@ -35,6 +38,16 @@ function _getAuctionHouse(): AuctionHouse {
 
 function _getERC20Contract(address: Bytes): ERC20 {
   return ERC20.bind(Address.fromBytes(address));
+}
+
+function _getAuctionModule(auctionHouse: AuctionHouse, lotId: BigInt): AuctionModule {
+  return AuctionModule.bind(auctionHouse.getModuleForId(lotId));
+}
+
+function _getAuctionLot(lotId: BigInt): AuctionModule__lotDataResult {
+  const auctionHouse = _getAuctionHouse();
+  const auctionModule = _getAuctionModule(auctionHouse, lotId);
+  return auctionModule.lotData(lotId);
 }
 
 function _getOrCreateToken(address: Bytes): Token {
@@ -57,8 +70,30 @@ function _getOrCreateToken(address: Bytes): Token {
   return token as Token;
 }
 
+function _saveLotSnapshot(
+  lotId: BigInt,
+  block: ethereum.Block,
+  transactionHash: Bytes,
+  logIndex: BigInt
+): void {
+  const lotData = _getAuctionLot(lotId);
+
+  const record = new AuctionLotSnapshot(transactionHash.concatI32(logIndex.toI32()));
+  record.lot = lotId.toString();
+
+  record.blockNumber = block.number;
+  record.blockTimestamp = block.timestamp;
+  record.transactionHash = transactionHash;
+
+  record.capacity = lotData.getCapacity();
+  record.sold = lotData.getSold();
+  record.purchased = lotData.getPurchased();
+
+  record.save();
+}
+
 export function handleAuctionCancelled(event: AuctionCancelledEvent): void {
-  let entity = new AuctionCancelled(
+  const entity = new AuctionCancelled(
     event.transaction.hash.concatI32(event.logIndex.toI32())
   )
   entity.lot = event.params.id.toString();
@@ -67,8 +102,9 @@ export function handleAuctionCancelled(event: AuctionCancelledEvent): void {
   entity.blockNumber = event.block.number;
   entity.blockTimestamp = event.block.timestamp;
   entity.transactionHash = event.transaction.hash;
-
   entity.save();
+
+  _saveLotSnapshot(event.params.id, event.block, event.transaction.hash, event.logIndex);
 }
 
 export function handleAuctionCreated(event: AuctionCreatedEvent): void {
@@ -95,7 +131,15 @@ export function handleAuctionCreated(event: AuctionCreatedEvent): void {
   const auctionCuration = auctionHouse.lotCuration(entity.lotId);
   entity.curator = auctionCuration.getCurator();
 
+  // Get the auction details
+  const auctionLot = _getAuctionLot(entity.lotId);
+  entity.start = auctionLot.getStart();
+  entity.conclusion = auctionLot.getConclusion();
+  entity.capacityInQuote = auctionLot.getCapacityInQuote();
+  entity.capacity = auctionLot.getCapacity();
   entity.save();
+
+  _saveLotSnapshot(event.params.id, event.block, event.transaction.hash, event.logIndex);
 }
 
 function _getBidId(lotId: BigInt, bidId: BigInt): string {
@@ -103,94 +147,50 @@ function _getBidId(lotId: BigInt, bidId: BigInt): string {
 }
 
 export function handleBid(event: BidEvent): void {
-  let entity = new Bid(_getBidId(event.params.lotId_, event.params.bidId_));
+  const entity = new Bid(_getBidId(event.params.lotId_, event.params.bidId_));
   entity.lot = event.params.lotId_.toString();
   entity.bidId = event.params.bidId_;
   entity.bidder = event.params.bidder;
   entity.amount = event.params.amount;
-
   entity.blockNumber = event.block.number;
   entity.blockTimestamp = event.block.timestamp;
   entity.transactionHash = event.transaction.hash;
-
   entity.save();
+
+  _saveLotSnapshot(event.params.lotId_, event.block, event.transaction.hash, event.logIndex);
 }
 
 export function handleCancelBid(event: CancelBidEvent): void {
-  let entity = new CancelBid(
+  const entity = new CancelBid(
     event.transaction.hash.concatI32(event.logIndex.toI32())
   );
   entity.lot = event.params.lotId_.toString();
   entity.bid = _getBidId(event.params.lotId_, event.params.bidId_);
   entity.bidder = event.params.bidder;
-
   entity.blockNumber = event.block.number;
   entity.blockTimestamp = event.block.timestamp;
   entity.transactionHash = event.transaction.hash;
-
   entity.save();
+
+  _saveLotSnapshot(event.params.lotId_, event.block, event.transaction.hash, event.logIndex);
 }
 
 export function handleCurated(event: CuratedEvent): void {
-  let entity = new Curated(
+  const entity = new Curated(
     event.transaction.hash.concatI32(event.logIndex.toI32())
   );
   entity.lot = event.params.id.toString();
   entity.curator = event.params.curator;
-
   entity.blockNumber = event.block.number;
   entity.blockTimestamp = event.block.timestamp;
   entity.transactionHash = event.transaction.hash;
-
   entity.save();
-}
 
-export function handleModuleInstalled(event: ModuleInstalledEvent): void {
-  let entity = new ModuleInstalled(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
-  );
-  entity.keycode = event.params.keycode_;
-  entity.version = event.params.version_;
-  entity.address = event.params.address_;
-
-  entity.blockNumber = event.block.number;
-  entity.blockTimestamp = event.block.timestamp;
-  entity.transactionHash = event.transaction.hash;
-
-  entity.save();
-}
-
-export function handleModuleSunset(event: ModuleSunsetEvent): void {
-  let entity = new ModuleSunset(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
-  );
-  entity.keycode = event.params.keycode_;
-
-  entity.blockNumber = event.block.number;
-  entity.blockTimestamp = event.block.timestamp;
-  entity.transactionHash = event.transaction.hash;
-
-  entity.save();
-}
-
-export function handleOwnershipTransferred(
-  event: OwnershipTransferredEvent
-): void {
-  let entity = new OwnershipTransferred(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
-  );
-  entity.caller = event.params.user;
-  entity.newOwner = event.params.newOwner;
-
-  entity.blockNumber = event.block.number;
-  entity.blockTimestamp = event.block.timestamp;
-  entity.transactionHash = event.transaction.hash;
-
-  entity.save();
+  _saveLotSnapshot(event.params.id, event.block, event.transaction.hash, event.logIndex);
 }
 
 export function handlePurchase(event: PurchaseEvent): void {
-  let entity = new Purchase(
+  const entity = new Purchase(
     event.transaction.hash.concatI32(event.logIndex.toI32())
   );
   entity.lot = event.params.lotId_.toString();
@@ -198,20 +198,61 @@ export function handlePurchase(event: PurchaseEvent): void {
   entity.referrer = event.params.referrer;
   entity.amount = event.params.amount;
   entity.payout = event.params.payout;
-
   entity.blockNumber = event.block.number;
   entity.blockTimestamp = event.block.timestamp;
   entity.transactionHash = event.transaction.hash;
-
   entity.save();
+
+  _saveLotSnapshot(event.params.lotId_, event.block, event.transaction.hash, event.logIndex);
 }
 
 export function handleSettle(event: SettleEvent): void {
-  let entity = new Settle(
+  const entity = new Settle(
     event.transaction.hash.concatI32(event.logIndex.toI32())
   );
   entity.lot = event.params.lotId_.toString();
+  entity.blockNumber = event.block.number;
+  entity.blockTimestamp = event.block.timestamp;
+  entity.transactionHash = event.transaction.hash;
+  entity.save();
 
+  _saveLotSnapshot(event.params.lotId_, event.block, event.transaction.hash, event.logIndex);
+}
+
+// Administrative events
+
+export function handleModuleInstalled(event: ModuleInstalledEvent): void {
+  const entity = new ModuleInstalled(
+    event.transaction.hash.concatI32(event.logIndex.toI32())
+  );
+  entity.keycode = event.params.keycode_;
+  entity.version = event.params.version_;
+  entity.address = event.params.address_;
+  entity.blockNumber = event.block.number;
+  entity.blockTimestamp = event.block.timestamp;
+  entity.transactionHash = event.transaction.hash;
+  entity.save();
+}
+
+export function handleModuleSunset(event: ModuleSunsetEvent): void {
+  const entity = new ModuleSunset(
+    event.transaction.hash.concatI32(event.logIndex.toI32())
+  );
+  entity.keycode = event.params.keycode_;
+  entity.blockNumber = event.block.number;
+  entity.blockTimestamp = event.block.timestamp;
+  entity.transactionHash = event.transaction.hash;
+  entity.save();
+}
+
+export function handleOwnershipTransferred(
+  event: OwnershipTransferredEvent
+): void {
+  const entity = new OwnershipTransferred(
+    event.transaction.hash.concatI32(event.logIndex.toI32())
+  );
+  entity.caller = event.params.user;
+  entity.newOwner = event.params.newOwner;
   entity.blockNumber = event.block.number;
   entity.blockTimestamp = event.block.timestamp;
   entity.transactionHash = event.transaction.hash;
