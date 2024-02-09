@@ -3,6 +3,10 @@
     "AuctionHouse": {
       "address": "0x13B299062c5E613C304145D78dA733bF9711DfC9",
       "startBlock": 1361361
+    },
+    "LocalSealedBidBatchAuction": {
+      "address": "0xA9AEAe1d42bbfa591F4a06945a895d75011bE6e8",
+      "startBlock": 1361367
     }
   }
 }

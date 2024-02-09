@@ -55,3 +55,23 @@ dataSources:
         - event: Settle(indexed uint96)
           handler: handleSettle
       file: ./src/auction-house.ts
+  - kind: ethereum
+    name: LocalSealedBidBatchAuction
+    network: blast-testnet
+    source:
+      address: "0xA9AEAe1d42bbfa591F4a06945a895d75011bE6e8"
+      abi: LocalSealedBidBatchAuction
+      startBlock: 1361367
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - BidDecrypted
+      abis:
+        - name: LocalSealedBidBatchAuction
+          file: ./abis/LocalSealedBidBatchAuction.json
+      eventHandlers:
+        - event: BidDecrypted(indexed uint96,indexed uint96,uint256,uint256)
+          handler: handleBidDecrypted
+      file: ./src/local-sealed-bid-batch-auction.ts

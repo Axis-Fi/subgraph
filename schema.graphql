@@ -138,3 +138,14 @@ type Token @entity(immutable: true) {
   symbol: String!
   decimals: Int!
 }
+
+type BidDecrypted @entity(immutable: true) {
+  id: Bytes!
+  lotId: BigInt! # uint96
+  bidId: BigInt! # uint96
+  amountIn: BigDecimal!
+  amountOut: BigDecimal!
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
