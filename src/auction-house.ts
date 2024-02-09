@@ -9,7 +9,6 @@ import {
 import {
   AuctionCancelled as AuctionCancelledEvent,
   AuctionCreated as AuctionCreatedEvent,
-  AuctionHouse,
   Bid as BidEvent,
   CancelBid as CancelBidEvent,
   Curated as CuratedEvent,
@@ -19,10 +18,6 @@ import {
   Purchase as PurchaseEvent,
   Settle as SettleEvent,
 } from "../generated/AuctionHouse/AuctionHouse";
-import {
-  AuctionModule,
-  AuctionModule__lotDataResult,
-} from "../generated/AuctionHouse/AuctionModule";
 import { ERC20 } from "../generated/AuctionHouse/ERC20";
 import {
   AuctionCancelled,
@@ -38,29 +33,11 @@ import {
   Settle,
 } from "../generated/schema";
 import { Token } from "../generated/schema";
+import { getAuctionHouse, getAuctionLot } from "./helpers/auction";
 import { toDecimal } from "./helpers/number";
-
-const AUCTION_HOUSE = "0x6837fa8E3aF4C82f5EA7ac6ecBEcFE65dae8877f";
-
-function _getAuctionHouse(): AuctionHouse {
-  return AuctionHouse.bind(Address.fromString(AUCTION_HOUSE));
-}
 
 function _getERC20Contract(address: Bytes): ERC20 {
   return ERC20.bind(Address.fromBytes(address));
-}
-
-function _getAuctionModule(
-  auctionHouse: AuctionHouse,
-  lotId: BigInt,
-): AuctionModule {
-  return AuctionModule.bind(auctionHouse.getModuleForId(lotId));
-}
-
-function _getAuctionLot(lotId: BigInt): AuctionModule__lotDataResult {
-  const auctionHouse = _getAuctionHouse();
-  const auctionModule = _getAuctionModule(auctionHouse, lotId);
-  return auctionModule.lotData(lotId);
 }
 
 function _getOrCreateToken(address: Bytes): Token {
@@ -89,7 +66,7 @@ function _saveLotSnapshot(
   transactionHash: Bytes,
   logIndex: BigInt,
 ): void {
-  const auctionLot = _getAuctionLot(lotId);
+  const auctionLot = getAuctionLot(lotId);
 
   const entity = new AuctionLotSnapshot(
     transactionHash.concatI32(logIndex.toI32()),
@@ -150,7 +127,7 @@ export function handleAuctionCreated(event: AuctionCreatedEvent): void {
   entity.chain = dataSource.network();
 
   // Get the auction routing
-  const auctionHouse = _getAuctionHouse();
+  const auctionHouse = getAuctionHouse();
 
   const auctionRouting = auctionHouse.lotRouting(entity.lotId);
   entity.owner = auctionRouting.getOwner();
@@ -161,7 +138,7 @@ export function handleAuctionCreated(event: AuctionCreatedEvent): void {
   entity.curator = auctionCuration.getCurator();
 
   // Get the auction details
-  const auctionLot = _getAuctionLot(entity.lotId);
+  const auctionLot = getAuctionLot(entity.lotId);
   entity.start = auctionLot.getStart();
   entity.conclusion = auctionLot.getConclusion();
   entity.capacityInQuote = auctionLot.getCapacityInQuote();
@@ -193,7 +170,7 @@ export function handleBid(event: BidEvent): void {
   entity.transactionHash = event.transaction.hash;
   entity.save();
 
-  const auctionLot = _getAuctionLot(lotId);
+  const auctionLot = getAuctionLot(lotId);
   entity.amount = toDecimal(
     event.params.amount,
     auctionLot.getQuoteTokenDecimals(),
@@ -248,7 +225,7 @@ export function handlePurchase(event: PurchaseEvent): void {
   entity.blockTimestamp = event.block.timestamp;
   entity.transactionHash = event.transaction.hash;
 
-  const auctionLot = _getAuctionLot(lotId);
+  const auctionLot = getAuctionLot(lotId);
   entity.amount = toDecimal(
     event.params.amount,
     auctionLot.getQuoteTokenDecimals(),
