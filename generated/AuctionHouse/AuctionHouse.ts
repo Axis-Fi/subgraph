@@ -771,9 +771,11 @@ export class AuctionHouse extends ethereum.SmartContract {
   }
 
   try_fees(param0: Bytes): ethereum.CallResult<AuctionHouse__feesResult> {
-    const result = super.tryCall("fees", "fees(bytes5):(uint48,uint48,uint48)", [
-      ethereum.Value.fromFixedBytes(param0),
-    ]);
+    const result = super.tryCall(
+      "fees",
+      "fees(bytes5):(uint48,uint48,uint48)",
+      [ethereum.Value.fromFixedBytes(param0)],
+    );
     if (result.reverted) {
       return new ethereum.CallResult();
     }
@@ -873,7 +875,11 @@ export class AuctionHouse extends ethereum.SmartContract {
   }
 
   try_isExecOnModule(): ethereum.CallResult<boolean> {
-    const result = super.tryCall("isExecOnModule", "isExecOnModule():(bool)", []);
+    const result = super.tryCall(
+      "isExecOnModule",
+      "isExecOnModule():(bool)",
+      [],
+    );
     if (result.reverted) {
       return new ethereum.CallResult();
     }
@@ -1004,7 +1010,11 @@ export class AuctionHouse extends ethereum.SmartContract {
   }
 
   try_modulesCount(): ethereum.CallResult<BigInt> {
-    const result = super.tryCall("modulesCount", "modulesCount():(uint256)", []);
+    const result = super.tryCall(
+      "modulesCount",
+      "modulesCount():(uint256)",
+      [],
+    );
     if (result.reverted) {
       return new ethereum.CallResult();
     }

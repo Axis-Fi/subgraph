@@ -1,10 +1,10 @@
 {
-    "recommendations": [
-        "davidanson.vscode-markdownlint",
-        "dbaeumer.vscode-eslint",
-        "mquandalle.graphql",
-        "graphql.vscode-graphql",
-        "graphql.vscode-graphql-syntax",
-        "gruntfuggly.todo-tree"
-    ]
+  "recommendations": [
+    "davidanson.vscode-markdownlint",
+    "dbaeumer.vscode-eslint",
+    "mquandalle.graphql",
+    "graphql.vscode-graphql",
+    "graphql.vscode-graphql-syntax",
+    "gruntfuggly.todo-tree"
+  ]
 }
