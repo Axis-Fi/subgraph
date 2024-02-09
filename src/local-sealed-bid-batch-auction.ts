@@ -1,6 +1,7 @@
 import { BidDecrypted as BidDecryptedEvent } from "../generated/LocalSealedBidBatchAuction/LocalSealedBidBatchAuction";
 import { BidDecrypted } from "../generated/schema";
 import { getAuctionLot } from "./helpers/auction";
+import { getBidId } from "./helpers/bid";
 import { toDecimal } from "./helpers/number";
 
 export function handleBidDecrypted(event: BidDecryptedEvent): void {
@@ -9,8 +10,8 @@ export function handleBidDecrypted(event: BidDecryptedEvent): void {
   const entity = new BidDecrypted(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   );
-  entity.lotId = event.params.lotId;
-  entity.bidId = event.params.bidId;
+  entity.lot = event.params.lotId.toString();
+  entity.bid = getBidId(lotId, event.params.bidId);
 
   const auctionLot = getAuctionLot(lotId);
   entity.amountIn = toDecimal(

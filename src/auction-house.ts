@@ -22,7 +22,7 @@ import { ERC20 } from "../generated/AuctionHouse/ERC20";
 import {
   AuctionCancelled,
   AuctionCreated,
-  AuctionLotSnapshot,
+  AuctionLot,
   Bid,
   CancelBid,
   Curated,
@@ -33,7 +33,11 @@ import {
   Settle,
 } from "../generated/schema";
 import { Token } from "../generated/schema";
-import { getAuctionHouse, getAuctionLot } from "./helpers/auction";
+import {
+  getAuctionCuration,
+  getAuctionHouse,
+  getAuctionLot,
+} from "./helpers/auction";
 import { getBidId } from "./helpers/bid";
 import { toDecimal } from "./helpers/number";
 
@@ -61,23 +65,23 @@ function _getOrCreateToken(address: Bytes): Token {
   return token as Token;
 }
 
-function _saveLotSnapshot(
+function _updateAuctionLot(
   lotId: BigInt,
   block: ethereum.Block,
   transactionHash: Bytes,
-  logIndex: BigInt,
 ): void {
   const auctionLot = getAuctionLot(lotId);
 
-  const entity = new AuctionLotSnapshot(
-    transactionHash.concatI32(logIndex.toI32()),
-  );
-  entity.lot = lotId.toString();
+  // Get the auction lot record
+  const entity = AuctionLot.load(lotId.toString());
 
-  entity.blockNumber = block.number;
-  entity.blockTimestamp = block.timestamp;
-  entity.transactionHash = transactionHash;
+  if (entity == null) {
+    throw new Error(
+      "Expected auction lot to exist for lotId " + lotId.toString(),
+    );
+  }
 
+  // Update the auction lot record
   entity.capacity = toDecimal(
     auctionLot.getCapacity(),
     auctionLot.getCapacityInQuote()
@@ -92,6 +96,12 @@ function _saveLotSnapshot(
     auctionLot.getPurchased(),
     auctionLot.getQuoteTokenDecimals(),
   );
+  entity.lastUpdatedBlockNumber = block.number;
+  entity.lastUpdatedBlockTimestamp = block.timestamp;
+  entity.lastUpdatedTransactionHash = transactionHash;
+
+  const auctionCuration = getAuctionCuration(lotId);
+  entity.curatorApproved = auctionCuration.getCurated();
 
   entity.save();
 }
@@ -110,48 +120,71 @@ export function handleAuctionCancelled(event: AuctionCancelledEvent): void {
   entity.transactionHash = event.transaction.hash;
   entity.save();
 
-  _saveLotSnapshot(lotId, event.block, event.transaction.hash, event.logIndex);
+  _updateAuctionLot(lotId, event.block, event.transaction.hash);
 }
 
 export function handleAuctionCreated(event: AuctionCreatedEvent): void {
   const lotId = event.params.lotId;
 
-  const entity = new AuctionCreated(lotId.toString());
-  entity.lotId = lotId;
-  entity.auctionRef = event.params.auctionRef;
-  entity.baseToken = _getOrCreateToken(event.params.baseToken).id;
-  entity.quoteToken = _getOrCreateToken(event.params.quoteToken).id;
+  // Create an AuctionLot record
+  const auctionLot = new AuctionLot(lotId.toString());
+  auctionLot.lotId = lotId;
+  auctionLot.createdBlockNumber = event.block.number;
+  auctionLot.createdBlockTimestamp = event.block.timestamp;
+  auctionLot.createdTransactionHash = event.transaction.hash;
+  auctionLot.chain = dataSource.network();
 
+  const auctionLotContractRecord = getAuctionLot(lotId);
+
+  auctionLot.capacityInQuote = auctionLotContractRecord.getCapacityInQuote();
+  auctionLot.capacityInitial = toDecimal(
+    auctionLotContractRecord.getCapacity(),
+    auctionLotContractRecord.getCapacityInQuote()
+      ? auctionLotContractRecord.getQuoteTokenDecimals()
+      : auctionLotContractRecord.getBaseTokenDecimals(),
+  );
+  auctionLot.start = auctionLotContractRecord.getStart();
+  auctionLot.conclusion = auctionLotContractRecord.getConclusion();
+
+  auctionLot.auctionRef = event.params.auctionRef;
+  auctionLot.baseToken = _getOrCreateToken(event.params.baseToken).id;
+  auctionLot.quoteToken = _getOrCreateToken(event.params.quoteToken).id;
+
+  const auctionHouse = getAuctionHouse();
+  const auctionRouting = auctionHouse.lotRouting(lotId);
+  auctionLot.owner = auctionRouting.getOwner();
+  auctionLot.derivativeRef = auctionRouting.getDerivativeReference();
+  auctionLot.wrapDerivative = auctionRouting.getWrapDerivative();
+
+  const auctionCuration = auctionHouse.lotCuration(lotId);
+  auctionLot.curator = auctionCuration.getCurator();
+  auctionLot.curatorApproved = false;
+
+  // Set initial values
+  auctionLot.capacity = auctionLot.capacityInitial;
+  auctionLot.sold = toDecimal(
+    auctionLotContractRecord.getSold(),
+    auctionLotContractRecord.getBaseTokenDecimals(),
+  );
+  auctionLot.purchased = toDecimal(
+    auctionLotContractRecord.getPurchased(),
+    auctionLotContractRecord.getQuoteTokenDecimals(),
+  );
+  auctionLot.lastUpdatedBlockNumber = event.block.number;
+  auctionLot.lastUpdatedBlockTimestamp = event.block.timestamp;
+  auctionLot.lastUpdatedTransactionHash = event.transaction.hash;
+
+  auctionLot.save();
+
+  // Create the event
+  const entity = new AuctionCreated(
+    event.transaction.hash.concatI32(event.logIndex.toI32()),
+  );
+  entity.lot = auctionLot.id;
   entity.blockNumber = event.block.number;
   entity.blockTimestamp = event.block.timestamp;
   entity.transactionHash = event.transaction.hash;
-  entity.chain = dataSource.network();
-
-  // Get the auction routing
-  const auctionHouse = getAuctionHouse();
-
-  const auctionRouting = auctionHouse.lotRouting(entity.lotId);
-  entity.owner = auctionRouting.getOwner();
-  entity.derivativeRef = auctionRouting.getDerivativeReference();
-  entity.wrapDerivative = auctionRouting.getWrapDerivative();
-
-  const auctionCuration = auctionHouse.lotCuration(entity.lotId);
-  entity.curator = auctionCuration.getCurator();
-
-  // Get the auction details
-  const auctionLot = getAuctionLot(entity.lotId);
-  entity.start = auctionLot.getStart();
-  entity.conclusion = auctionLot.getConclusion();
-  entity.capacityInQuote = auctionLot.getCapacityInQuote();
-  entity.capacity = toDecimal(
-    auctionLot.getCapacity(),
-    auctionLot.getCapacityInQuote()
-      ? auctionLot.getQuoteTokenDecimals()
-      : auctionLot.getBaseTokenDecimals(),
-  );
   entity.save();
-
-  _saveLotSnapshot(lotId, event.block, event.transaction.hash, event.logIndex);
 }
 
 export function handleBid(event: BidEvent): void {
@@ -165,6 +198,10 @@ export function handleBid(event: BidEvent): void {
   entity.blockNumber = event.block.number;
   entity.blockTimestamp = event.block.timestamp;
   entity.transactionHash = event.transaction.hash;
+  entity.amount = toDecimal(
+    event.params.amount,
+    getAuctionLot(lotId).getQuoteTokenDecimals(),
+  );
   entity.save();
 
   const auctionLot = getAuctionLot(lotId);
@@ -173,7 +210,7 @@ export function handleBid(event: BidEvent): void {
     auctionLot.getQuoteTokenDecimals(),
   );
 
-  _saveLotSnapshot(lotId, event.block, event.transaction.hash, event.logIndex);
+  _updateAuctionLot(lotId, event.block, event.transaction.hash);
 }
 
 export function handleCancelBid(event: CancelBidEvent): void {
@@ -190,7 +227,7 @@ export function handleCancelBid(event: CancelBidEvent): void {
   entity.transactionHash = event.transaction.hash;
   entity.save();
 
-  _saveLotSnapshot(lotId, event.block, event.transaction.hash, event.logIndex);
+  _updateAuctionLot(lotId, event.block, event.transaction.hash);
 }
 
 export function handleCurated(event: CuratedEvent): void {
@@ -206,7 +243,7 @@ export function handleCurated(event: CuratedEvent): void {
   entity.transactionHash = event.transaction.hash;
   entity.save();
 
-  _saveLotSnapshot(lotId, event.block, event.transaction.hash, event.logIndex);
+  _updateAuctionLot(lotId, event.block, event.transaction.hash);
 }
 
 export function handlePurchase(event: PurchaseEvent): void {
@@ -234,7 +271,7 @@ export function handlePurchase(event: PurchaseEvent): void {
 
   entity.save();
 
-  _saveLotSnapshot(lotId, event.block, event.transaction.hash, event.logIndex);
+  _updateAuctionLot(lotId, event.block, event.transaction.hash);
 }
 
 export function handleSettle(event: SettleEvent): void {
@@ -249,7 +286,7 @@ export function handleSettle(event: SettleEvent): void {
   entity.transactionHash = event.transaction.hash;
   entity.save();
 
-  _saveLotSnapshot(lotId, event.block, event.transaction.hash, event.logIndex);
+  _updateAuctionLot(lotId, event.block, event.transaction.hash);
 }
 
 // Administrative events
