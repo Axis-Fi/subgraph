@@ -8,9 +8,9 @@ dataSources:
     name: AuctionHouse
     network: blast-testnet
     source:
-      address: "0x6837fa8E3aF4C82f5EA7ac6ecBEcFE65dae8877f"
+      address: "0x13B299062c5E613C304145D78dA733bF9711DfC9"
       abi: AuctionHouse
-      startBlock: 1313820
+      startBlock: 1361361
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7

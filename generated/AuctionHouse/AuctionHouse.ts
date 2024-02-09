@@ -23,7 +23,7 @@ export class AuctionCancelled__Params {
     this._event = event;
   }
 
-  get id(): BigInt {
+  get lotId(): BigInt {
     return this._event.parameters[0].value.toBigInt();
   }
 
@@ -45,7 +45,7 @@ export class AuctionCreated__Params {
     this._event = event;
   }
 
-  get id(): BigInt {
+  get lotId(): BigInt {
     return this._event.parameters[0].value.toBigInt();
   }
 
@@ -75,11 +75,11 @@ export class Bid__Params {
     this._event = event;
   }
 
-  get lotId_(): BigInt {
+  get lotId(): BigInt {
     return this._event.parameters[0].value.toBigInt();
   }
 
-  get bidId_(): BigInt {
+  get bidId(): BigInt {
     return this._event.parameters[1].value.toBigInt();
   }
 
@@ -105,11 +105,11 @@ export class CancelBid__Params {
     this._event = event;
   }
 
-  get lotId_(): BigInt {
+  get lotId(): BigInt {
     return this._event.parameters[0].value.toBigInt();
   }
 
-  get bidId_(): BigInt {
+  get bidId(): BigInt {
     return this._event.parameters[1].value.toBigInt();
   }
 
@@ -131,7 +131,7 @@ export class Curated__Params {
     this._event = event;
   }
 
-  get id(): BigInt {
+  get lotId(): BigInt {
     return this._event.parameters[0].value.toBigInt();
   }
 
@@ -153,15 +153,15 @@ export class ModuleInstalled__Params {
     this._event = event;
   }
 
-  get keycode_(): Bytes {
+  get keycode(): Bytes {
     return this._event.parameters[0].value.toBytes();
   }
 
-  get version_(): i32 {
+  get version(): i32 {
     return this._event.parameters[1].value.toI32();
   }
 
-  get address_(): Address {
+  get location(): Address {
     return this._event.parameters[2].value.toAddress();
   }
 }
@@ -179,7 +179,7 @@ export class ModuleSunset__Params {
     this._event = event;
   }
 
-  get keycode_(): Bytes {
+  get keycode(): Bytes {
     return this._event.parameters[0].value.toBytes();
   }
 }
@@ -219,7 +219,7 @@ export class Purchase__Params {
     this._event = event;
   }
 
-  get lotId_(): BigInt {
+  get lotId(): BigInt {
     return this._event.parameters[0].value.toBigInt();
   }
 
@@ -253,7 +253,7 @@ export class Settle__Params {
     this._event = event;
   }
 
-  get lotId_(): BigInt {
+  get lotId(): BigInt {
     return this._event.parameters[0].value.toBigInt();
   }
 }
@@ -639,45 +639,6 @@ export class AuctionHouse extends ethereum.SmartContract {
       "bid",
       "bid((uint96,address,address,uint256,bytes,bytes,bytes)):(uint96)",
       [ethereum.Value.fromTuple(params_)],
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    const value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBigInt());
-  }
-
-  calculateFeeEstimate(
-    auctionType_: Bytes,
-    hasReferrer_: boolean,
-    price_: BigInt,
-  ): BigInt {
-    const result = super.call(
-      "calculateFeeEstimate",
-      "calculateFeeEstimate(bytes5,bool,uint256):(uint256)",
-      [
-        ethereum.Value.fromFixedBytes(auctionType_),
-        ethereum.Value.fromBoolean(hasReferrer_),
-        ethereum.Value.fromUnsignedBigInt(price_),
-      ],
-    );
-
-    return result[0].toBigInt();
-  }
-
-  try_calculateFeeEstimate(
-    auctionType_: Bytes,
-    hasReferrer_: boolean,
-    price_: BigInt,
-  ): ethereum.CallResult<BigInt> {
-    const result = super.tryCall(
-      "calculateFeeEstimate",
-      "calculateFeeEstimate(bytes5,bool,uint256):(uint256)",
-      [
-        ethereum.Value.fromFixedBytes(auctionType_),
-        ethereum.Value.fromBoolean(hasReferrer_),
-        ethereum.Value.fromUnsignedBigInt(price_),
-      ],
     );
     if (result.reverted) {
       return new ethereum.CallResult();
