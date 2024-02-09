@@ -34,6 +34,7 @@ import {
 } from "../generated/schema";
 import { Token } from "../generated/schema";
 import { getAuctionHouse, getAuctionLot } from "./helpers/auction";
+import { getBidId } from "./helpers/bid";
 import { toDecimal } from "./helpers/number";
 
 function _getERC20Contract(address: Bytes): ERC20 {
@@ -153,15 +154,11 @@ export function handleAuctionCreated(event: AuctionCreatedEvent): void {
   _saveLotSnapshot(lotId, event.block, event.transaction.hash, event.logIndex);
 }
 
-function _getBidId(lotId: BigInt, bidId: BigInt): string {
-  return lotId.toString().concat("-").concat(bidId.toString());
-}
-
 export function handleBid(event: BidEvent): void {
   const lotId = event.params.lotId;
   const bidId = event.params.bidId;
 
-  const entity = new Bid(_getBidId(lotId, bidId));
+  const entity = new Bid(getBidId(lotId, bidId));
   entity.lot = lotId.toString();
   entity.bidId = bidId;
   entity.bidder = event.params.bidder;
@@ -186,7 +183,7 @@ export function handleCancelBid(event: CancelBidEvent): void {
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   );
   entity.lot = lotId.toString();
-  entity.bid = _getBidId(lotId, event.params.bidId);
+  entity.bid = getBidId(lotId, event.params.bidId);
   entity.bidder = event.params.bidder;
   entity.blockNumber = event.block.number;
   entity.blockTimestamp = event.block.timestamp;
