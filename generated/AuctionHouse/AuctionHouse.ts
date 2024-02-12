@@ -92,32 +92,6 @@ export class Bid__Params {
   }
 }
 
-export class CancelBid extends ethereum.Event {
-  get params(): CancelBid__Params {
-    return new CancelBid__Params(this);
-  }
-}
-
-export class CancelBid__Params {
-  _event: CancelBid;
-
-  constructor(event: CancelBid) {
-    this._event = event;
-  }
-
-  get lotId(): BigInt {
-    return this._event.parameters[0].value.toBigInt();
-  }
-
-  get bidId(): BigInt {
-    return this._event.parameters[1].value.toBigInt();
-  }
-
-  get bidder(): Address {
-    return this._event.parameters[2].value.toAddress();
-  }
-}
-
 export class Curated extends ethereum.Event {
   get params(): Curated__Params {
     return new Curated__Params(this);
@@ -240,6 +214,32 @@ export class Purchase__Params {
   }
 }
 
+export class RefundBid extends ethereum.Event {
+  get params(): RefundBid__Params {
+    return new RefundBid__Params(this);
+  }
+}
+
+export class RefundBid__Params {
+  _event: RefundBid;
+
+  constructor(event: RefundBid) {
+    this._event = event;
+  }
+
+  get lotId(): BigInt {
+    return this._event.parameters[0].value.toBigInt();
+  }
+
+  get bidId(): BigInt {
+    return this._event.parameters[1].value.toBigInt();
+  }
+
+  get bidder(): Address {
+    return this._event.parameters[2].value.toAddress();
+  }
+}
+
 export class Settle extends ethereum.Event {
   get params(): Settle__Params {
     return new Settle__Params(this);
@@ -287,16 +287,12 @@ export class AuctionHouse__auctionInputRouting_Struct extends ethereum.Tuple {
     return this[6].toBytes();
   }
 
-  get payoutData(): Bytes {
+  get derivativeType(): Bytes {
     return this[7].toBytes();
   }
 
-  get derivativeType(): Bytes {
-    return this[8].toBytes();
-  }
-
   get derivativeParams(): Bytes {
-    return this[9].toBytes();
+    return this[8].toBytes();
   }
 }
 
@@ -599,7 +595,7 @@ export class AuctionHouse extends ethereum.SmartContract {
   ): BigInt {
     const result = super.call(
       "auction",
-      "auction((bytes5,address,address,address,address,address,bytes,bytes,bytes5,bytes),(uint48,uint48,bool,uint256,bytes)):(uint96)",
+      "auction((bytes5,address,address,address,address,address,bytes,bytes5,bytes),(uint48,uint48,bool,uint256,bytes)):(uint96)",
       [ethereum.Value.fromTuple(routing_), ethereum.Value.fromTuple(params_)],
     );
 
@@ -612,7 +608,7 @@ export class AuctionHouse extends ethereum.SmartContract {
   ): ethereum.CallResult<BigInt> {
     const result = super.tryCall(
       "auction",
-      "auction((bytes5,address,address,address,address,address,bytes,bytes,bytes5,bytes),(uint48,uint48,bool,uint256,bytes)):(uint96)",
+      "auction((bytes5,address,address,address,address,address,bytes,bytes5,bytes),(uint48,uint48,bool,uint256,bytes)):(uint96)",
       [ethereum.Value.fromTuple(routing_), ethereum.Value.fromTuple(params_)],
     );
     if (result.reverted) {
@@ -1102,12 +1098,16 @@ export class ConstructorCall__Inputs {
     this._call = call;
   }
 
-  get protocol_(): Address {
+  get owner_(): Address {
     return this._call.inputValues[0].value.toAddress();
   }
 
-  get permit2_(): Address {
+  get protocol_(): Address {
     return this._call.inputValues[1].value.toAddress();
+  }
+
+  get permit2_(): Address {
+    return this._call.inputValues[2].value.toAddress();
   }
 }
 
@@ -1190,16 +1190,12 @@ export class AuctionCallRouting_Struct extends ethereum.Tuple {
     return this[6].toBytes();
   }
 
-  get payoutData(): Bytes {
+  get derivativeType(): Bytes {
     return this[7].toBytes();
   }
 
-  get derivativeType(): Bytes {
-    return this[8].toBytes();
-  }
-
   get derivativeParams(): Bytes {
-    return this[9].toBytes();
+    return this[8].toBytes();
   }
 }
 
@@ -1317,40 +1313,6 @@ export class CancelCall__Outputs {
   _call: CancelCall;
 
   constructor(call: CancelCall) {
-    this._call = call;
-  }
-}
-
-export class CancelBidCall extends ethereum.Call {
-  get inputs(): CancelBidCall__Inputs {
-    return new CancelBidCall__Inputs(this);
-  }
-
-  get outputs(): CancelBidCall__Outputs {
-    return new CancelBidCall__Outputs(this);
-  }
-}
-
-export class CancelBidCall__Inputs {
-  _call: CancelBidCall;
-
-  constructor(call: CancelBidCall) {
-    this._call = call;
-  }
-
-  get lotId_(): BigInt {
-    return this._call.inputValues[0].value.toBigInt();
-  }
-
-  get bidId_(): BigInt {
-    return this._call.inputValues[1].value.toBigInt();
-  }
-}
-
-export class CancelBidCall__Outputs {
-  _call: CancelBidCall;
-
-  constructor(call: CancelBidCall) {
     this._call = call;
   }
 }
@@ -1550,6 +1512,40 @@ export class PurchaseCallParams_Struct extends ethereum.Tuple {
 
   get permit2Data(): Bytes {
     return this[7].toBytes();
+  }
+}
+
+export class RefundBidCall extends ethereum.Call {
+  get inputs(): RefundBidCall__Inputs {
+    return new RefundBidCall__Inputs(this);
+  }
+
+  get outputs(): RefundBidCall__Outputs {
+    return new RefundBidCall__Outputs(this);
+  }
+}
+
+export class RefundBidCall__Inputs {
+  _call: RefundBidCall;
+
+  constructor(call: RefundBidCall) {
+    this._call = call;
+  }
+
+  get lotId_(): BigInt {
+    return this._call.inputValues[0].value.toBigInt();
+  }
+
+  get bidId_(): BigInt {
+    return this._call.inputValues[1].value.toBigInt();
+  }
+}
+
+export class RefundBidCall__Outputs {
+  _call: RefundBidCall;
+
+  constructor(call: RefundBidCall) {
+    this._call = call;
   }
 }
 

@@ -8,9 +8,9 @@ dataSources:
     name: AuctionHouse
     network: blast-testnet
     source:
-      address: "0x13B299062c5E613C304145D78dA733bF9711DfC9"
+      address: "0x00000000AD4dd7bC9077e3894225840fE1bfd6eC"
       abi: AuctionHouse
-      startBlock: 1361361
+      startBlock: 1458396
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -19,12 +19,12 @@ dataSources:
         - AuctionCancelled
         - AuctionCreated
         - Bid
-        - CancelBid
         - Curated
         - ModuleInstalled
         - ModuleSunset
         - OwnershipTransferred
         - Purchase
+        - RefundBid
         - Settle
       abis:
         - name: AuctionHouse
@@ -40,8 +40,8 @@ dataSources:
           handler: handleAuctionCreated
         - event: Bid(indexed uint96,indexed uint96,indexed address,uint256)
           handler: handleBid
-        - event: CancelBid(indexed uint96,indexed uint96,indexed address)
-          handler: handleCancelBid
+        - event: RefundBid(indexed uint96,indexed uint96,indexed address)
+          handler: handleRefundBid
         - event: Curated(indexed uint96,indexed address)
           handler: handleCurated
         - event: ModuleInstalled(indexed bytes5,indexed uint8,indexed address)
@@ -59,9 +59,9 @@ dataSources:
     name: LocalSealedBidBatchAuction
     network: blast-testnet
     source:
-      address: "0xA9AEAe1d42bbfa591F4a06945a895d75011bE6e8"
+      address: "0xc20918b09dE9708d2A7997dfFc3c5ACB34d4a15b"
       abi: LocalSealedBidBatchAuction
-      startBlock: 1361367
+      startBlock: 1458403
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7

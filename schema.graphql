@@ -31,14 +31,14 @@ type AuctionLot @entity {
   lastUpdatedTransactionHash: Bytes!
 
   # Reverse lookups
-  created: AuctionCreated! @derivedFrom(field: "lot")
   cancelled: AuctionCancelled @derivedFrom(field: "lot")
+  created: AuctionCreated! @derivedFrom(field: "lot")
+  curated: Curated @derivedFrom(field: "lot")
   bids: [Bid!]! @derivedFrom(field: "lot")
-  cancelledBids: [CancelBid!]! @derivedFrom(field: "lot")
   bidsDecrypted: [BidDecrypted!]! @derivedFrom(field: "lot")
   purchases: [Purchase!]! @derivedFrom(field: "lot")
+  refundedBids: [RefundBid!]! @derivedFrom(field: "lot")
   settle: Settle @derivedFrom(field: "lot")
-  curated: Curated @derivedFrom(field: "lot")
 }
 
 type AuctionCancelled @entity(immutable: true) {
@@ -69,11 +69,11 @@ type Bid @entity(immutable: true) {
   transactionHash: Bytes!
 
   # Reverse lookups
-  cancelled: CancelBid @derivedFrom(field: "bid")
   decrypted: BidDecrypted @derivedFrom(field: "bid")
+  refunded: RefundBid @derivedFrom(field: "bid")
 }
 
-type CancelBid @entity(immutable: true) {
+type RefundBid @entity(immutable: true) {
   id: Bytes!
   lot: AuctionLot!
   bid: Bid!

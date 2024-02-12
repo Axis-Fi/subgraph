@@ -756,41 +756,6 @@ export class LocalSealedBidBatchAuction extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
-  cancelBid(lotId_: BigInt, bidId_: BigInt, caller_: Address): BigInt {
-    const result = super.call(
-      "cancelBid",
-      "cancelBid(uint96,uint96,address):(uint256)",
-      [
-        ethereum.Value.fromUnsignedBigInt(lotId_),
-        ethereum.Value.fromUnsignedBigInt(bidId_),
-        ethereum.Value.fromAddress(caller_),
-      ],
-    );
-
-    return result[0].toBigInt();
-  }
-
-  try_cancelBid(
-    lotId_: BigInt,
-    bidId_: BigInt,
-    caller_: Address,
-  ): ethereum.CallResult<BigInt> {
-    const result = super.tryCall(
-      "cancelBid",
-      "cancelBid(uint96,uint96,address):(uint256)",
-      [
-        ethereum.Value.fromUnsignedBigInt(lotId_),
-        ethereum.Value.fromUnsignedBigInt(bidId_),
-        ethereum.Value.fromAddress(caller_),
-      ],
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    const value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBigInt());
-  }
-
   capacityInQuote(lotId_: BigInt): boolean {
     const result = super.call(
       "capacityInQuote",
@@ -1386,6 +1351,41 @@ export class LocalSealedBidBatchAuction extends ethereum.SmartContract {
     );
   }
 
+  refundBid(lotId_: BigInt, bidId_: BigInt, bidder_: Address): BigInt {
+    const result = super.call(
+      "refundBid",
+      "refundBid(uint96,uint96,address):(uint256)",
+      [
+        ethereum.Value.fromUnsignedBigInt(lotId_),
+        ethereum.Value.fromUnsignedBigInt(bidId_),
+        ethereum.Value.fromAddress(bidder_),
+      ],
+    );
+
+    return result[0].toBigInt();
+  }
+
+  try_refundBid(
+    lotId_: BigInt,
+    bidId_: BigInt,
+    bidder_: Address,
+  ): ethereum.CallResult<BigInt> {
+    const result = super.tryCall(
+      "refundBid",
+      "refundBid(uint96,uint96,address):(uint256)",
+      [
+        ethereum.Value.fromUnsignedBigInt(lotId_),
+        ethereum.Value.fromUnsignedBigInt(bidId_),
+        ethereum.Value.fromAddress(bidder_),
+      ],
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    const value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
+
   remainingCapacity(lotId_: BigInt): BigInt {
     const result = super.call(
       "remainingCapacity",
@@ -1657,48 +1657,6 @@ export class CancelAuctionCall__Outputs {
   }
 }
 
-export class CancelBidCall extends ethereum.Call {
-  get inputs(): CancelBidCall__Inputs {
-    return new CancelBidCall__Inputs(this);
-  }
-
-  get outputs(): CancelBidCall__Outputs {
-    return new CancelBidCall__Outputs(this);
-  }
-}
-
-export class CancelBidCall__Inputs {
-  _call: CancelBidCall;
-
-  constructor(call: CancelBidCall) {
-    this._call = call;
-  }
-
-  get lotId_(): BigInt {
-    return this._call.inputValues[0].value.toBigInt();
-  }
-
-  get bidId_(): BigInt {
-    return this._call.inputValues[1].value.toBigInt();
-  }
-
-  get caller_(): Address {
-    return this._call.inputValues[2].value.toAddress();
-  }
-}
-
-export class CancelBidCall__Outputs {
-  _call: CancelBidCall;
-
-  constructor(call: CancelBidCall) {
-    this._call = call;
-  }
-
-  get bidAmount(): BigInt {
-    return this._call.outputValues[0].value.toBigInt();
-  }
-}
-
 export class DecryptAndSortBidsCall extends ethereum.Call {
   get inputs(): DecryptAndSortBidsCall__Inputs {
     return new DecryptAndSortBidsCall__Inputs(this);
@@ -1786,6 +1744,48 @@ export class PurchaseCall__Outputs {
 
   get auctionOutput(): Bytes {
     return this._call.outputValues[1].value.toBytes();
+  }
+}
+
+export class RefundBidCall extends ethereum.Call {
+  get inputs(): RefundBidCall__Inputs {
+    return new RefundBidCall__Inputs(this);
+  }
+
+  get outputs(): RefundBidCall__Outputs {
+    return new RefundBidCall__Outputs(this);
+  }
+}
+
+export class RefundBidCall__Inputs {
+  _call: RefundBidCall;
+
+  constructor(call: RefundBidCall) {
+    this._call = call;
+  }
+
+  get lotId_(): BigInt {
+    return this._call.inputValues[0].value.toBigInt();
+  }
+
+  get bidId_(): BigInt {
+    return this._call.inputValues[1].value.toBigInt();
+  }
+
+  get bidder_(): Address {
+    return this._call.inputValues[2].value.toAddress();
+  }
+}
+
+export class RefundBidCall__Outputs {
+  _call: RefundBidCall;
+
+  constructor(call: RefundBidCall) {
+    this._call = call;
+  }
+
+  get bidAmount(): BigInt {
+    return this._call.outputValues[0].value.toBigInt();
   }
 }
 

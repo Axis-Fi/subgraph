@@ -10,12 +10,12 @@ import {
   AuctionCancelled as AuctionCancelledEvent,
   AuctionCreated as AuctionCreatedEvent,
   Bid as BidEvent,
-  CancelBid as CancelBidEvent,
   Curated as CuratedEvent,
   ModuleInstalled as ModuleInstalledEvent,
   ModuleSunset as ModuleSunsetEvent,
   OwnershipTransferred as OwnershipTransferredEvent,
   Purchase as PurchaseEvent,
+  RefundBid as RefundBidEvent,
   Settle as SettleEvent,
 } from "../generated/AuctionHouse/AuctionHouse";
 import { ERC20 } from "../generated/AuctionHouse/ERC20";
@@ -24,12 +24,12 @@ import {
   AuctionCreated,
   AuctionLot,
   Bid,
-  CancelBid,
   Curated,
   ModuleInstalled,
   ModuleSunset,
   OwnershipTransferred,
   Purchase,
+  RefundBid,
   Settle,
 } from "../generated/schema";
 import { Token } from "../generated/schema";
@@ -213,10 +213,10 @@ export function handleBid(event: BidEvent): void {
   _updateAuctionLot(lotId, event.block, event.transaction.hash);
 }
 
-export function handleCancelBid(event: CancelBidEvent): void {
+export function handleRefundBid(event: RefundBidEvent): void {
   const lotId = event.params.lotId;
 
-  const entity = new CancelBid(
+  const entity = new RefundBid(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   );
   entity.lot = lotId.toString();

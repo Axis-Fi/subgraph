@@ -349,14 +349,6 @@ export class AuctionLot extends Entity {
     this.set("lastUpdatedTransactionHash", Value.fromBytes(value));
   }
 
-  get created(): AuctionCreatedLoader {
-    return new AuctionCreatedLoader(
-      "AuctionLot",
-      this.get("id")!.toString(),
-      "created",
-    );
-  }
-
   get cancelled(): AuctionCancelledLoader {
     return new AuctionCancelledLoader(
       "AuctionLot",
@@ -365,16 +357,24 @@ export class AuctionLot extends Entity {
     );
   }
 
-  get bids(): BidLoader {
-    return new BidLoader("AuctionLot", this.get("id")!.toString(), "bids");
-  }
-
-  get cancelledBids(): CancelBidLoader {
-    return new CancelBidLoader(
+  get created(): AuctionCreatedLoader {
+    return new AuctionCreatedLoader(
       "AuctionLot",
       this.get("id")!.toString(),
-      "cancelledBids",
+      "created",
     );
+  }
+
+  get curated(): CuratedLoader {
+    return new CuratedLoader(
+      "AuctionLot",
+      this.get("id")!.toString(),
+      "curated",
+    );
+  }
+
+  get bids(): BidLoader {
+    return new BidLoader("AuctionLot", this.get("id")!.toString(), "bids");
   }
 
   get bidsDecrypted(): BidDecryptedLoader {
@@ -393,16 +393,16 @@ export class AuctionLot extends Entity {
     );
   }
 
-  get settle(): SettleLoader {
-    return new SettleLoader("AuctionLot", this.get("id")!.toString(), "settle");
-  }
-
-  get curated(): CuratedLoader {
-    return new CuratedLoader(
+  get refundedBids(): RefundBidLoader {
+    return new RefundBidLoader(
       "AuctionLot",
       this.get("id")!.toString(),
-      "curated",
+      "refundedBids",
     );
+  }
+
+  get settle(): SettleLoader {
+    return new SettleLoader("AuctionLot", this.get("id")!.toString(), "settle");
   }
 }
 
@@ -741,10 +741,6 @@ export class Bid extends Entity {
     this.set("transactionHash", Value.fromBytes(value));
   }
 
-  get cancelled(): CancelBidLoader {
-    return new CancelBidLoader("Bid", this.get("id")!.toString(), "cancelled");
-  }
-
   get decrypted(): BidDecryptedLoader {
     return new BidDecryptedLoader(
       "Bid",
@@ -752,9 +748,13 @@ export class Bid extends Entity {
       "decrypted",
     );
   }
+
+  get refunded(): RefundBidLoader {
+    return new RefundBidLoader("Bid", this.get("id")!.toString(), "refunded");
+  }
 }
 
-export class CancelBid extends Entity {
+export class RefundBid extends Entity {
   constructor(id: Bytes) {
     super();
     this.set("id", Value.fromBytes(id));
@@ -762,25 +762,25 @@ export class CancelBid extends Entity {
 
   save(): void {
     const id = this.get("id");
-    assert(id != null, "Cannot save CancelBid entity without an ID");
+    assert(id != null, "Cannot save RefundBid entity without an ID");
     if (id) {
       assert(
         id.kind == ValueKind.BYTES,
-        `Entities of type CancelBid must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+        `Entities of type RefundBid must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
       );
-      store.set("CancelBid", id.toBytes().toHexString(), this);
+      store.set("RefundBid", id.toBytes().toHexString(), this);
     }
   }
 
-  static loadInBlock(id: Bytes): CancelBid | null {
-    return changetype<CancelBid | null>(
-      store.get_in_block("CancelBid", id.toHexString()),
+  static loadInBlock(id: Bytes): RefundBid | null {
+    return changetype<RefundBid | null>(
+      store.get_in_block("RefundBid", id.toHexString()),
     );
   }
 
-  static load(id: Bytes): CancelBid | null {
-    return changetype<CancelBid | null>(
-      store.get("CancelBid", id.toHexString()),
+  static load(id: Bytes): RefundBid | null {
+    return changetype<RefundBid | null>(
+      store.get("RefundBid", id.toHexString()),
     );
   }
 
@@ -1779,24 +1779,6 @@ export class OwnershipTransferred extends Entity {
   }
 }
 
-export class AuctionCreatedLoader extends Entity {
-  _entity: string;
-  _field: string;
-  _id: string;
-
-  constructor(entity: string, id: string, field: string) {
-    super();
-    this._entity = entity;
-    this._id = id;
-    this._field = field;
-  }
-
-  load(): AuctionCreated[] {
-    const value = store.loadRelated(this._entity, this._id, this._field);
-    return changetype<AuctionCreated[]>(value);
-  }
-}
-
 export class AuctionCancelledLoader extends Entity {
   _entity: string;
   _field: string;
@@ -1815,6 +1797,42 @@ export class AuctionCancelledLoader extends Entity {
   }
 }
 
+export class AuctionCreatedLoader extends Entity {
+  _entity: string;
+  _field: string;
+  _id: string;
+
+  constructor(entity: string, id: string, field: string) {
+    super();
+    this._entity = entity;
+    this._id = id;
+    this._field = field;
+  }
+
+  load(): AuctionCreated[] {
+    const value = store.loadRelated(this._entity, this._id, this._field);
+    return changetype<AuctionCreated[]>(value);
+  }
+}
+
+export class CuratedLoader extends Entity {
+  _entity: string;
+  _field: string;
+  _id: string;
+
+  constructor(entity: string, id: string, field: string) {
+    super();
+    this._entity = entity;
+    this._id = id;
+    this._field = field;
+  }
+
+  load(): Curated[] {
+    const value = store.loadRelated(this._entity, this._id, this._field);
+    return changetype<Curated[]>(value);
+  }
+}
+
 export class BidLoader extends Entity {
   _entity: string;
   _field: string;
@@ -1830,24 +1848,6 @@ export class BidLoader extends Entity {
   load(): Bid[] {
     const value = store.loadRelated(this._entity, this._id, this._field);
     return changetype<Bid[]>(value);
-  }
-}
-
-export class CancelBidLoader extends Entity {
-  _entity: string;
-  _field: string;
-  _id: string;
-
-  constructor(entity: string, id: string, field: string) {
-    super();
-    this._entity = entity;
-    this._id = id;
-    this._field = field;
-  }
-
-  load(): CancelBid[] {
-    const value = store.loadRelated(this._entity, this._id, this._field);
-    return changetype<CancelBid[]>(value);
   }
 }
 
@@ -1887,6 +1887,24 @@ export class PurchaseLoader extends Entity {
   }
 }
 
+export class RefundBidLoader extends Entity {
+  _entity: string;
+  _field: string;
+  _id: string;
+
+  constructor(entity: string, id: string, field: string) {
+    super();
+    this._entity = entity;
+    this._id = id;
+    this._field = field;
+  }
+
+  load(): RefundBid[] {
+    const value = store.loadRelated(this._entity, this._id, this._field);
+    return changetype<RefundBid[]>(value);
+  }
+}
+
 export class SettleLoader extends Entity {
   _entity: string;
   _field: string;
@@ -1902,23 +1920,5 @@ export class SettleLoader extends Entity {
   load(): Settle[] {
     const value = store.loadRelated(this._entity, this._id, this._field);
     return changetype<Settle[]>(value);
-  }
-}
-
-export class CuratedLoader extends Entity {
-  _entity: string;
-  _field: string;
-  _id: string;
-
-  constructor(entity: string, id: string, field: string) {
-    super();
-    this._entity = entity;
-    this._id = id;
-    this._field = field;
-  }
-
-  load(): Curated[] {
-    const value = store.loadRelated(this._entity, this._id, this._field);
-    return changetype<Curated[]>(value);
   }
 }
