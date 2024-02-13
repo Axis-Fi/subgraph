@@ -69,6 +69,10 @@ dataSources:
       entities:
         - BidDecrypted
       abis:
+        - name: AuctionHouse
+          file: ./abis/AuctionHouse.json
+        - name: AuctionModule
+          file: ./abis/AuctionModule.json
         - name: LocalSealedBidBatchAuction
           file: ./abis/LocalSealedBidBatchAuction.json
       eventHandlers:
