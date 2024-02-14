@@ -53,12 +53,8 @@ export class AuctionCreated__Params {
     return this._event.parameters[1].value.toBytes();
   }
 
-  get baseToken(): Address {
-    return this._event.parameters[2].value.toAddress();
-  }
-
-  get quoteToken(): Address {
-    return this._event.parameters[3].value.toAddress();
+  get infoHash(): string {
+    return this._event.parameters[2].value.toString();
   }
 }
 
@@ -592,11 +588,16 @@ export class AuctionHouse extends ethereum.SmartContract {
   auction(
     routing_: AuctionHouse__auctionInputRouting_Struct,
     params_: AuctionHouse__auctionInputParams_Struct,
+    infoHash_: string,
   ): BigInt {
     const result = super.call(
       "auction",
-      "auction((bytes5,address,address,address,address,address,bytes,bytes5,bytes),(uint48,uint48,bool,uint256,bytes)):(uint96)",
-      [ethereum.Value.fromTuple(routing_), ethereum.Value.fromTuple(params_)],
+      "auction((bytes5,address,address,address,address,address,bytes,bytes5,bytes),(uint48,uint48,bool,uint256,bytes),string):(uint96)",
+      [
+        ethereum.Value.fromTuple(routing_),
+        ethereum.Value.fromTuple(params_),
+        ethereum.Value.fromString(infoHash_),
+      ],
     );
 
     return result[0].toBigInt();
@@ -605,11 +606,16 @@ export class AuctionHouse extends ethereum.SmartContract {
   try_auction(
     routing_: AuctionHouse__auctionInputRouting_Struct,
     params_: AuctionHouse__auctionInputParams_Struct,
+    infoHash_: string,
   ): ethereum.CallResult<BigInt> {
     const result = super.tryCall(
       "auction",
-      "auction((bytes5,address,address,address,address,address,bytes,bytes5,bytes),(uint48,uint48,bool,uint256,bytes)):(uint96)",
-      [ethereum.Value.fromTuple(routing_), ethereum.Value.fromTuple(params_)],
+      "auction((bytes5,address,address,address,address,address,bytes,bytes5,bytes),(uint48,uint48,bool,uint256,bytes),string):(uint96)",
+      [
+        ethereum.Value.fromTuple(routing_),
+        ethereum.Value.fromTuple(params_),
+        ethereum.Value.fromString(infoHash_),
+      ],
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -1146,6 +1152,10 @@ export class AuctionCall__Inputs {
     return changetype<AuctionCallParams_Struct>(
       this._call.inputValues[1].value.toTuple(),
     );
+  }
+
+  get infoHash_(): string {
+    return this._call.inputValues[2].value.toString();
   }
 }
 

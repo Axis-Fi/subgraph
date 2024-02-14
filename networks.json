@@ -1,11 +1,11 @@
 {
   "blast-testnet": {
     "AuctionHouse": {
-      "address": "0x00000000AD4dd7bC9077e3894225840fE1bfd6eC",
+      "address": "0x00000000cB3c2A36dEF5Be4d3A674280eFC33498",
       "startBlock": 1458396
     },
     "LocalSealedBidBatchAuction": {
-      "address": "0xc20918b09dE9708d2A7997dfFc3c5ACB34d4a15b",
+      "address": "0xcE56d3E3E145b44597B61E99c64cb82FB209Da04",
       "startBlock": 1458403
     }
   }

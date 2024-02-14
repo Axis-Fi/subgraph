@@ -8,7 +8,7 @@ dataSources:
     name: AuctionHouse
     network: blast-testnet
     source:
-      address: "0x00000000AD4dd7bC9077e3894225840fE1bfd6eC"
+      address: "0x00000000cB3c2A36dEF5Be4d3A674280eFC33498"
       abi: AuctionHouse
       startBlock: 1458396
     mapping:
@@ -38,7 +38,7 @@ dataSources:
       eventHandlers:
         - event: AuctionCancelled(indexed uint96,indexed bytes7)
           handler: handleAuctionCancelled
-        - event: AuctionCreated(indexed uint96,indexed bytes7,address,address)
+        - event: AuctionCreated(indexed uint96,indexed bytes7,string)
           handler: handleAuctionCreated
         - event: Bid(indexed uint96,indexed uint96,indexed address,uint256)
           handler: handleBid
@@ -61,7 +61,7 @@ dataSources:
     name: LocalSealedBidBatchAuction
     network: blast-testnet
     source:
-      address: "0xc20918b09dE9708d2A7997dfFc3c5ACB34d4a15b"
+      address: "0xcE56d3E3E145b44597B61E99c64cb82FB209Da04"
       abi: LocalSealedBidBatchAuction
       startBlock: 1458403
     mapping:

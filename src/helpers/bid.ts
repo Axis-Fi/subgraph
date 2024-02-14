@@ -6,7 +6,7 @@ import {
 } from "../../generated/LocalSealedBidBatchAuction/LocalSealedBidBatchAuction";
 import { AuctionLot, Bid } from "../../generated/schema";
 
-const LSBBA_MODULE = "0xc20918b09dE9708d2A7997dfFc3c5ACB34d4a15b";
+const LSBBA_MODULE = "0xcE56d3E3E145b44597B61E99c64cb82FB209Da04";
 
 function getAuctionModule(): LocalSealedBidBatchAuction {
   return LocalSealedBidBatchAuction.bind(Address.fromString(LSBBA_MODULE));

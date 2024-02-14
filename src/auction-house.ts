@@ -157,13 +157,12 @@ export function handleAuctionCreated(event: AuctionCreatedEvent): void {
   );
   auctionLot.start = auctionLotContractRecord.getStart();
   auctionLot.conclusion = auctionLotContractRecord.getConclusion();
-
   auctionLot.auctionRef = event.params.auctionRef;
-  auctionLot.baseToken = _getOrCreateToken(event.params.baseToken).id;
-  auctionLot.quoteToken = _getOrCreateToken(event.params.quoteToken).id;
 
   const auctionHouse = getAuctionHouse();
   const auctionRouting = auctionHouse.lotRouting(lotId);
+  auctionLot.baseToken = _getOrCreateToken(auctionRouting.getBaseToken()).id;
+  auctionLot.quoteToken = _getOrCreateToken(auctionRouting.getQuoteToken()).id;
   auctionLot.owner = auctionRouting.getOwner();
   auctionLot.derivativeRef = auctionRouting.getDerivativeReference();
   auctionLot.wrapDerivative = auctionRouting.getWrapDerivative();
@@ -197,7 +196,7 @@ export function handleAuctionCreated(event: AuctionCreatedEvent): void {
   entity.blockNumber = event.block.number;
   entity.blockTimestamp = event.block.timestamp;
   entity.transactionHash = event.transaction.hash;
-  entity.infoHash = "QmSKBCWL2qvCCruAeMpp8eRnrc58e6gPrZfDTQGrcxZLJQ"; // TODO temp value
+  entity.infoHash = event.params.infoHash;
   entity.save();
 }
 
