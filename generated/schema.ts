@@ -349,6 +349,19 @@ export class AuctionLot extends Entity {
     this.set("lastUpdatedTransactionHash", Value.fromBytes(value));
   }
 
+  get maxBidId(): BigInt {
+    const value = this.get("maxBidId");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set maxBidId(value: BigInt) {
+    this.set("maxBidId", Value.fromBigInt(value));
+  }
+
   get cancelled(): AuctionCancelledLoader {
     return new AuctionCancelledLoader(
       "AuctionLot",
@@ -752,6 +765,19 @@ export class Bid extends Entity {
 
   set transactionHash(value: Bytes) {
     this.set("transactionHash", Value.fromBytes(value));
+  }
+
+  get status(): string {
+    const value = this.get("status");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set status(value: string) {
+    this.set("status", Value.fromString(value));
   }
 
   get decrypted(): BidDecryptedLoader {

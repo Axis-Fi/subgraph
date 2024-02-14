@@ -1,7 +1,7 @@
 import { BidDecrypted as BidDecryptedEvent } from "../generated/LocalSealedBidBatchAuction/LocalSealedBidBatchAuction";
 import { BidDecrypted } from "../generated/schema";
 import { getAuctionLot } from "./helpers/auction";
-import { getBidId } from "./helpers/bid";
+import { getBidId, updateBid } from "./helpers/bid";
 import { toDecimal } from "./helpers/number";
 
 export function handleBidDecrypted(event: BidDecryptedEvent): void {
@@ -28,4 +28,7 @@ export function handleBidDecrypted(event: BidDecryptedEvent): void {
   entity.transactionHash = event.transaction.hash;
 
   entity.save();
+
+  // Update the bid
+  updateBid(lotId, event.params.bidId);
 }

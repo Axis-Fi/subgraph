@@ -38,7 +38,13 @@ import {
   getAuctionHouse,
   getAuctionLot,
 } from "./helpers/auction";
-import { getBidId } from "./helpers/bid";
+import {
+  getBidId,
+  getBidStatus,
+  getEncryptedBid,
+  updateBid,
+  updateBidsStatus,
+} from "./helpers/bid";
 import { toDecimal } from "./helpers/number";
 
 function _getERC20Contract(address: Bytes): ERC20 {
@@ -69,6 +75,7 @@ function _updateAuctionLot(
   lotId: BigInt,
   block: ethereum.Block,
   transactionHash: Bytes,
+  bidId: BigInt | null,
 ): void {
   const auctionLot = getAuctionLot(lotId);
 
@@ -100,6 +107,11 @@ function _updateAuctionLot(
   entity.lastUpdatedBlockTimestamp = block.timestamp;
   entity.lastUpdatedTransactionHash = transactionHash;
 
+  // Update the maxBidId if applicable
+  if (bidId !== null && entity.maxBidId.lt(bidId)) {
+    entity.maxBidId = bidId;
+  }
+
   const auctionCuration = getAuctionCuration(lotId);
   entity.curatorApproved = auctionCuration.getCurated();
 
@@ -120,7 +132,7 @@ export function handleAuctionCancelled(event: AuctionCancelledEvent): void {
   entity.transactionHash = event.transaction.hash;
   entity.save();
 
-  _updateAuctionLot(lotId, event.block, event.transaction.hash);
+  _updateAuctionLot(lotId, event.block, event.transaction.hash, null);
 }
 
 export function handleAuctionCreated(event: AuctionCreatedEvent): void {
@@ -173,6 +185,7 @@ export function handleAuctionCreated(event: AuctionCreatedEvent): void {
   auctionLot.lastUpdatedBlockNumber = event.block.number;
   auctionLot.lastUpdatedBlockTimestamp = event.block.timestamp;
   auctionLot.lastUpdatedTransactionHash = event.transaction.hash;
+  auctionLot.maxBidId = BigInt.fromI32(0);
 
   auctionLot.save();
 
@@ -192,6 +205,9 @@ export function handleBid(event: BidEvent): void {
   const lotId = event.params.lotId;
   const bidId = event.params.bidId;
 
+  // Get the encrypted bid
+  const encryptedBid = getEncryptedBid(lotId, bidId);
+
   const entity = new Bid(getBidId(lotId, bidId));
   entity.lot = lotId.toString();
   entity.bidId = bidId;
@@ -203,6 +219,7 @@ export function handleBid(event: BidEvent): void {
     event.params.amount,
     getAuctionLot(lotId).getQuoteTokenDecimals(),
   );
+  entity.status = getBidStatus(encryptedBid.getStatus());
   entity.save();
 
   const auctionLot = getAuctionLot(lotId);
@@ -211,7 +228,7 @@ export function handleBid(event: BidEvent): void {
     auctionLot.getQuoteTokenDecimals(),
   );
 
-  _updateAuctionLot(lotId, event.block, event.transaction.hash);
+  _updateAuctionLot(lotId, event.block, event.transaction.hash, bidId);
 }
 
 export function handleRefundBid(event: RefundBidEvent): void {
@@ -228,7 +245,11 @@ export function handleRefundBid(event: RefundBidEvent): void {
   entity.transactionHash = event.transaction.hash;
   entity.save();
 
-  _updateAuctionLot(lotId, event.block, event.transaction.hash);
+  // Update the bid record
+  updateBid(lotId, event.params.bidId);
+
+  // Update the auction record
+  _updateAuctionLot(lotId, event.block, event.transaction.hash, null);
 }
 
 export function handleCurated(event: CuratedEvent): void {
@@ -244,7 +265,7 @@ export function handleCurated(event: CuratedEvent): void {
   entity.transactionHash = event.transaction.hash;
   entity.save();
 
-  _updateAuctionLot(lotId, event.block, event.transaction.hash);
+  _updateAuctionLot(lotId, event.block, event.transaction.hash, null);
 }
 
 export function handlePurchase(event: PurchaseEvent): void {
@@ -272,7 +293,7 @@ export function handlePurchase(event: PurchaseEvent): void {
 
   entity.save();
 
-  _updateAuctionLot(lotId, event.block, event.transaction.hash);
+  _updateAuctionLot(lotId, event.block, event.transaction.hash, null);
 }
 
 export function handleSettle(event: SettleEvent): void {
@@ -287,7 +308,10 @@ export function handleSettle(event: SettleEvent): void {
   entity.transactionHash = event.transaction.hash;
   entity.save();
 
-  _updateAuctionLot(lotId, event.block, event.transaction.hash);
+  _updateAuctionLot(lotId, event.block, event.transaction.hash, null);
+
+  // Iterate over all bids and update their status
+  updateBidsStatus(lotId);
 }
 
 // Administrative events

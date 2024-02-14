@@ -33,6 +33,8 @@ dataSources:
           file: ./abis/AuctionModule.json
         - name: ERC20
           file: ./abis/ERC20.json
+        - name: LocalSealedBidBatchAuction
+          file: ./abis/LocalSealedBidBatchAuction.json
       eventHandlers:
         - event: AuctionCancelled(indexed uint96,indexed bytes7)
           handler: handleAuctionCancelled

@@ -30,6 +30,8 @@ type AuctionLot @entity {
   lastUpdatedBlockTimestamp: BigInt!
   lastUpdatedTransactionHash: Bytes!
 
+  maxBidId: BigInt! # uint96
+
   # Reverse lookups
   cancelled: AuctionCancelled @derivedFrom(field: "lot")
   created: AuctionCreated! @derivedFrom(field: "lot")
@@ -59,7 +61,7 @@ type AuctionCreated @entity(immutable: true) {
   infoHash: String! # IPFS info hash
 }
 
-type Bid @entity(immutable: true) {
+type Bid @entity {
   id: String! # lotId + bidId
   lot: AuctionLot!
   bidId: BigInt! # uint96
@@ -68,6 +70,7 @@ type Bid @entity(immutable: true) {
   blockNumber: BigInt!
   blockTimestamp: BigInt!
   transactionHash: Bytes!
+  status: String! # enum: "submitted" | "decrypted" | "won" | "refunded"
 
   # Reverse lookups
   decrypted: BidDecrypted @derivedFrom(field: "bid")
