@@ -184,6 +184,7 @@ export function handleAuctionCreated(event: AuctionCreatedEvent): void {
   entity.blockNumber = event.block.number;
   entity.blockTimestamp = event.block.timestamp;
   entity.transactionHash = event.transaction.hash;
+  entity.infoHash = "QmSKBCWL2qvCCruAeMpp8eRnrc58e6gPrZfDTQGrcxZLJQ"; // TODO temp value
   entity.save();
 }
 

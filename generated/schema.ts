@@ -609,6 +609,19 @@ export class AuctionCreated extends Entity {
   set transactionHash(value: Bytes) {
     this.set("transactionHash", Value.fromBytes(value));
   }
+
+  get infoHash(): string {
+    const value = this.get("infoHash");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set infoHash(value: string) {
+    this.set("infoHash", Value.fromString(value));
+  }
 }
 
 export class Bid extends Entity {
