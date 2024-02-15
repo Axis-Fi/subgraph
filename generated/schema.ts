@@ -715,8 +715,8 @@ export class Bid extends Entity {
     this.set("bidder", Value.fromBytes(value));
   }
 
-  get amount(): BigDecimal {
-    const value = this.get("amount");
+  get amountIn(): BigDecimal {
+    const value = this.get("amountIn");
     if (!value || value.kind == ValueKind.NULL) {
       throw new Error("Cannot return null for a required field.");
     } else {
@@ -724,8 +724,25 @@ export class Bid extends Entity {
     }
   }
 
-  set amount(value: BigDecimal) {
-    this.set("amount", Value.fromBigDecimal(value));
+  set amountIn(value: BigDecimal) {
+    this.set("amountIn", Value.fromBigDecimal(value));
+  }
+
+  get amountOut(): BigDecimal | null {
+    const value = this.get("amountOut");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigDecimal();
+    }
+  }
+
+  set amountOut(value: BigDecimal | null) {
+    if (!value) {
+      this.unset("amountOut");
+    } else {
+      this.set("amountOut", Value.fromBigDecimal(<BigDecimal>value));
+    }
   }
 
   get blockNumber(): BigInt {

@@ -214,18 +214,12 @@ export function handleBid(event: BidEvent): void {
   entity.blockNumber = event.block.number;
   entity.blockTimestamp = event.block.timestamp;
   entity.transactionHash = event.transaction.hash;
-  entity.amount = toDecimal(
+  entity.amountIn = toDecimal(
     event.params.amount,
     getAuctionLot(lotId).getQuoteTokenDecimals(),
   );
   entity.status = getBidStatus(encryptedBid.getStatus());
   entity.save();
-
-  const auctionLot = getAuctionLot(lotId);
-  entity.amount = toDecimal(
-    event.params.amount,
-    auctionLot.getQuoteTokenDecimals(),
-  );
 
   _updateAuctionLot(lotId, event.block, event.transaction.hash, bidId);
 }
