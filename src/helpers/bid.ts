@@ -2,6 +2,7 @@ import { Address, BigInt } from "@graphprotocol/graph-ts";
 
 import {
   EncryptedMarginalPriceAuctionModule,
+  EncryptedMarginalPriceAuctionModule__bidsResult,
   EncryptedMarginalPriceAuctionModule__encryptedBidsResult,
 } from "../../generated/EncryptedMarginalPriceAuctionModule/EncryptedMarginalPriceAuctionModule";
 import { AuctionLot, Bid } from "../../generated/schema";
@@ -26,7 +27,10 @@ export function getEncryptedBid(
   return auctionModule.encryptedBids(lotId, bidId);
 }
 
-export function getBid(lotId: BigInt, bidId: BigInt) {
+export function getBid(
+  lotId: BigInt,
+  bidId: BigInt
+): EncryptedMarginalPriceAuctionModule__bidsResult {
   const auctionModule = getAuctionModule();
   return auctionModule.bids(lotId, bidId);
 }

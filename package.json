@@ -8,11 +8,14 @@
   "license": "ISC",
   "scripts": {
     "codegen": "rm -rf generated/ && graph codegen && yarn eslint --config ./.eslintrc.json --fix generated/",
-    "build": "graph build",
-    "deploy:studio": "source .subgraph-version && source .env && graph deploy --product subgraph-studio --version-label $SUBGRAPH_VERSION --deploy-key $GRAPH_STUDIO_TOKEN axisfi-auctions",
+    "build": "source .deploy-meta && graph build --network $TARGET_NETWORK",
+    "deploy:studio": "source .deploy-meta && source .env && graph deploy --product subgraph-studio --version-label $SUBGRAPH_VERSION --deploy-key $GRAPH_STUDIO_TOKEN axis-origin-$TARGET_NETWORK",
     "lint": "prettier --write \"**/*.{ts,md,json}\" && eslint --config ./.eslintrc.json --fix",
     "test": "graph test --version 0.5.3",
-    "test:force": "yarn test --recompile"
+    "test:force": "yarn test --recompile",
+    "local:create": "graph create --node http://localhost:8020/ axisfi-auctions",
+    "local:remove": "graph remove --node http://localhost:8020/ axisfi-auctions",
+    "local:deploy": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 axisfi-auctions"
   },
   "dependencies": {
     "@graphprotocol/graph-cli": "^0.67.0",

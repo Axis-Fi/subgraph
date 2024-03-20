@@ -1,12 +1,32 @@
 {
   "blast-testnet": {
     "AuctionHouse": {
-      "address": "0x000000008D5D105e7e35483B4c03160761A2De5D",
-      "startBlock": "3087856"
+      "address": "0x000000009DB7a64d0B3f92E2F0e026a2AF9Cf9b3",
+      "startBlock": 3087856
     },
     "EncryptedMarginalPriceAuctionModule": {
-      "address": "0xe1B83edA3399A2c9B8265215EA21042C9b918dc5",
-      "startBlock": "3087856"
+      "address": "0xF3e2578C66071a637F06cc02b1c11DeC0784C1A6",
+      "startBlock": 3087856
+    }
+  },
+  "arbitrum-sepolia": {
+    "AuctionHouse": {
+      "address": "0x00000000dca78197E4B82b17AFc5C263a097ef3e",
+      "startBlock": 25134248
+    },
+    "EncryptedMarginalPriceAuctionModule": {
+      "address": "0x605A7105CA51FD5F107258362f52d8269eeA851A",
+      "startBlock": 25134248
+    }
+  },
+  "mode-sepolia": {
+    "AuctionHouse": {
+      "address": "0x00000000dca78197E4B82b17AFc5C263a097ef3e",
+      "startBlock": 11539414
+    },
+    "EncryptedMarginalPriceAuctionModule": {
+      "address": "0x0407910809D251c2E4c217576b63f263e3Fd1B59",
+      "startBlock": 11539414
     }
   }
 }
