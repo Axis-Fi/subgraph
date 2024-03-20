@@ -2,7 +2,7 @@ import { Address, BigInt } from "@graphprotocol/graph-ts";
 
 import {
   AuctionHouse,
-  AuctionHouse__lotCurationResult,
+  AuctionHouse__lotFeesResult,
 } from "../../generated/AuctionHouse/AuctionHouse";
 import {
   AuctionModule,
@@ -17,7 +17,7 @@ export function getAuctionHouse(): AuctionHouse {
 
 export function getAuctionModule(
   auctionHouse: AuctionHouse,
-  lotId: BigInt,
+  lotId: BigInt
 ): AuctionModule {
   return AuctionModule.bind(auctionHouse.getModuleForId(lotId));
 }
@@ -28,9 +28,7 @@ export function getAuctionLot(lotId: BigInt): AuctionModule__lotDataResult {
   return auctionModule.lotData(lotId);
 }
 
-export function getAuctionCuration(
-  lotId: BigInt,
-): AuctionHouse__lotCurationResult {
+export function getAuctionCuration(lotId: BigInt): AuctionHouse__lotFeesResult {
   const auctionHouse = getAuctionHouse();
-  return auctionHouse.lotCuration(lotId);
+  return auctionHouse.lotFees(lotId);
 }

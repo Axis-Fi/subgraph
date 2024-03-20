@@ -6,9 +6,7 @@ import {
   beforeAll,
   afterAll,
 } from "matchstick-as/assembly/index";
-import { BigInt, Bytes, Address } from "@graphprotocol/graph-ts";
-import { AuctionCancelled } from "../generated/schema";
-import { AuctionCancelled as AuctionCancelledEvent } from "../generated/AuctionHouse/AuctionHouse";
+import { BigInt, Bytes } from "@graphprotocol/graph-ts";
 import { handleAuctionCancelled } from "../src/auction-house";
 import { createAuctionCancelledEvent } from "./auction-house-utils";
 
@@ -38,7 +36,7 @@ describe("Describe entity assertions", () => {
       "AuctionCancelled",
       "0xa16081f360e3847006db660bae1c6d1b2e17ec2a-1",
       "auctionRef",
-      "1234567890",
+      "1234567890"
     );
 
     // More assert options:

@@ -1,4 +1,4 @@
-import { BidDecrypted as BidDecryptedEvent } from "../generated/LocalSealedBidBatchAuction/LocalSealedBidBatchAuction";
+import { BidDecrypted as BidDecryptedEvent } from "../generated/EncryptedMarginalPriceAuctionModule/EncryptedMarginalPriceAuctionModule";
 import { Bid, BidDecrypted } from "../generated/schema";
 import { getAuctionLot } from "./helpers/auction";
 import { getBidId, updateBid } from "./helpers/bid";
@@ -8,7 +8,7 @@ export function handleBidDecrypted(event: BidDecryptedEvent): void {
   const lotId = event.params.lotId;
 
   const entity = new BidDecrypted(
-    event.transaction.hash.concatI32(event.logIndex.toI32()),
+    event.transaction.hash.concatI32(event.logIndex.toI32())
   );
   entity.lot = event.params.lotId.toString();
   entity.bid = getBidId(lotId, event.params.bidId);
@@ -16,11 +16,11 @@ export function handleBidDecrypted(event: BidDecryptedEvent): void {
   const auctionLot = getAuctionLot(lotId);
   entity.amountIn = toDecimal(
     event.params.amountIn,
-    auctionLot.getQuoteTokenDecimals(),
+    auctionLot.getQuoteTokenDecimals()
   );
   entity.amountOut = toDecimal(
     event.params.amountOut,
-    auctionLot.getBaseTokenDecimals(),
+    auctionLot.getBaseTokenDecimals()
   );
 
   entity.blockNumber = event.block.number;

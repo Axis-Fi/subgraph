@@ -1,6 +1,6 @@
 import { newMockEvent } from "matchstick-as";
 import { ethereum, BigInt } from "@graphprotocol/graph-ts";
-import { BidDecrypted } from "../generated/LocalSealedBidBatchAuction/LocalSealedBidBatchAuction";
+import { BidDecrypted } from "../generated/EncryptedMarginalPriceAuctionModule/EncryptedMarginalPriceAuctionModule";
 
 export function createBidDecryptedEvent(
   lotId: BigInt,

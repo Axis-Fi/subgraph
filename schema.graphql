@@ -11,7 +11,6 @@ type AuctionLot @entity {
   capacityInitial: BigDecimal! # uint256
   start: BigInt! # timestamp
   conclusion: BigInt! # timestamp
-
   # Routing details
   auctionRef: Bytes! # bytes7
   baseToken: Token! # address
@@ -21,6 +20,7 @@ type AuctionLot @entity {
   curatorApproved: Boolean!
   derivativeRef: Bytes! # bytes7
   wrapDerivative: Boolean!
+  reference: Bytes!
 
   # These values are updated when events occur
   capacity: BigDecimal! # uint256
@@ -31,7 +31,6 @@ type AuctionLot @entity {
   lastUpdatedTransactionHash: Bytes!
 
   maxBidId: BigInt! # uint96
-
   # Reverse lookups
   cancelled: AuctionCancelled @derivedFrom(field: "lot")
   created: AuctionCreated! @derivedFrom(field: "lot")
@@ -72,7 +71,6 @@ type Bid @entity {
   blockTimestamp: BigInt!
   transactionHash: Bytes!
   status: String! # enum: "submitted" | "decrypted" | "won" | "refunded"
-
   # Reverse lookups
   decrypted: BidDecrypted @derivedFrom(field: "bid")
   refunded: RefundBid @derivedFrom(field: "bid")
