@@ -6,11 +6,11 @@ schema:
 dataSources:
   - kind: ethereum
     name: AuctionHouse
-    network: arbitrum-sepolia
+    network: mode-testnet
     source:
       abi: AuctionHouse
-      address: "0x00000000dca78197E4B82b17AFc5C263a097ef3e"
-      startBlock: 25134248
+      address: "0x0000000053307d4Ec2141c8b49fff0A04903F11D"
+      startBlock: 11539414
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -57,11 +57,11 @@ dataSources:
       file: ./src/auction-house.ts
   - kind: ethereum
     name: EncryptedMarginalPriceAuctionModule
-    network: arbitrum-sepolia
+    network: mode-testnet
     source:
       abi: EncryptedMarginalPriceAuctionModule
-      address: "0x605A7105CA51FD5F107258362f52d8269eeA851A"
-      startBlock: 25134248
+      address: "0x0407910809D251c2E4c217576b63f263e3Fd1B59"
+      startBlock: 11539414
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7

@@ -8,11 +8,12 @@
   "license": "ISC",
   "scripts": {
     "codegen": "rm -rf generated/ && graph codegen && yarn eslint --config ./.eslintrc.json --fix generated/",
-    "build": "source .deploy-meta && graph build --network $TARGET_NETWORK",
-    "deploy:studio": "source .deploy-meta && source .env && graph deploy --product subgraph-studio --version-label $SUBGRAPH_VERSION --deploy-key $GRAPH_STUDIO_TOKEN axis-origin-$TARGET_NETWORK",
+    "build": "source .env && yarn update:constants && graph build --network $TARGET_NETWORK",
+    "deploy:studio": "source .env && graph deploy --product subgraph-studio --version-label $SUBGRAPH_VERSION --deploy-key $GRAPH_STUDIO_TOKEN axis-origin-$TARGET_NETWORK",
     "lint": "prettier --write \"**/*.{ts,md,json}\" && eslint --config ./.eslintrc.json --fix",
     "test": "graph test --version 0.5.3",
     "test:force": "yarn test --recompile",
+    "update:constants": "source .env && node scripts/write-constants.js $TARGET_NETWORK",
     "local:create": "graph create --node http://localhost:8020/ axisfi-auctions",
     "local:remove": "graph remove --node http://localhost:8020/ axisfi-auctions",
     "local:deploy": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 axisfi-auctions"
@@ -20,7 +21,8 @@
   "dependencies": {
     "@graphprotocol/graph-cli": "^0.67.0",
     "@graphprotocol/graph-ts": "^0.32.0",
-    "assemblyscript-json": "^1.1.0"
+    "assemblyscript-json": "^1.1.0",
+    "dotenv": "^16.4.5"
   },
   "devDependencies": {
     "@types/node": "^20",

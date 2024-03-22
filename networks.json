@@ -19,9 +19,9 @@
       "startBlock": 25134248
     }
   },
-  "mode-sepolia": {
+  "mode-testnet": {
     "AuctionHouse": {
-      "address": "0x00000000dca78197E4B82b17AFc5C263a097ef3e",
+      "address": "0x0000000053307d4Ec2141c8b49fff0A04903F11D",
       "startBlock": 11539414
     },
     "EncryptedMarginalPriceAuctionModule": {

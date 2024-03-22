@@ -20,7 +20,7 @@ type AuctionLot @entity {
   curatorApproved: Boolean!
   derivativeRef: Bytes! # bytes7
   wrapDerivative: Boolean!
-  reference: Bytes!
+  #reference: Bytes!
 
   # These values are updated when events occur
   capacity: BigDecimal! # uint256

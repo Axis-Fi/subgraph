@@ -9,10 +9,10 @@ import {
   AuctionModule__lotDataResult,
 } from "../../generated/AuctionHouse/AuctionModule";
 
-const AUCTION_HOUSE = "0x00000000cB3c2A36dEF5Be4d3A674280eFC33498";
+import { AUCTION_HOUSE_ADDRESS } from "../constants";
 
 export function getAuctionHouse(): AuctionHouse {
-  return AuctionHouse.bind(Address.fromString(AUCTION_HOUSE));
+  return AuctionHouse.bind(Address.fromString(AUCTION_HOUSE_ADDRESS));
 }
 
 export function getAuctionModule(
