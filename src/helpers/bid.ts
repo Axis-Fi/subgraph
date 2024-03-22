@@ -1,15 +1,17 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts";
 
 import {
-  LocalSealedBidBatchAuction,
-  LocalSealedBidBatchAuction__lotEncryptedBidsResult,
-} from "../../generated/LocalSealedBidBatchAuction/LocalSealedBidBatchAuction";
+  EncryptedMarginalPriceAuctionModule,
+  EncryptedMarginalPriceAuctionModule__bidsResult,
+  EncryptedMarginalPriceAuctionModule__encryptedBidsResult,
+} from "../../generated/EncryptedMarginalPriceAuctionModule/EncryptedMarginalPriceAuctionModule";
 import { AuctionLot, Bid } from "../../generated/schema";
+import { EMPAM_ADDRESS } from "../constants";
 
-const LSBBA_MODULE = "0xcE56d3E3E145b44597B61E99c64cb82FB209Da04";
-
-function getAuctionModule(): LocalSealedBidBatchAuction {
-  return LocalSealedBidBatchAuction.bind(Address.fromString(LSBBA_MODULE));
+function getAuctionModule(): EncryptedMarginalPriceAuctionModule {
+  return EncryptedMarginalPriceAuctionModule.bind(
+    Address.fromString(EMPAM_ADDRESS)
+  );
 }
 
 export function getBidId(lotId: BigInt, bidId: BigInt): string {
@@ -18,11 +20,19 @@ export function getBidId(lotId: BigInt, bidId: BigInt): string {
 
 export function getEncryptedBid(
   lotId: BigInt,
-  bidId: BigInt,
-): LocalSealedBidBatchAuction__lotEncryptedBidsResult {
+  bidId: BigInt
+): EncryptedMarginalPriceAuctionModule__encryptedBidsResult {
   const auctionModule = getAuctionModule();
 
-  return auctionModule.lotEncryptedBids(lotId, bidId);
+  return auctionModule.encryptedBids(lotId, bidId);
+}
+
+export function getBid(
+  lotId: BigInt,
+  bidId: BigInt
+): EncryptedMarginalPriceAuctionModule__bidsResult {
+  const auctionModule = getAuctionModule();
+  return auctionModule.bids(lotId, bidId);
 }
 
 export function getBidStatus(status: i32): string {
@@ -47,8 +57,9 @@ export function updateBid(lotId: BigInt, bidId: BigInt): void {
     throw new Error("Bid not found: " + getBidId(lotId, bidId));
   }
 
-  const encryptedBid = getEncryptedBid(lotId, bidId);
-  entity.status = getBidStatus(encryptedBid.getStatus());
+  const bid = getBid(lotId, bidId);
+
+  entity.status = getBidStatus(bid.getStatus());
 
   entity.save();
 }

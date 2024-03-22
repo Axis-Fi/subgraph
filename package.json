@@ -6,18 +6,21 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "workspaces": [],
   "scripts": {
-    "codegen": "rm -rf generated/ && graph codegen && yarn eslint --config ./.eslintrc.json --fix generated/",
-    "build": "graph build",
-    "deploy:studio": "source .subgraph-version && source .env && graph deploy --product subgraph-studio --version-label $SUBGRAPH_VERSION --deploy-key $GRAPH_STUDIO_TOKEN axisfi-auctions",
+    "codegen": "rm -rf generated/ && graph codegen && pnpm eslint --config ./.eslintrc.json --fix generated/",
     "lint": "prettier --write \"**/*.{ts,md,json}\" && eslint --config ./.eslintrc.json --fix",
     "test": "graph test --version 0.5.3",
-    "test:force": "yarn test --recompile"
+    "test:force": "pnpm test --recompile",
+    "update:constants": "node scripts/write-constants.js",
+    "build": "pnpm update:constants && node scripts/build.js",
+    "deploy:graph": "pnpm build && node scripts/deploy.js"
   },
   "dependencies": {
     "@graphprotocol/graph-cli": "^0.67.0",
     "@graphprotocol/graph-ts": "^0.32.0",
-    "assemblyscript-json": "^1.1.0"
+    "assemblyscript-json": "^1.1.0",
+    "dotenv": "^16.4.5"
   },
   "devDependencies": {
     "@types/node": "^20",

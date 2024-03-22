@@ -40,32 +40,7 @@ export class BidDecrypted__Params {
   }
 }
 
-export class LocalSealedBidBatchAuction__auctionResult {
-  value0: boolean;
-  value1: BigInt;
-
-  constructor(value0: boolean, value1: BigInt) {
-    this.value0 = value0;
-    this.value1 = value1;
-  }
-
-  toMap(): TypedMap<string, ethereum.Value> {
-    const map = new TypedMap<string, ethereum.Value>();
-    map.set("value0", ethereum.Value.fromBoolean(this.value0));
-    map.set("value1", ethereum.Value.fromUnsignedBigInt(this.value1));
-    return map;
-  }
-
-  getPrefundingRequired(): boolean {
-    return this.value0;
-  }
-
-  getCapacity(): BigInt {
-    return this.value1;
-  }
-}
-
-export class LocalSealedBidBatchAuction__auctionInputParams_Struct extends ethereum.Tuple {
+export class EncryptedMarginalPriceAuctionModule__auctionInputParams_Struct extends ethereum.Tuple {
   get start(): BigInt {
     return this[0].toBigInt();
   }
@@ -87,23 +62,39 @@ export class LocalSealedBidBatchAuction__auctionInputParams_Struct extends ether
   }
 }
 
-export class LocalSealedBidBatchAuction__auctionDataResult {
-  value0: i32;
+export class EncryptedMarginalPriceAuctionModule__auctionDataResultPublicKeyStruct extends ethereum.Tuple {
+  get x(): BigInt {
+    return this[0].toBigInt();
+  }
+
+  get y(): BigInt {
+    return this[1].toBigInt();
+  }
+}
+
+export class EncryptedMarginalPriceAuctionModule__auctionDataResult {
+  value0: BigInt;
   value1: BigInt;
   value2: BigInt;
   value3: BigInt;
   value4: BigInt;
   value5: BigInt;
-  value6: Bytes;
+  value6: i32;
+  value7: BigInt;
+  value8: EncryptedMarginalPriceAuctionModule__auctionDataResultPublicKeyStruct;
+  value9: BigInt;
 
   constructor(
-    value0: i32,
+    value0: BigInt,
     value1: BigInt,
     value2: BigInt,
     value3: BigInt,
     value4: BigInt,
     value5: BigInt,
-    value6: Bytes,
+    value6: i32,
+    value7: BigInt,
+    value8: EncryptedMarginalPriceAuctionModule__auctionDataResultPublicKeyStruct,
+    value9: BigInt,
   ) {
     this.value0 = value0;
     this.value1 = value1;
@@ -112,36 +103,42 @@ export class LocalSealedBidBatchAuction__auctionDataResult {
     this.value4 = value4;
     this.value5 = value5;
     this.value6 = value6;
+    this.value7 = value7;
+    this.value8 = value8;
+    this.value9 = value9;
   }
 
   toMap(): TypedMap<string, ethereum.Value> {
     const map = new TypedMap<string, ethereum.Value>();
-    map.set(
-      "value0",
-      ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(this.value0)),
-    );
+    map.set("value0", ethereum.Value.fromUnsignedBigInt(this.value0));
     map.set("value1", ethereum.Value.fromUnsignedBigInt(this.value1));
     map.set("value2", ethereum.Value.fromUnsignedBigInt(this.value2));
     map.set("value3", ethereum.Value.fromUnsignedBigInt(this.value3));
     map.set("value4", ethereum.Value.fromUnsignedBigInt(this.value4));
     map.set("value5", ethereum.Value.fromUnsignedBigInt(this.value5));
-    map.set("value6", ethereum.Value.fromBytes(this.value6));
+    map.set(
+      "value6",
+      ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(this.value6)),
+    );
+    map.set("value7", ethereum.Value.fromUnsignedBigInt(this.value7));
+    map.set("value8", ethereum.Value.fromTuple(this.value8));
+    map.set("value9", ethereum.Value.fromUnsignedBigInt(this.value9));
     return map;
   }
 
-  getStatus(): i32 {
+  getNextBidId(): BigInt {
     return this.value0;
   }
 
-  getNextDecryptIndex(): BigInt {
+  getMarginalPrice(): BigInt {
     return this.value1;
   }
 
-  getNextBidId(): BigInt {
+  getMinPrice(): BigInt {
     return this.value2;
   }
 
-  getMinimumPrice(): BigInt {
+  getNextDecryptIndex(): BigInt {
     return this.value3;
   }
 
@@ -153,80 +150,325 @@ export class LocalSealedBidBatchAuction__auctionDataResult {
     return this.value5;
   }
 
-  getPublicKeyModulus(): Bytes {
+  getStatus(): i32 {
     return this.value6;
+  }
+
+  getMarginalBidId(): BigInt {
+    return this.value7;
+  }
+
+  getPublicKey(): EncryptedMarginalPriceAuctionModule__auctionDataResultPublicKeyStruct {
+    return this.value8;
+  }
+
+  getPrivateKey(): BigInt {
+    return this.value9;
   }
 }
 
-export class LocalSealedBidBatchAuction__getBidDataResultValue0Struct extends ethereum.Tuple {
-  get status(): i32 {
-    return this[0].toI32();
+export class EncryptedMarginalPriceAuctionModule__bidsResult {
+  value0: Address;
+  value1: BigInt;
+  value2: BigInt;
+  value3: Address;
+  value4: i32;
+
+  constructor(
+    value0: Address,
+    value1: BigInt,
+    value2: BigInt,
+    value3: Address,
+    value4: i32,
+  ) {
+    this.value0 = value0;
+    this.value1 = value1;
+    this.value2 = value2;
+    this.value3 = value3;
+    this.value4 = value4;
   }
 
+  toMap(): TypedMap<string, ethereum.Value> {
+    const map = new TypedMap<string, ethereum.Value>();
+    map.set("value0", ethereum.Value.fromAddress(this.value0));
+    map.set("value1", ethereum.Value.fromUnsignedBigInt(this.value1));
+    map.set("value2", ethereum.Value.fromUnsignedBigInt(this.value2));
+    map.set("value3", ethereum.Value.fromAddress(this.value3));
+    map.set(
+      "value4",
+      ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(this.value4)),
+    );
+    return map;
+  }
+
+  getBidder(): Address {
+    return this.value0;
+  }
+
+  getAmount(): BigInt {
+    return this.value1;
+  }
+
+  getMinAmountOut(): BigInt {
+    return this.value2;
+  }
+
+  getReferrer(): Address {
+    return this.value3;
+  }
+
+  getStatus(): i32 {
+    return this.value4;
+  }
+}
+
+export class EncryptedMarginalPriceAuctionModule__claimBidsResultBidClaimsStruct extends ethereum.Tuple {
   get bidder(): Address {
+    return this[0].toAddress();
+  }
+
+  get referrer(): Address {
     return this[1].toAddress();
   }
 
-  get recipient(): Address {
-    return this[2].toAddress();
+  get paid(): BigInt {
+    return this[2].toBigInt();
+  }
+
+  get payout(): BigInt {
+    return this[3].toBigInt();
+  }
+}
+
+export class EncryptedMarginalPriceAuctionModule__claimBidsResult {
+  value0: Array<EncryptedMarginalPriceAuctionModule__claimBidsResultBidClaimsStruct>;
+  value1: Bytes;
+
+  constructor(
+    value0: Array<EncryptedMarginalPriceAuctionModule__claimBidsResultBidClaimsStruct>,
+    value1: Bytes,
+  ) {
+    this.value0 = value0;
+    this.value1 = value1;
+  }
+
+  toMap(): TypedMap<string, ethereum.Value> {
+    const map = new TypedMap<string, ethereum.Value>();
+    map.set("value0", ethereum.Value.fromTupleArray(this.value0));
+    map.set("value1", ethereum.Value.fromBytes(this.value1));
+    return map;
+  }
+
+  getBidClaims(): Array<EncryptedMarginalPriceAuctionModule__claimBidsResultBidClaimsStruct> {
+    return this.value0;
+  }
+
+  getAuctionOutput(): Bytes {
+    return this.value1;
+  }
+}
+
+export class EncryptedMarginalPriceAuctionModule__claimProceedsResult {
+  value0: BigInt;
+  value1: BigInt;
+  value2: BigInt;
+
+  constructor(value0: BigInt, value1: BigInt, value2: BigInt) {
+    this.value0 = value0;
+    this.value1 = value1;
+    this.value2 = value2;
+  }
+
+  toMap(): TypedMap<string, ethereum.Value> {
+    const map = new TypedMap<string, ethereum.Value>();
+    map.set("value0", ethereum.Value.fromUnsignedBigInt(this.value0));
+    map.set("value1", ethereum.Value.fromUnsignedBigInt(this.value1));
+    map.set("value2", ethereum.Value.fromUnsignedBigInt(this.value2));
+    return map;
+  }
+
+  getPurchased(): BigInt {
+    return this.value0;
+  }
+
+  getSold(): BigInt {
+    return this.value1;
+  }
+
+  getPayoutSent(): BigInt {
+    return this.value2;
+  }
+}
+
+export class EncryptedMarginalPriceAuctionModule__encryptedBidsResultBidPubKeyStruct extends ethereum.Tuple {
+  get x(): BigInt {
+    return this[0].toBigInt();
+  }
+
+  get y(): BigInt {
+    return this[1].toBigInt();
+  }
+}
+
+export class EncryptedMarginalPriceAuctionModule__encryptedBidsResult {
+  value0: BigInt;
+  value1: EncryptedMarginalPriceAuctionModule__encryptedBidsResultBidPubKeyStruct;
+
+  constructor(
+    value0: BigInt,
+    value1: EncryptedMarginalPriceAuctionModule__encryptedBidsResultBidPubKeyStruct,
+  ) {
+    this.value0 = value0;
+    this.value1 = value1;
+  }
+
+  toMap(): TypedMap<string, ethereum.Value> {
+    const map = new TypedMap<string, ethereum.Value>();
+    map.set("value0", ethereum.Value.fromUnsignedBigInt(this.value0));
+    map.set("value1", ethereum.Value.fromTuple(this.value1));
+    return map;
+  }
+
+  getEncryptedAmountOut(): BigInt {
+    return this.value0;
+  }
+
+  getBidPubKey(): EncryptedMarginalPriceAuctionModule__encryptedBidsResultBidPubKeyStruct {
+    return this.value1;
+  }
+}
+
+export class EncryptedMarginalPriceAuctionModule__getAuctionDataResultAuctionData_Struct extends ethereum.Tuple {
+  get nextBidId(): BigInt {
+    return this[0].toBigInt();
+  }
+
+  get marginalPrice(): BigInt {
+    return this[1].toBigInt();
+  }
+
+  get minPrice(): BigInt {
+    return this[2].toBigInt();
+  }
+
+  get nextDecryptIndex(): BigInt {
+    return this[3].toBigInt();
+  }
+
+  get minFilled(): BigInt {
+    return this[4].toBigInt();
+  }
+
+  get minBidSize(): BigInt {
+    return this[5].toBigInt();
+  }
+
+  get status(): i32 {
+    return this[6].toI32();
+  }
+
+  get marginalBidId(): BigInt {
+    return this[7].toBigInt();
+  }
+
+  get publicKey(): EncryptedMarginalPriceAuctionModule__getAuctionDataResultAuctionData_PublicKeyStruct {
+    return changetype<EncryptedMarginalPriceAuctionModule__getAuctionDataResultAuctionData_PublicKeyStruct>(
+      this[8].toTuple(),
+    );
+  }
+
+  get privateKey(): BigInt {
+    return this[9].toBigInt();
+  }
+
+  get bidIds(): Array<BigInt> {
+    return this[10].toBigIntArray();
+  }
+}
+
+export class EncryptedMarginalPriceAuctionModule__getAuctionDataResultAuctionData_PublicKeyStruct extends ethereum.Tuple {
+  get x(): BigInt {
+    return this[0].toBigInt();
+  }
+
+  get y(): BigInt {
+    return this[1].toBigInt();
+  }
+}
+
+export class EncryptedMarginalPriceAuctionModule__getBidResultBidStruct extends ethereum.Tuple {
+  get bidder(): Address {
+    return this[0].toAddress();
+  }
+
+  get amount(): BigInt {
+    return this[1].toBigInt();
+  }
+
+  get minAmountOut(): BigInt {
+    return this[2].toBigInt();
   }
 
   get referrer(): Address {
     return this[3].toAddress();
   }
 
-  get amount(): BigInt {
-    return this[4].toBigInt();
-  }
-
-  get encryptedAmountOut(): Bytes {
-    return this[5].toBytes();
+  get status(): i32 {
+    return this[4].toI32();
   }
 }
 
-export class LocalSealedBidBatchAuction__getDecryptDataResult {
-  value0: i32;
-  value1: BigInt;
-  value2: BigInt;
-  value3: Bytes;
+export class EncryptedMarginalPriceAuctionModule__getBidResultEncryptedBidStruct extends ethereum.Tuple {
+  get encryptedAmountOut(): BigInt {
+    return this[0].toBigInt();
+  }
 
-  constructor(value0: i32, value1: BigInt, value2: BigInt, value3: Bytes) {
+  get bidPubKey(): EncryptedMarginalPriceAuctionModule__getBidResultEncryptedBidBidPubKeyStruct {
+    return changetype<EncryptedMarginalPriceAuctionModule__getBidResultEncryptedBidBidPubKeyStruct>(
+      this[1].toTuple(),
+    );
+  }
+}
+
+export class EncryptedMarginalPriceAuctionModule__getBidResultEncryptedBidBidPubKeyStruct extends ethereum.Tuple {
+  get x(): BigInt {
+    return this[0].toBigInt();
+  }
+
+  get y(): BigInt {
+    return this[1].toBigInt();
+  }
+}
+
+export class EncryptedMarginalPriceAuctionModule__getBidResult {
+  value0: EncryptedMarginalPriceAuctionModule__getBidResultBidStruct;
+  value1: EncryptedMarginalPriceAuctionModule__getBidResultEncryptedBidStruct;
+
+  constructor(
+    value0: EncryptedMarginalPriceAuctionModule__getBidResultBidStruct,
+    value1: EncryptedMarginalPriceAuctionModule__getBidResultEncryptedBidStruct,
+  ) {
     this.value0 = value0;
     this.value1 = value1;
-    this.value2 = value2;
-    this.value3 = value3;
   }
 
   toMap(): TypedMap<string, ethereum.Value> {
     const map = new TypedMap<string, ethereum.Value>();
-    map.set(
-      "value0",
-      ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(this.value0)),
-    );
-    map.set("value1", ethereum.Value.fromUnsignedBigInt(this.value1));
-    map.set("value2", ethereum.Value.fromUnsignedBigInt(this.value2));
-    map.set("value3", ethereum.Value.fromBytes(this.value3));
+    map.set("value0", ethereum.Value.fromTuple(this.value0));
+    map.set("value1", ethereum.Value.fromTuple(this.value1));
     return map;
   }
 
-  getStatus_(): i32 {
+  getBid(): EncryptedMarginalPriceAuctionModule__getBidResultBidStruct {
     return this.value0;
   }
 
-  getActiveBids_(): BigInt {
+  getEncryptedBid(): EncryptedMarginalPriceAuctionModule__getBidResultEncryptedBidStruct {
     return this.value1;
-  }
-
-  getNextDecryptIndex_(): BigInt {
-    return this.value2;
-  }
-
-  getPublicKeyModulus_(): Bytes {
-    return this.value3;
   }
 }
 
-export class LocalSealedBidBatchAuction__getLotResultValue0Struct extends ethereum.Tuple {
+export class EncryptedMarginalPriceAuctionModule__getLotResultValue0Struct extends ethereum.Tuple {
   get start(): BigInt {
     return this[0].toBigInt();
   }
@@ -258,83 +500,13 @@ export class LocalSealedBidBatchAuction__getLotResultValue0Struct extends ethere
   get purchased(): BigInt {
     return this[7].toBigInt();
   }
-}
 
-export class LocalSealedBidBatchAuction__getLotDataResultValue0Struct extends ethereum.Tuple {
-  get status(): i32 {
-    return this[0].toI32();
-  }
-
-  get nextDecryptIndex(): BigInt {
-    return this[1].toBigInt();
-  }
-
-  get nextBidId(): BigInt {
-    return this[2].toBigInt();
-  }
-
-  get minimumPrice(): BigInt {
-    return this[3].toBigInt();
-  }
-
-  get minFilled(): BigInt {
-    return this[4].toBigInt();
-  }
-
-  get minBidSize(): BigInt {
-    return this[5].toBigInt();
-  }
-
-  get publicKeyModulus(): Bytes {
-    return this[6].toBytes();
-  }
-
-  get bidIds(): Array<BigInt> {
-    return this[7].toBigIntArray();
+  get partialPayout(): BigInt {
+    return this[8].toBigInt();
   }
 }
 
-export class LocalSealedBidBatchAuction__getNextBidsToDecryptResultValue0Struct extends ethereum.Tuple {
-  get status(): i32 {
-    return this[0].toI32();
-  }
-
-  get bidder(): Address {
-    return this[1].toAddress();
-  }
-
-  get recipient(): Address {
-    return this[2].toAddress();
-  }
-
-  get referrer(): Address {
-    return this[3].toAddress();
-  }
-
-  get amount(): BigInt {
-    return this[4].toBigInt();
-  }
-
-  get encryptedAmountOut(): Bytes {
-    return this[5].toBytes();
-  }
-}
-
-export class LocalSealedBidBatchAuction__getSortedBidDataResultValue0Struct extends ethereum.Tuple {
-  get bidId(): BigInt {
-    return this[0].toBigInt();
-  }
-
-  get amountIn(): BigInt {
-    return this[1].toBigInt();
-  }
-
-  get minAmountOut(): BigInt {
-    return this[2].toBigInt();
-  }
-}
-
-export class LocalSealedBidBatchAuction__lotDataResult {
+export class EncryptedMarginalPriceAuctionModule__lotDataResult {
   value0: BigInt;
   value1: BigInt;
   value2: i32;
@@ -343,6 +515,7 @@ export class LocalSealedBidBatchAuction__lotDataResult {
   value5: BigInt;
   value6: BigInt;
   value7: BigInt;
+  value8: BigInt;
 
   constructor(
     value0: BigInt,
@@ -353,6 +526,7 @@ export class LocalSealedBidBatchAuction__lotDataResult {
     value5: BigInt,
     value6: BigInt,
     value7: BigInt,
+    value8: BigInt,
   ) {
     this.value0 = value0;
     this.value1 = value1;
@@ -362,6 +536,7 @@ export class LocalSealedBidBatchAuction__lotDataResult {
     this.value5 = value5;
     this.value6 = value6;
     this.value7 = value7;
+    this.value8 = value8;
   }
 
   toMap(): TypedMap<string, ethereum.Value> {
@@ -380,6 +555,7 @@ export class LocalSealedBidBatchAuction__lotDataResult {
     map.set("value5", ethereum.Value.fromUnsignedBigInt(this.value5));
     map.set("value6", ethereum.Value.fromUnsignedBigInt(this.value6));
     map.set("value7", ethereum.Value.fromUnsignedBigInt(this.value7));
+    map.set("value8", ethereum.Value.fromUnsignedBigInt(this.value8));
     return map;
   }
 
@@ -414,72 +590,13 @@ export class LocalSealedBidBatchAuction__lotDataResult {
   getPurchased(): BigInt {
     return this.value7;
   }
-}
 
-export class LocalSealedBidBatchAuction__lotEncryptedBidsResult {
-  value0: i32;
-  value1: Address;
-  value2: Address;
-  value3: Address;
-  value4: BigInt;
-  value5: Bytes;
-
-  constructor(
-    value0: i32,
-    value1: Address,
-    value2: Address,
-    value3: Address,
-    value4: BigInt,
-    value5: Bytes,
-  ) {
-    this.value0 = value0;
-    this.value1 = value1;
-    this.value2 = value2;
-    this.value3 = value3;
-    this.value4 = value4;
-    this.value5 = value5;
-  }
-
-  toMap(): TypedMap<string, ethereum.Value> {
-    const map = new TypedMap<string, ethereum.Value>();
-    map.set(
-      "value0",
-      ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(this.value0)),
-    );
-    map.set("value1", ethereum.Value.fromAddress(this.value1));
-    map.set("value2", ethereum.Value.fromAddress(this.value2));
-    map.set("value3", ethereum.Value.fromAddress(this.value3));
-    map.set("value4", ethereum.Value.fromUnsignedBigInt(this.value4));
-    map.set("value5", ethereum.Value.fromBytes(this.value5));
-    return map;
-  }
-
-  getStatus(): i32 {
-    return this.value0;
-  }
-
-  getBidder(): Address {
-    return this.value1;
-  }
-
-  getRecipient(): Address {
-    return this.value2;
-  }
-
-  getReferrer(): Address {
-    return this.value3;
-  }
-
-  getAmount(): BigInt {
-    return this.value4;
-  }
-
-  getEncryptedAmountOut(): Bytes {
-    return this.value5;
+  getPartialPayout(): BigInt {
+    return this.value8;
   }
 }
 
-export class LocalSealedBidBatchAuction__purchaseResult {
+export class EncryptedMarginalPriceAuctionModule__purchaseResult {
   value0: BigInt;
   value1: Bytes;
 
@@ -504,38 +621,42 @@ export class LocalSealedBidBatchAuction__purchaseResult {
   }
 }
 
-export class LocalSealedBidBatchAuction__settleResultWinningBids_Struct extends ethereum.Tuple {
-  get bidder(): Address {
-    return this[0].toAddress();
+export class EncryptedMarginalPriceAuctionModule__settleResultSettlementStruct extends ethereum.Tuple {
+  get totalIn(): BigInt {
+    return this[0].toBigInt();
   }
 
-  get recipient(): Address {
-    return this[1].toAddress();
+  get totalOut(): BigInt {
+    return this[1].toBigInt();
   }
 
-  get referrer(): Address {
+  get pfBidder(): Address {
     return this[2].toAddress();
   }
 
-  get amount(): BigInt {
-    return this[3].toBigInt();
+  get pfReferrer(): Address {
+    return this[3].toAddress();
   }
 
-  get minAmountOut(): BigInt {
+  get pfRefund(): BigInt {
     return this[4].toBigInt();
   }
 
-  get auctionParam(): Bytes {
-    return this[5].toBytes();
+  get pfPayout(): BigInt {
+    return this[5].toBigInt();
+  }
+
+  get auctionOutput(): Bytes {
+    return this[6].toBytes();
   }
 }
 
-export class LocalSealedBidBatchAuction__settleResult {
-  value0: Array<LocalSealedBidBatchAuction__settleResultWinningBids_Struct>;
+export class EncryptedMarginalPriceAuctionModule__settleResult {
+  value0: EncryptedMarginalPriceAuctionModule__settleResultSettlementStruct;
   value1: Bytes;
 
   constructor(
-    value0: Array<LocalSealedBidBatchAuction__settleResultWinningBids_Struct>,
+    value0: EncryptedMarginalPriceAuctionModule__settleResultSettlementStruct,
     value1: Bytes,
   ) {
     this.value0 = value0;
@@ -544,24 +665,24 @@ export class LocalSealedBidBatchAuction__settleResult {
 
   toMap(): TypedMap<string, ethereum.Value> {
     const map = new TypedMap<string, ethereum.Value>();
-    map.set("value0", ethereum.Value.fromTupleArray(this.value0));
+    map.set("value0", ethereum.Value.fromTuple(this.value0));
     map.set("value1", ethereum.Value.fromBytes(this.value1));
     return map;
   }
 
-  getWinningBids_(): Array<LocalSealedBidBatchAuction__settleResultWinningBids_Struct> {
+  getSettlement(): EncryptedMarginalPriceAuctionModule__settleResultSettlementStruct {
     return this.value0;
   }
 
-  getAuctionOutput_(): Bytes {
+  getAuctionOutput(): Bytes {
     return this.value1;
   }
 }
 
-export class LocalSealedBidBatchAuction extends ethereum.SmartContract {
-  static bind(address: Address): LocalSealedBidBatchAuction {
-    return new LocalSealedBidBatchAuction(
-      "LocalSealedBidBatchAuction",
+export class EncryptedMarginalPriceAuctionModule extends ethereum.SmartContract {
+  static bind(address: Address): EncryptedMarginalPriceAuctionModule {
+    return new EncryptedMarginalPriceAuctionModule(
+      "EncryptedMarginalPriceAuctionModule",
       address,
     );
   }
@@ -613,13 +734,13 @@ export class LocalSealedBidBatchAuction extends ethereum.SmartContract {
 
   auction(
     lotId_: BigInt,
-    params_: LocalSealedBidBatchAuction__auctionInputParams_Struct,
+    params_: EncryptedMarginalPriceAuctionModule__auctionInputParams_Struct,
     quoteTokenDecimals_: i32,
     baseTokenDecimals_: i32,
-  ): LocalSealedBidBatchAuction__auctionResult {
+  ): BigInt {
     const result = super.call(
       "auction",
-      "auction(uint96,(uint48,uint48,bool,uint256,bytes),uint8,uint8):(bool,uint256)",
+      "auction(uint96,(uint48,uint48,bool,uint96,bytes),uint8,uint8):(uint96)",
       [
         ethereum.Value.fromUnsignedBigInt(lotId_),
         ethereum.Value.fromTuple(params_),
@@ -628,21 +749,18 @@ export class LocalSealedBidBatchAuction extends ethereum.SmartContract {
       ],
     );
 
-    return new LocalSealedBidBatchAuction__auctionResult(
-      result[0].toBoolean(),
-      result[1].toBigInt(),
-    );
+    return result[0].toBigInt();
   }
 
   try_auction(
     lotId_: BigInt,
-    params_: LocalSealedBidBatchAuction__auctionInputParams_Struct,
+    params_: EncryptedMarginalPriceAuctionModule__auctionInputParams_Struct,
     quoteTokenDecimals_: i32,
     baseTokenDecimals_: i32,
-  ): ethereum.CallResult<LocalSealedBidBatchAuction__auctionResult> {
+  ): ethereum.CallResult<BigInt> {
     const result = super.tryCall(
       "auction",
-      "auction(uint96,(uint48,uint48,bool,uint256,bytes),uint8,uint8):(bool,uint256)",
+      "auction(uint96,(uint48,uint48,bool,uint96,bytes),uint8,uint8):(uint96)",
       [
         ethereum.Value.fromUnsignedBigInt(lotId_),
         ethereum.Value.fromTuple(params_),
@@ -654,38 +772,40 @@ export class LocalSealedBidBatchAuction extends ethereum.SmartContract {
       return new ethereum.CallResult();
     }
     const value = result.value;
-    return ethereum.CallResult.fromValue(
-      new LocalSealedBidBatchAuction__auctionResult(
-        value[0].toBoolean(),
-        value[1].toBigInt(),
-      ),
-    );
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
-  auctionData(lotId: BigInt): LocalSealedBidBatchAuction__auctionDataResult {
+  auctionData(
+    lotId: BigInt,
+  ): EncryptedMarginalPriceAuctionModule__auctionDataResult {
     const result = super.call(
       "auctionData",
-      "auctionData(uint96):(uint8,uint96,uint96,uint256,uint256,uint256,bytes)",
+      "auctionData(uint96):(uint64,uint96,uint96,uint64,uint96,uint96,uint8,uint64,(uint256,uint256),uint256)",
       [ethereum.Value.fromUnsignedBigInt(lotId)],
     );
 
-    return new LocalSealedBidBatchAuction__auctionDataResult(
-      result[0].toI32(),
+    return new EncryptedMarginalPriceAuctionModule__auctionDataResult(
+      result[0].toBigInt(),
       result[1].toBigInt(),
       result[2].toBigInt(),
       result[3].toBigInt(),
       result[4].toBigInt(),
       result[5].toBigInt(),
-      result[6].toBytes(),
+      result[6].toI32(),
+      result[7].toBigInt(),
+      changetype<EncryptedMarginalPriceAuctionModule__auctionDataResultPublicKeyStruct>(
+        result[8].toTuple(),
+      ),
+      result[9].toBigInt(),
     );
   }
 
   try_auctionData(
     lotId: BigInt,
-  ): ethereum.CallResult<LocalSealedBidBatchAuction__auctionDataResult> {
+  ): ethereum.CallResult<EncryptedMarginalPriceAuctionModule__auctionDataResult> {
     const result = super.tryCall(
       "auctionData",
-      "auctionData(uint96):(uint8,uint96,uint96,uint256,uint256,uint256,bytes)",
+      "auctionData(uint96):(uint64,uint96,uint96,uint64,uint96,uint96,uint8,uint64,(uint256,uint256),uint256)",
       [ethereum.Value.fromUnsignedBigInt(lotId)],
     );
     if (result.reverted) {
@@ -693,33 +813,51 @@ export class LocalSealedBidBatchAuction extends ethereum.SmartContract {
     }
     const value = result.value;
     return ethereum.CallResult.fromValue(
-      new LocalSealedBidBatchAuction__auctionDataResult(
-        value[0].toI32(),
+      new EncryptedMarginalPriceAuctionModule__auctionDataResult(
+        value[0].toBigInt(),
         value[1].toBigInt(),
         value[2].toBigInt(),
         value[3].toBigInt(),
         value[4].toBigInt(),
         value[5].toBigInt(),
-        value[6].toBytes(),
+        value[6].toI32(),
+        value[7].toBigInt(),
+        changetype<EncryptedMarginalPriceAuctionModule__auctionDataResultPublicKeyStruct>(
+          value[8].toTuple(),
+        ),
+        value[9].toBigInt(),
       ),
     );
+  }
+
+  auctionType(): i32 {
+    const result = super.call("auctionType", "auctionType():(uint8)", []);
+
+    return result[0].toI32();
+  }
+
+  try_auctionType(): ethereum.CallResult<i32> {
+    const result = super.tryCall("auctionType", "auctionType():(uint8)", []);
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    const value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toI32());
   }
 
   bid(
     lotId_: BigInt,
     bidder_: Address,
-    recipient_: Address,
     referrer_: Address,
     amount_: BigInt,
     auctionData_: Bytes,
   ): BigInt {
     const result = super.call(
       "bid",
-      "bid(uint96,address,address,address,uint256,bytes):(uint96)",
+      "bid(uint96,address,address,uint96,bytes):(uint64)",
       [
         ethereum.Value.fromUnsignedBigInt(lotId_),
         ethereum.Value.fromAddress(bidder_),
-        ethereum.Value.fromAddress(recipient_),
         ethereum.Value.fromAddress(referrer_),
         ethereum.Value.fromUnsignedBigInt(amount_),
         ethereum.Value.fromBytes(auctionData_),
@@ -732,18 +870,16 @@ export class LocalSealedBidBatchAuction extends ethereum.SmartContract {
   try_bid(
     lotId_: BigInt,
     bidder_: Address,
-    recipient_: Address,
     referrer_: Address,
     amount_: BigInt,
     auctionData_: Bytes,
   ): ethereum.CallResult<BigInt> {
     const result = super.tryCall(
       "bid",
-      "bid(uint96,address,address,address,uint256,bytes):(uint96)",
+      "bid(uint96,address,address,uint96,bytes):(uint64)",
       [
         ethereum.Value.fromUnsignedBigInt(lotId_),
         ethereum.Value.fromAddress(bidder_),
-        ethereum.Value.fromAddress(recipient_),
         ethereum.Value.fromAddress(referrer_),
         ethereum.Value.fromUnsignedBigInt(amount_),
         ethereum.Value.fromBytes(auctionData_),
@@ -754,6 +890,55 @@ export class LocalSealedBidBatchAuction extends ethereum.SmartContract {
     }
     const value = result.value;
     return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
+
+  bids(
+    lotId: BigInt,
+    bidId: BigInt,
+  ): EncryptedMarginalPriceAuctionModule__bidsResult {
+    const result = super.call(
+      "bids",
+      "bids(uint96,uint64):(address,uint96,uint96,address,uint8)",
+      [
+        ethereum.Value.fromUnsignedBigInt(lotId),
+        ethereum.Value.fromUnsignedBigInt(bidId),
+      ],
+    );
+
+    return new EncryptedMarginalPriceAuctionModule__bidsResult(
+      result[0].toAddress(),
+      result[1].toBigInt(),
+      result[2].toBigInt(),
+      result[3].toAddress(),
+      result[4].toI32(),
+    );
+  }
+
+  try_bids(
+    lotId: BigInt,
+    bidId: BigInt,
+  ): ethereum.CallResult<EncryptedMarginalPriceAuctionModule__bidsResult> {
+    const result = super.tryCall(
+      "bids",
+      "bids(uint96,uint64):(address,uint96,uint96,address,uint8)",
+      [
+        ethereum.Value.fromUnsignedBigInt(lotId),
+        ethereum.Value.fromUnsignedBigInt(bidId),
+      ],
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    const value = result.value;
+    return ethereum.CallResult.fromValue(
+      new EncryptedMarginalPriceAuctionModule__bidsResult(
+        value[0].toAddress(),
+        value[1].toBigInt(),
+        value[2].toBigInt(),
+        value[3].toAddress(),
+        value[4].toI32(),
+      ),
+    );
   }
 
   capacityInQuote(lotId_: BigInt): boolean {
@@ -779,34 +964,35 @@ export class LocalSealedBidBatchAuction extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBoolean());
   }
 
-  getBidData(
+  claimBids(
     lotId_: BigInt,
-    bidId_: BigInt,
-  ): LocalSealedBidBatchAuction__getBidDataResultValue0Struct {
+    bidIds_: Array<BigInt>,
+  ): EncryptedMarginalPriceAuctionModule__claimBidsResult {
     const result = super.call(
-      "getBidData",
-      "getBidData(uint96,uint96):((uint8,address,address,address,uint256,bytes))",
+      "claimBids",
+      "claimBids(uint96,uint64[]):((address,address,uint96,uint96)[],bytes)",
       [
         ethereum.Value.fromUnsignedBigInt(lotId_),
-        ethereum.Value.fromUnsignedBigInt(bidId_),
+        ethereum.Value.fromUnsignedBigIntArray(bidIds_),
       ],
     );
 
-    return changetype<LocalSealedBidBatchAuction__getBidDataResultValue0Struct>(
-      result[0].toTuple(),
+    return new EncryptedMarginalPriceAuctionModule__claimBidsResult(
+      result[0].toTupleArray<EncryptedMarginalPriceAuctionModule__claimBidsResultBidClaimsStruct>(),
+      result[1].toBytes(),
     );
   }
 
-  try_getBidData(
+  try_claimBids(
     lotId_: BigInt,
-    bidId_: BigInt,
-  ): ethereum.CallResult<LocalSealedBidBatchAuction__getBidDataResultValue0Struct> {
+    bidIds_: Array<BigInt>,
+  ): ethereum.CallResult<EncryptedMarginalPriceAuctionModule__claimBidsResult> {
     const result = super.tryCall(
-      "getBidData",
-      "getBidData(uint96,uint96):((uint8,address,address,address,uint256,bytes))",
+      "claimBids",
+      "claimBids(uint96,uint64[]):((address,address,uint96,uint96)[],bytes)",
       [
         ethereum.Value.fromUnsignedBigInt(lotId_),
-        ethereum.Value.fromUnsignedBigInt(bidId_),
+        ethereum.Value.fromUnsignedBigIntArray(bidIds_),
       ],
     );
     if (result.reverted) {
@@ -814,35 +1000,35 @@ export class LocalSealedBidBatchAuction extends ethereum.SmartContract {
     }
     const value = result.value;
     return ethereum.CallResult.fromValue(
-      changetype<LocalSealedBidBatchAuction__getBidDataResultValue0Struct>(
-        value[0].toTuple(),
+      new EncryptedMarginalPriceAuctionModule__claimBidsResult(
+        value[0].toTupleArray<EncryptedMarginalPriceAuctionModule__claimBidsResultBidClaimsStruct>(),
+        value[1].toBytes(),
       ),
     );
   }
 
-  getDecryptData(
+  claimProceeds(
     lotId_: BigInt,
-  ): LocalSealedBidBatchAuction__getDecryptDataResult {
+  ): EncryptedMarginalPriceAuctionModule__claimProceedsResult {
     const result = super.call(
-      "getDecryptData",
-      "getDecryptData(uint96):(uint8,uint96,uint96,bytes)",
+      "claimProceeds",
+      "claimProceeds(uint96):(uint96,uint96,uint96)",
       [ethereum.Value.fromUnsignedBigInt(lotId_)],
     );
 
-    return new LocalSealedBidBatchAuction__getDecryptDataResult(
-      result[0].toI32(),
+    return new EncryptedMarginalPriceAuctionModule__claimProceedsResult(
+      result[0].toBigInt(),
       result[1].toBigInt(),
       result[2].toBigInt(),
-      result[3].toBytes(),
     );
   }
 
-  try_getDecryptData(
+  try_claimProceeds(
     lotId_: BigInt,
-  ): ethereum.CallResult<LocalSealedBidBatchAuction__getDecryptDataResult> {
+  ): ethereum.CallResult<EncryptedMarginalPriceAuctionModule__claimProceedsResult> {
     const result = super.tryCall(
-      "getDecryptData",
-      "getDecryptData(uint96):(uint8,uint96,uint96,bytes)",
+      "claimProceeds",
+      "claimProceeds(uint96):(uint96,uint96,uint96)",
       [ethereum.Value.fromUnsignedBigInt(lotId_)],
     );
     if (result.reverted) {
@@ -850,133 +1036,27 @@ export class LocalSealedBidBatchAuction extends ethereum.SmartContract {
     }
     const value = result.value;
     return ethereum.CallResult.fromValue(
-      new LocalSealedBidBatchAuction__getDecryptDataResult(
-        value[0].toI32(),
+      new EncryptedMarginalPriceAuctionModule__claimProceedsResult(
+        value[0].toBigInt(),
         value[1].toBigInt(),
         value[2].toBigInt(),
-        value[3].toBytes(),
       ),
     );
   }
 
-  getLot(lotId_: BigInt): LocalSealedBidBatchAuction__getLotResultValue0Struct {
-    const result = super.call(
-      "getLot",
-      "getLot(uint96):((uint48,uint48,uint8,uint8,bool,uint256,uint256,uint256))",
-      [ethereum.Value.fromUnsignedBigInt(lotId_)],
-    );
-
-    return changetype<LocalSealedBidBatchAuction__getLotResultValue0Struct>(
-      result[0].toTuple(),
-    );
-  }
-
-  try_getLot(
-    lotId_: BigInt,
-  ): ethereum.CallResult<LocalSealedBidBatchAuction__getLotResultValue0Struct> {
-    const result = super.tryCall(
-      "getLot",
-      "getLot(uint96):((uint48,uint48,uint8,uint8,bool,uint256,uint256,uint256))",
-      [ethereum.Value.fromUnsignedBigInt(lotId_)],
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    const value = result.value;
-    return ethereum.CallResult.fromValue(
-      changetype<LocalSealedBidBatchAuction__getLotResultValue0Struct>(
-        value[0].toTuple(),
-      ),
-    );
-  }
-
-  getLotData(
-    lotId_: BigInt,
-  ): LocalSealedBidBatchAuction__getLotDataResultValue0Struct {
-    const result = super.call(
-      "getLotData",
-      "getLotData(uint96):((uint8,uint96,uint96,uint256,uint256,uint256,bytes,uint96[]))",
-      [ethereum.Value.fromUnsignedBigInt(lotId_)],
-    );
-
-    return changetype<LocalSealedBidBatchAuction__getLotDataResultValue0Struct>(
-      result[0].toTuple(),
-    );
-  }
-
-  try_getLotData(
-    lotId_: BigInt,
-  ): ethereum.CallResult<LocalSealedBidBatchAuction__getLotDataResultValue0Struct> {
-    const result = super.tryCall(
-      "getLotData",
-      "getLotData(uint96):((uint8,uint96,uint96,uint256,uint256,uint256,bytes,uint96[]))",
-      [ethereum.Value.fromUnsignedBigInt(lotId_)],
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    const value = result.value;
-    return ethereum.CallResult.fromValue(
-      changetype<LocalSealedBidBatchAuction__getLotDataResultValue0Struct>(
-        value[0].toTuple(),
-      ),
-    );
-  }
-
-  getNextBidsToDecrypt(
-    lotId_: BigInt,
-    number_: BigInt,
-  ): Array<LocalSealedBidBatchAuction__getNextBidsToDecryptResultValue0Struct> {
-    const result = super.call(
-      "getNextBidsToDecrypt",
-      "getNextBidsToDecrypt(uint96,uint256):((uint8,address,address,address,uint256,bytes)[])",
-      [
-        ethereum.Value.fromUnsignedBigInt(lotId_),
-        ethereum.Value.fromUnsignedBigInt(number_),
-      ],
-    );
-
-    return result[0].toTupleArray<LocalSealedBidBatchAuction__getNextBidsToDecryptResultValue0Struct>();
-  }
-
-  try_getNextBidsToDecrypt(
-    lotId_: BigInt,
-    number_: BigInt,
-  ): ethereum.CallResult<
-    Array<LocalSealedBidBatchAuction__getNextBidsToDecryptResultValue0Struct>
-  > {
-    const result = super.tryCall(
-      "getNextBidsToDecrypt",
-      "getNextBidsToDecrypt(uint96,uint256):((uint8,address,address,address,uint256,bytes)[])",
-      [
-        ethereum.Value.fromUnsignedBigInt(lotId_),
-        ethereum.Value.fromUnsignedBigInt(number_),
-      ],
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    const value = result.value;
-    return ethereum.CallResult.fromValue(
-      value[0].toTupleArray<LocalSealedBidBatchAuction__getNextBidsToDecryptResultValue0Struct>(),
-    );
-  }
-
-  getSortedBidCount(lotId_: BigInt): BigInt {
-    const result = super.call(
-      "getSortedBidCount",
-      "getSortedBidCount(uint96):(uint256)",
-      [ethereum.Value.fromUnsignedBigInt(lotId_)],
-    );
+  decryptedBids(lotId: BigInt): BigInt {
+    const result = super.call("decryptedBids", "decryptedBids(uint96):(uint64)", [
+      ethereum.Value.fromUnsignedBigInt(lotId),
+    ]);
 
     return result[0].toBigInt();
   }
 
-  try_getSortedBidCount(lotId_: BigInt): ethereum.CallResult<BigInt> {
+  try_decryptedBids(lotId: BigInt): ethereum.CallResult<BigInt> {
     const result = super.tryCall(
-      "getSortedBidCount",
-      "getSortedBidCount(uint96):(uint256)",
-      [ethereum.Value.fromUnsignedBigInt(lotId_)],
+      "decryptedBids",
+      "decryptedBids(uint96):(uint64)",
+      [ethereum.Value.fromUnsignedBigInt(lotId)],
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -985,34 +1065,37 @@ export class LocalSealedBidBatchAuction extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
-  getSortedBidData(
-    lotId_: BigInt,
-    index_: BigInt,
-  ): LocalSealedBidBatchAuction__getSortedBidDataResultValue0Struct {
+  encryptedBids(
+    lotId: BigInt,
+    bidId: BigInt,
+  ): EncryptedMarginalPriceAuctionModule__encryptedBidsResult {
     const result = super.call(
-      "getSortedBidData",
-      "getSortedBidData(uint96,uint96):((uint96,uint256,uint256))",
+      "encryptedBids",
+      "encryptedBids(uint96,uint64):(uint256,(uint256,uint256))",
       [
-        ethereum.Value.fromUnsignedBigInt(lotId_),
-        ethereum.Value.fromUnsignedBigInt(index_),
+        ethereum.Value.fromUnsignedBigInt(lotId),
+        ethereum.Value.fromUnsignedBigInt(bidId),
       ],
     );
 
-    return changetype<LocalSealedBidBatchAuction__getSortedBidDataResultValue0Struct>(
-      result[0].toTuple(),
+    return new EncryptedMarginalPriceAuctionModule__encryptedBidsResult(
+      result[0].toBigInt(),
+      changetype<EncryptedMarginalPriceAuctionModule__encryptedBidsResultBidPubKeyStruct>(
+        result[1].toTuple(),
+      ),
     );
   }
 
-  try_getSortedBidData(
-    lotId_: BigInt,
-    index_: BigInt,
-  ): ethereum.CallResult<LocalSealedBidBatchAuction__getSortedBidDataResultValue0Struct> {
+  try_encryptedBids(
+    lotId: BigInt,
+    bidId: BigInt,
+  ): ethereum.CallResult<EncryptedMarginalPriceAuctionModule__encryptedBidsResult> {
     const result = super.tryCall(
-      "getSortedBidData",
-      "getSortedBidData(uint96,uint96):((uint96,uint256,uint256))",
+      "encryptedBids",
+      "encryptedBids(uint96,uint64):(uint256,(uint256,uint256))",
       [
-        ethereum.Value.fromUnsignedBigInt(lotId_),
-        ethereum.Value.fromUnsignedBigInt(index_),
+        ethereum.Value.fromUnsignedBigInt(lotId),
+        ethereum.Value.fromUnsignedBigInt(bidId),
       ],
     );
     if (result.reverted) {
@@ -1020,7 +1103,131 @@ export class LocalSealedBidBatchAuction extends ethereum.SmartContract {
     }
     const value = result.value;
     return ethereum.CallResult.fromValue(
-      changetype<LocalSealedBidBatchAuction__getSortedBidDataResultValue0Struct>(
+      new EncryptedMarginalPriceAuctionModule__encryptedBidsResult(
+        value[0].toBigInt(),
+        changetype<EncryptedMarginalPriceAuctionModule__encryptedBidsResultBidPubKeyStruct>(
+          value[1].toTuple(),
+        ),
+      ),
+    );
+  }
+
+  getAuctionData(
+    lotId_: BigInt,
+  ): EncryptedMarginalPriceAuctionModule__getAuctionDataResultAuctionData_Struct {
+    const result = super.call(
+      "getAuctionData",
+      "getAuctionData(uint96):((uint64,uint96,uint96,uint64,uint96,uint96,uint8,uint64,(uint256,uint256),uint256,uint64[]))",
+      [ethereum.Value.fromUnsignedBigInt(lotId_)],
+    );
+
+    return changetype<EncryptedMarginalPriceAuctionModule__getAuctionDataResultAuctionData_Struct>(
+      result[0].toTuple(),
+    );
+  }
+
+  try_getAuctionData(
+    lotId_: BigInt,
+  ): ethereum.CallResult<EncryptedMarginalPriceAuctionModule__getAuctionDataResultAuctionData_Struct> {
+    const result = super.tryCall(
+      "getAuctionData",
+      "getAuctionData(uint96):((uint64,uint96,uint96,uint64,uint96,uint96,uint8,uint64,(uint256,uint256),uint256,uint64[]))",
+      [ethereum.Value.fromUnsignedBigInt(lotId_)],
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    const value = result.value;
+    return ethereum.CallResult.fromValue(
+      changetype<EncryptedMarginalPriceAuctionModule__getAuctionDataResultAuctionData_Struct>(
+        value[0].toTuple(),
+      ),
+    );
+  }
+
+  getBid(
+    lotId_: BigInt,
+    bidId_: BigInt,
+  ): EncryptedMarginalPriceAuctionModule__getBidResult {
+    const result = super.call(
+      "getBid",
+      "getBid(uint96,uint64):((address,uint96,uint96,address,uint8),(uint256,(uint256,uint256)))",
+      [
+        ethereum.Value.fromUnsignedBigInt(lotId_),
+        ethereum.Value.fromUnsignedBigInt(bidId_),
+      ],
+    );
+
+    return changetype<EncryptedMarginalPriceAuctionModule__getBidResult>(
+      new EncryptedMarginalPriceAuctionModule__getBidResult(
+        changetype<EncryptedMarginalPriceAuctionModule__getBidResultBidStruct>(
+          result[0].toTuple(),
+        ),
+        changetype<EncryptedMarginalPriceAuctionModule__getBidResultEncryptedBidStruct>(
+          result[1].toTuple(),
+        ),
+      ),
+    );
+  }
+
+  try_getBid(
+    lotId_: BigInt,
+    bidId_: BigInt,
+  ): ethereum.CallResult<EncryptedMarginalPriceAuctionModule__getBidResult> {
+    const result = super.tryCall(
+      "getBid",
+      "getBid(uint96,uint64):((address,uint96,uint96,address,uint8),(uint256,(uint256,uint256)))",
+      [
+        ethereum.Value.fromUnsignedBigInt(lotId_),
+        ethereum.Value.fromUnsignedBigInt(bidId_),
+      ],
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    const value = result.value;
+    return ethereum.CallResult.fromValue(
+      changetype<EncryptedMarginalPriceAuctionModule__getBidResult>(
+        new EncryptedMarginalPriceAuctionModule__getBidResult(
+          changetype<EncryptedMarginalPriceAuctionModule__getBidResultBidStruct>(
+            value[0].toTuple(),
+          ),
+          changetype<EncryptedMarginalPriceAuctionModule__getBidResultEncryptedBidStruct>(
+            value[1].toTuple(),
+          ),
+        ),
+      ),
+    );
+  }
+
+  getLot(
+    lotId_: BigInt,
+  ): EncryptedMarginalPriceAuctionModule__getLotResultValue0Struct {
+    const result = super.call(
+      "getLot",
+      "getLot(uint96):((uint48,uint48,uint8,uint8,bool,uint96,uint96,uint96,uint96))",
+      [ethereum.Value.fromUnsignedBigInt(lotId_)],
+    );
+
+    return changetype<EncryptedMarginalPriceAuctionModule__getLotResultValue0Struct>(
+      result[0].toTuple(),
+    );
+  }
+
+  try_getLot(
+    lotId_: BigInt,
+  ): ethereum.CallResult<EncryptedMarginalPriceAuctionModule__getLotResultValue0Struct> {
+    const result = super.tryCall(
+      "getLot",
+      "getLot(uint96):((uint48,uint48,uint8,uint8,bool,uint96,uint96,uint96,uint96))",
+      [ethereum.Value.fromUnsignedBigInt(lotId_)],
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    const value = result.value;
+    return ethereum.CallResult.fromValue(
+      changetype<EncryptedMarginalPriceAuctionModule__getLotResultValue0Struct>(
         value[0].toTuple(),
       ),
     );
@@ -1064,14 +1271,14 @@ export class LocalSealedBidBatchAuction extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBoolean());
   }
 
-  lotData(id: BigInt): LocalSealedBidBatchAuction__lotDataResult {
+  lotData(id: BigInt): EncryptedMarginalPriceAuctionModule__lotDataResult {
     const result = super.call(
       "lotData",
-      "lotData(uint96):(uint48,uint48,uint8,uint8,bool,uint256,uint256,uint256)",
+      "lotData(uint96):(uint48,uint48,uint8,uint8,bool,uint96,uint96,uint96,uint96)",
       [ethereum.Value.fromUnsignedBigInt(id)],
     );
 
-    return new LocalSealedBidBatchAuction__lotDataResult(
+    return new EncryptedMarginalPriceAuctionModule__lotDataResult(
       result[0].toBigInt(),
       result[1].toBigInt(),
       result[2].toI32(),
@@ -1080,15 +1287,16 @@ export class LocalSealedBidBatchAuction extends ethereum.SmartContract {
       result[5].toBigInt(),
       result[6].toBigInt(),
       result[7].toBigInt(),
+      result[8].toBigInt(),
     );
   }
 
   try_lotData(
     id: BigInt,
-  ): ethereum.CallResult<LocalSealedBidBatchAuction__lotDataResult> {
+  ): ethereum.CallResult<EncryptedMarginalPriceAuctionModule__lotDataResult> {
     const result = super.tryCall(
       "lotData",
-      "lotData(uint96):(uint48,uint48,uint8,uint8,bool,uint256,uint256,uint256)",
+      "lotData(uint96):(uint48,uint48,uint8,uint8,bool,uint96,uint96,uint96,uint96)",
       [ethereum.Value.fromUnsignedBigInt(id)],
     );
     if (result.reverted) {
@@ -1096,7 +1304,7 @@ export class LocalSealedBidBatchAuction extends ethereum.SmartContract {
     }
     const value = result.value;
     return ethereum.CallResult.fromValue(
-      new LocalSealedBidBatchAuction__lotDataResult(
+      new EncryptedMarginalPriceAuctionModule__lotDataResult(
         value[0].toBigInt(),
         value[1].toBigInt(),
         value[2].toI32(),
@@ -1105,86 +1313,15 @@ export class LocalSealedBidBatchAuction extends ethereum.SmartContract {
         value[5].toBigInt(),
         value[6].toBigInt(),
         value[7].toBigInt(),
+        value[8].toBigInt(),
       ),
     );
-  }
-
-  lotEncryptedBids(
-    lotId: BigInt,
-    bidId: BigInt,
-  ): LocalSealedBidBatchAuction__lotEncryptedBidsResult {
-    const result = super.call(
-      "lotEncryptedBids",
-      "lotEncryptedBids(uint96,uint96):(uint8,address,address,address,uint256,bytes)",
-      [
-        ethereum.Value.fromUnsignedBigInt(lotId),
-        ethereum.Value.fromUnsignedBigInt(bidId),
-      ],
-    );
-
-    return new LocalSealedBidBatchAuction__lotEncryptedBidsResult(
-      result[0].toI32(),
-      result[1].toAddress(),
-      result[2].toAddress(),
-      result[3].toAddress(),
-      result[4].toBigInt(),
-      result[5].toBytes(),
-    );
-  }
-
-  try_lotEncryptedBids(
-    lotId: BigInt,
-    bidId: BigInt,
-  ): ethereum.CallResult<LocalSealedBidBatchAuction__lotEncryptedBidsResult> {
-    const result = super.tryCall(
-      "lotEncryptedBids",
-      "lotEncryptedBids(uint96,uint96):(uint8,address,address,address,uint256,bytes)",
-      [
-        ethereum.Value.fromUnsignedBigInt(lotId),
-        ethereum.Value.fromUnsignedBigInt(bidId),
-      ],
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    const value = result.value;
-    return ethereum.CallResult.fromValue(
-      new LocalSealedBidBatchAuction__lotEncryptedBidsResult(
-        value[0].toI32(),
-        value[1].toAddress(),
-        value[2].toAddress(),
-        value[3].toAddress(),
-        value[4].toBigInt(),
-        value[5].toBytes(),
-      ),
-    );
-  }
-
-  lotSortedBids(lotId: BigInt): boolean {
-    const result = super.call("lotSortedBids", "lotSortedBids(uint96):(bool)", [
-      ethereum.Value.fromUnsignedBigInt(lotId),
-    ]);
-
-    return result[0].toBoolean();
-  }
-
-  try_lotSortedBids(lotId: BigInt): ethereum.CallResult<boolean> {
-    const result = super.tryCall(
-      "lotSortedBids",
-      "lotSortedBids(uint96):(bool)",
-      [ethereum.Value.fromUnsignedBigInt(lotId)],
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    const value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBoolean());
   }
 
   maxAmountAccepted(lotId_: BigInt): BigInt {
     const result = super.call(
       "maxAmountAccepted",
-      "maxAmountAccepted(uint96):(uint256)",
+      "maxAmountAccepted(uint96):(uint96)",
       [ethereum.Value.fromUnsignedBigInt(lotId_)],
     );
 
@@ -1194,7 +1331,7 @@ export class LocalSealedBidBatchAuction extends ethereum.SmartContract {
   try_maxAmountAccepted(lotId_: BigInt): ethereum.CallResult<BigInt> {
     const result = super.tryCall(
       "maxAmountAccepted",
-      "maxAmountAccepted(uint96):(uint256)",
+      "maxAmountAccepted(uint96):(uint96)",
       [ethereum.Value.fromUnsignedBigInt(lotId_)],
     );
     if (result.reverted) {
@@ -1205,7 +1342,7 @@ export class LocalSealedBidBatchAuction extends ethereum.SmartContract {
   }
 
   maxPayout(lotId_: BigInt): BigInt {
-    const result = super.call("maxPayout", "maxPayout(uint96):(uint256)", [
+    const result = super.call("maxPayout", "maxPayout(uint96):(uint96)", [
       ethereum.Value.fromUnsignedBigInt(lotId_),
     ]);
 
@@ -1213,7 +1350,7 @@ export class LocalSealedBidBatchAuction extends ethereum.SmartContract {
   }
 
   try_maxPayout(lotId_: BigInt): ethereum.CallResult<BigInt> {
-    const result = super.tryCall("maxPayout", "maxPayout(uint96):(uint256)", [
+    const result = super.tryCall("maxPayout", "maxPayout(uint96):(uint96)", [
       ethereum.Value.fromUnsignedBigInt(lotId_),
     ]);
     if (result.reverted) {
@@ -1247,14 +1384,10 @@ export class LocalSealedBidBatchAuction extends ethereum.SmartContract {
   }
 
   payoutFor(lotId_: BigInt, amount_: BigInt): BigInt {
-    const result = super.call(
-      "payoutFor",
-      "payoutFor(uint96,uint256):(uint256)",
-      [
-        ethereum.Value.fromUnsignedBigInt(lotId_),
-        ethereum.Value.fromUnsignedBigInt(amount_),
-      ],
-    );
+    const result = super.call("payoutFor", "payoutFor(uint96,uint96):(uint96)", [
+      ethereum.Value.fromUnsignedBigInt(lotId_),
+      ethereum.Value.fromUnsignedBigInt(amount_),
+    ]);
 
     return result[0].toBigInt();
   }
@@ -1262,7 +1395,7 @@ export class LocalSealedBidBatchAuction extends ethereum.SmartContract {
   try_payoutFor(lotId_: BigInt, amount_: BigInt): ethereum.CallResult<BigInt> {
     const result = super.tryCall(
       "payoutFor",
-      "payoutFor(uint96,uint256):(uint256)",
+      "payoutFor(uint96,uint96):(uint96)",
       [
         ethereum.Value.fromUnsignedBigInt(lotId_),
         ethereum.Value.fromUnsignedBigInt(amount_),
@@ -1276,27 +1409,19 @@ export class LocalSealedBidBatchAuction extends ethereum.SmartContract {
   }
 
   priceFor(lotId_: BigInt, payout_: BigInt): BigInt {
-    const result = super.call(
-      "priceFor",
-      "priceFor(uint96,uint256):(uint256)",
-      [
-        ethereum.Value.fromUnsignedBigInt(lotId_),
-        ethereum.Value.fromUnsignedBigInt(payout_),
-      ],
-    );
+    const result = super.call("priceFor", "priceFor(uint96,uint96):(uint96)", [
+      ethereum.Value.fromUnsignedBigInt(lotId_),
+      ethereum.Value.fromUnsignedBigInt(payout_),
+    ]);
 
     return result[0].toBigInt();
   }
 
   try_priceFor(lotId_: BigInt, payout_: BigInt): ethereum.CallResult<BigInt> {
-    const result = super.tryCall(
-      "priceFor",
-      "priceFor(uint96,uint256):(uint256)",
-      [
-        ethereum.Value.fromUnsignedBigInt(lotId_),
-        ethereum.Value.fromUnsignedBigInt(payout_),
-      ],
-    );
+    const result = super.tryCall("priceFor", "priceFor(uint96,uint96):(uint96)", [
+      ethereum.Value.fromUnsignedBigInt(lotId_),
+      ethereum.Value.fromUnsignedBigInt(payout_),
+    ]);
     if (result.reverted) {
       return new ethereum.CallResult();
     }
@@ -1308,10 +1433,10 @@ export class LocalSealedBidBatchAuction extends ethereum.SmartContract {
     lotId_: BigInt,
     amount_: BigInt,
     auctionData_: Bytes,
-  ): LocalSealedBidBatchAuction__purchaseResult {
+  ): EncryptedMarginalPriceAuctionModule__purchaseResult {
     const result = super.call(
       "purchase",
-      "purchase(uint96,uint256,bytes):(uint256,bytes)",
+      "purchase(uint96,uint96,bytes):(uint96,bytes)",
       [
         ethereum.Value.fromUnsignedBigInt(lotId_),
         ethereum.Value.fromUnsignedBigInt(amount_),
@@ -1319,7 +1444,7 @@ export class LocalSealedBidBatchAuction extends ethereum.SmartContract {
       ],
     );
 
-    return new LocalSealedBidBatchAuction__purchaseResult(
+    return new EncryptedMarginalPriceAuctionModule__purchaseResult(
       result[0].toBigInt(),
       result[1].toBytes(),
     );
@@ -1329,10 +1454,10 @@ export class LocalSealedBidBatchAuction extends ethereum.SmartContract {
     lotId_: BigInt,
     amount_: BigInt,
     auctionData_: Bytes,
-  ): ethereum.CallResult<LocalSealedBidBatchAuction__purchaseResult> {
+  ): ethereum.CallResult<EncryptedMarginalPriceAuctionModule__purchaseResult> {
     const result = super.tryCall(
       "purchase",
-      "purchase(uint96,uint256,bytes):(uint256,bytes)",
+      "purchase(uint96,uint96,bytes):(uint96,bytes)",
       [
         ethereum.Value.fromUnsignedBigInt(lotId_),
         ethereum.Value.fromUnsignedBigInt(amount_),
@@ -1344,21 +1469,21 @@ export class LocalSealedBidBatchAuction extends ethereum.SmartContract {
     }
     const value = result.value;
     return ethereum.CallResult.fromValue(
-      new LocalSealedBidBatchAuction__purchaseResult(
+      new EncryptedMarginalPriceAuctionModule__purchaseResult(
         value[0].toBigInt(),
         value[1].toBytes(),
       ),
     );
   }
 
-  refundBid(lotId_: BigInt, bidId_: BigInt, bidder_: Address): BigInt {
+  refundBid(lotId_: BigInt, bidId_: BigInt, caller_: Address): BigInt {
     const result = super.call(
       "refundBid",
-      "refundBid(uint96,uint96,address):(uint256)",
+      "refundBid(uint96,uint64,address):(uint96)",
       [
         ethereum.Value.fromUnsignedBigInt(lotId_),
         ethereum.Value.fromUnsignedBigInt(bidId_),
-        ethereum.Value.fromAddress(bidder_),
+        ethereum.Value.fromAddress(caller_),
       ],
     );
 
@@ -1368,15 +1493,15 @@ export class LocalSealedBidBatchAuction extends ethereum.SmartContract {
   try_refundBid(
     lotId_: BigInt,
     bidId_: BigInt,
-    bidder_: Address,
+    caller_: Address,
   ): ethereum.CallResult<BigInt> {
     const result = super.tryCall(
       "refundBid",
-      "refundBid(uint96,uint96,address):(uint256)",
+      "refundBid(uint96,uint64,address):(uint96)",
       [
         ethereum.Value.fromUnsignedBigInt(lotId_),
         ethereum.Value.fromUnsignedBigInt(bidId_),
-        ethereum.Value.fromAddress(bidder_),
+        ethereum.Value.fromAddress(caller_),
       ],
     );
     if (result.reverted) {
@@ -1389,7 +1514,7 @@ export class LocalSealedBidBatchAuction extends ethereum.SmartContract {
   remainingCapacity(lotId_: BigInt): BigInt {
     const result = super.call(
       "remainingCapacity",
-      "remainingCapacity(uint96):(uint256)",
+      "remainingCapacity(uint96):(uint96)",
       [ethereum.Value.fromUnsignedBigInt(lotId_)],
     );
 
@@ -1399,7 +1524,7 @@ export class LocalSealedBidBatchAuction extends ethereum.SmartContract {
   try_remainingCapacity(lotId_: BigInt): ethereum.CallResult<BigInt> {
     const result = super.tryCall(
       "remainingCapacity",
-      "remainingCapacity(uint96):(uint256)",
+      "remainingCapacity(uint96):(uint96)",
       [ethereum.Value.fromUnsignedBigInt(lotId_)],
     );
     if (result.reverted) {
@@ -1409,25 +1534,29 @@ export class LocalSealedBidBatchAuction extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
-  settle(lotId_: BigInt): LocalSealedBidBatchAuction__settleResult {
+  settle(lotId_: BigInt): EncryptedMarginalPriceAuctionModule__settleResult {
     const result = super.call(
       "settle",
-      "settle(uint96):((address,address,address,uint256,uint256,bytes)[],bytes)",
+      "settle(uint96):((uint96,uint96,address,address,uint96,uint96,bytes),bytes)",
       [ethereum.Value.fromUnsignedBigInt(lotId_)],
     );
 
-    return new LocalSealedBidBatchAuction__settleResult(
-      result[0].toTupleArray<LocalSealedBidBatchAuction__settleResultWinningBids_Struct>(),
-      result[1].toBytes(),
+    return changetype<EncryptedMarginalPriceAuctionModule__settleResult>(
+      new EncryptedMarginalPriceAuctionModule__settleResult(
+        changetype<EncryptedMarginalPriceAuctionModule__settleResultSettlementStruct>(
+          result[0].toTuple(),
+        ),
+        result[1].toBytes(),
+      ),
     );
   }
 
   try_settle(
     lotId_: BigInt,
-  ): ethereum.CallResult<LocalSealedBidBatchAuction__settleResult> {
+  ): ethereum.CallResult<EncryptedMarginalPriceAuctionModule__settleResult> {
     const result = super.tryCall(
       "settle",
-      "settle(uint96):((address,address,address,uint256,uint256,bytes)[],bytes)",
+      "settle(uint96):((uint96,uint96,address,address,uint96,uint96,bytes),bytes)",
       [ethereum.Value.fromUnsignedBigInt(lotId_)],
     );
     if (result.reverted) {
@@ -1435,9 +1564,13 @@ export class LocalSealedBidBatchAuction extends ethereum.SmartContract {
     }
     const value = result.value;
     return ethereum.CallResult.fromValue(
-      new LocalSealedBidBatchAuction__settleResult(
-        value[0].toTupleArray<LocalSealedBidBatchAuction__settleResultWinningBids_Struct>(),
-        value[1].toBytes(),
+      changetype<EncryptedMarginalPriceAuctionModule__settleResult>(
+        new EncryptedMarginalPriceAuctionModule__settleResult(
+          changetype<EncryptedMarginalPriceAuctionModule__settleResultSettlementStruct>(
+            value[0].toTuple(),
+          ),
+          value[1].toBytes(),
+        ),
       ),
     );
   }
@@ -1542,12 +1675,8 @@ export class AuctionCall__Outputs {
     this._call = call;
   }
 
-  get prefundingRequired(): boolean {
-    return this._call.outputValues[0].value.toBoolean();
-  }
-
   get capacity(): BigInt {
-    return this._call.outputValues[1].value.toBigInt();
+    return this._call.outputValues[0].value.toBigInt();
   }
 }
 
@@ -1598,20 +1727,16 @@ export class BidCall__Inputs {
     return this._call.inputValues[1].value.toAddress();
   }
 
-  get recipient_(): Address {
+  get referrer_(): Address {
     return this._call.inputValues[2].value.toAddress();
   }
 
-  get referrer_(): Address {
-    return this._call.inputValues[3].value.toAddress();
-  }
-
   get amount_(): BigInt {
-    return this._call.inputValues[4].value.toBigInt();
+    return this._call.inputValues[3].value.toBigInt();
   }
 
   get auctionData_(): Bytes {
-    return this._call.inputValues[5].value.toBytes();
+    return this._call.inputValues[4].value.toBytes();
   }
 }
 
@@ -1657,6 +1782,108 @@ export class CancelAuctionCall__Outputs {
   }
 }
 
+export class ClaimBidsCall extends ethereum.Call {
+  get inputs(): ClaimBidsCall__Inputs {
+    return new ClaimBidsCall__Inputs(this);
+  }
+
+  get outputs(): ClaimBidsCall__Outputs {
+    return new ClaimBidsCall__Outputs(this);
+  }
+}
+
+export class ClaimBidsCall__Inputs {
+  _call: ClaimBidsCall;
+
+  constructor(call: ClaimBidsCall) {
+    this._call = call;
+  }
+
+  get lotId_(): BigInt {
+    return this._call.inputValues[0].value.toBigInt();
+  }
+
+  get bidIds_(): Array<BigInt> {
+    return this._call.inputValues[1].value.toBigIntArray();
+  }
+}
+
+export class ClaimBidsCall__Outputs {
+  _call: ClaimBidsCall;
+
+  constructor(call: ClaimBidsCall) {
+    this._call = call;
+  }
+
+  get bidClaims(): Array<ClaimBidsCallBidClaimsStruct> {
+    return this._call.outputValues[0].value.toTupleArray<ClaimBidsCallBidClaimsStruct>();
+  }
+
+  get auctionOutput(): Bytes {
+    return this._call.outputValues[1].value.toBytes();
+  }
+}
+
+export class ClaimBidsCallBidClaimsStruct extends ethereum.Tuple {
+  get bidder(): Address {
+    return this[0].toAddress();
+  }
+
+  get referrer(): Address {
+    return this[1].toAddress();
+  }
+
+  get paid(): BigInt {
+    return this[2].toBigInt();
+  }
+
+  get payout(): BigInt {
+    return this[3].toBigInt();
+  }
+}
+
+export class ClaimProceedsCall extends ethereum.Call {
+  get inputs(): ClaimProceedsCall__Inputs {
+    return new ClaimProceedsCall__Inputs(this);
+  }
+
+  get outputs(): ClaimProceedsCall__Outputs {
+    return new ClaimProceedsCall__Outputs(this);
+  }
+}
+
+export class ClaimProceedsCall__Inputs {
+  _call: ClaimProceedsCall;
+
+  constructor(call: ClaimProceedsCall) {
+    this._call = call;
+  }
+
+  get lotId_(): BigInt {
+    return this._call.inputValues[0].value.toBigInt();
+  }
+}
+
+export class ClaimProceedsCall__Outputs {
+  _call: ClaimProceedsCall;
+
+  constructor(call: ClaimProceedsCall) {
+    this._call = call;
+  }
+
+  get purchased(): BigInt {
+    return this._call.outputValues[0].value.toBigInt();
+  }
+
+  get sold(): BigInt {
+    return this._call.outputValues[1].value.toBigInt();
+  }
+
+  get payoutSent(): BigInt {
+    return this._call.outputValues[2].value.toBigInt();
+  }
+}
+
 export class DecryptAndSortBidsCall extends ethereum.Call {
   get inputs(): DecryptAndSortBidsCall__Inputs {
     return new DecryptAndSortBidsCall__Inputs(this);
@@ -1678,8 +1905,8 @@ export class DecryptAndSortBidsCall__Inputs {
     return this._call.inputValues[0].value.toBigInt();
   }
 
-  get decrypts_(): Array<DecryptAndSortBidsCallDecrypts_Struct> {
-    return this._call.inputValues[1].value.toTupleArray<DecryptAndSortBidsCallDecrypts_Struct>();
+  get num_(): BigInt {
+    return this._call.inputValues[1].value.toBigInt();
   }
 }
 
@@ -1688,16 +1915,6 @@ export class DecryptAndSortBidsCall__Outputs {
 
   constructor(call: DecryptAndSortBidsCall) {
     this._call = call;
-  }
-}
-
-export class DecryptAndSortBidsCallDecrypts_Struct extends ethereum.Tuple {
-  get amountOut(): BigInt {
-    return this[0].toBigInt();
-  }
-
-  get seed(): Bytes {
-    return this[1].toBytes();
   }
 }
 
@@ -1772,7 +1989,7 @@ export class RefundBidCall__Inputs {
     return this._call.inputValues[1].value.toBigInt();
   }
 
-  get bidder_(): Address {
+  get caller_(): Address {
     return this._call.inputValues[2].value.toAddress();
   }
 }
@@ -1784,7 +2001,7 @@ export class RefundBidCall__Outputs {
     this._call = call;
   }
 
-  get bidAmount(): BigInt {
+  get refund(): BigInt {
     return this._call.outputValues[0].value.toBigInt();
   }
 }
@@ -1818,37 +2035,81 @@ export class SettleCall__Outputs {
     this._call = call;
   }
 
-  get winningBids_(): Array<SettleCallWinningBids_Struct> {
-    return this._call.outputValues[0].value.toTupleArray<SettleCallWinningBids_Struct>();
+  get settlement(): SettleCallSettlementStruct {
+    return changetype<SettleCallSettlementStruct>(
+      this._call.outputValues[0].value.toTuple(),
+    );
   }
 
-  get auctionOutput_(): Bytes {
+  get auctionOutput(): Bytes {
     return this._call.outputValues[1].value.toBytes();
   }
 }
 
-export class SettleCallWinningBids_Struct extends ethereum.Tuple {
-  get bidder(): Address {
-    return this[0].toAddress();
+export class SettleCallSettlementStruct extends ethereum.Tuple {
+  get totalIn(): BigInt {
+    return this[0].toBigInt();
   }
 
-  get recipient(): Address {
-    return this[1].toAddress();
+  get totalOut(): BigInt {
+    return this[1].toBigInt();
   }
 
-  get referrer(): Address {
+  get pfBidder(): Address {
     return this[2].toAddress();
   }
 
-  get amount(): BigInt {
-    return this[3].toBigInt();
+  get pfReferrer(): Address {
+    return this[3].toAddress();
   }
 
-  get minAmountOut(): BigInt {
+  get pfRefund(): BigInt {
     return this[4].toBigInt();
   }
 
-  get auctionParam(): Bytes {
-    return this[5].toBytes();
+  get pfPayout(): BigInt {
+    return this[5].toBigInt();
+  }
+
+  get auctionOutput(): Bytes {
+    return this[6].toBytes();
+  }
+}
+
+export class SubmitPrivateKeyCall extends ethereum.Call {
+  get inputs(): SubmitPrivateKeyCall__Inputs {
+    return new SubmitPrivateKeyCall__Inputs(this);
+  }
+
+  get outputs(): SubmitPrivateKeyCall__Outputs {
+    return new SubmitPrivateKeyCall__Outputs(this);
+  }
+}
+
+export class SubmitPrivateKeyCall__Inputs {
+  _call: SubmitPrivateKeyCall;
+
+  constructor(call: SubmitPrivateKeyCall) {
+    this._call = call;
+  }
+
+  get lotId_(): BigInt {
+    return this._call.inputValues[0].value.toBigInt();
+  }
+
+  get privateKey_(): BigInt {
+    return this._call.inputValues[1].value.toBigInt();
+  }
+
+  get num_(): BigInt {
+    return this._call.inputValues[2].value.toBigInt();
+  }
+}
+
+export class SubmitPrivateKeyCall__Outputs {
+  _call: SubmitPrivateKeyCall;
+
+  constructor(call: SubmitPrivateKeyCall) {
+    this._call = call;
   }
 }
