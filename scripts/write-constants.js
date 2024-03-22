@@ -1,28 +1,31 @@
+/**
+ * This script overwrites src/constants.ts with the
+ * addresses matching the TARGET_NETWORK from '../deployment.js'
+ */
 const fs = require("fs");
-
 const networks = require("../networks.json");
+const config = require("../deployment");
 
-if (process.argv.length !== 3) {
-  console.error("Usage: node write-constants.js <network-name>");
-  process.exit(1);
-}
-
-//Network name gets provided as arg
-const networkName = process.argv[2];
-const network = networks[networkName];
+const network = networks[config.TARGET_NETWORK];
 
 if (!network) {
-  console.error("No network config found for:", networkName);
+  console.error("No network config found for: ", networkName);
   process.exit(1);
 }
 
-const data = `export const AUCTION_HOUSE_ADDRESS = "${network.AuctionHouse.address}";
-export const EMPAM_ADDRESS = "${network.EncryptedMarginalPriceAuctionModule.address}";`;
+const addresses = {
+  AUCTION_HOUSE_ADDRESS: network.AuctionHouse.address,
+  EMPAM_ADDRESS: network.EncryptedMarginalPriceAuctionModule.address,
+};
+
+const data = Object.entries(addresses)
+  .map(([key, address]) => `export const ${key} = "${address}";`)
+  .join("\n");
 
 fs.writeFile(__dirname + "/../src/constants.ts", data, (err) => {
   if (err) {
     console.error("  Error updating constants:", err);
   } else {
-    console.log("  Addresses updated on source files");
+    console.log("  Addresses updated at src/constants.ts");
   }
 });

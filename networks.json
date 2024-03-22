@@ -1,5 +1,5 @@
 {
-  "blast-testnet": {
+  "blast-sepolia": {
     "AuctionHouse": {
       "address": "0x000000009DB7a64d0B3f92E2F0e026a2AF9Cf9b3",
       "startBlock": 3087856

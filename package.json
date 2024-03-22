@@ -6,17 +6,15 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "workspaces": [],
   "scripts": {
-    "codegen": "rm -rf generated/ && graph codegen && yarn eslint --config ./.eslintrc.json --fix generated/",
-    "build": "source .env && yarn update:constants && graph build --network $TARGET_NETWORK",
-    "deploy:studio": "source .env && graph deploy --product subgraph-studio --version-label $SUBGRAPH_VERSION --deploy-key $GRAPH_STUDIO_TOKEN axis-origin-$TARGET_NETWORK",
+    "codegen": "rm -rf generated/ && graph codegen && pnpm eslint --config ./.eslintrc.json --fix generated/",
     "lint": "prettier --write \"**/*.{ts,md,json}\" && eslint --config ./.eslintrc.json --fix",
     "test": "graph test --version 0.5.3",
-    "test:force": "yarn test --recompile",
-    "update:constants": "source .env && node scripts/write-constants.js $TARGET_NETWORK",
-    "local:create": "graph create --node http://localhost:8020/ axisfi-auctions",
-    "local:remove": "graph remove --node http://localhost:8020/ axisfi-auctions",
-    "local:deploy": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 axisfi-auctions"
+    "test:force": "pnpm test --recompile",
+    "update:constants": "node scripts/write-constants.js",
+    "build": "pnpm update:constants && node scripts/build.js",
+    "deploy:graph": "pnpm build && node scripts/deploy.js"
   },
   "dependencies": {
     "@graphprotocol/graph-cli": "^0.67.0",
