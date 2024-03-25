@@ -53,6 +53,7 @@ export function getBidStatus(status: i32): string {
 export function updateBid(lotId: BigInt, bidId: BigInt): void {
   // Fetch the existing bid record
   const entity = Bid.load(getBidId(lotId, bidId));
+
   if (!entity) {
     throw new Error("Bid not found: " + getBidId(lotId, bidId));
   }

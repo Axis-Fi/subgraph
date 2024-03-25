@@ -65,6 +65,7 @@ function _getOrCreateToken(address: Bytes): Token {
     token.name = tokenContract.name();
     token.symbol = tokenContract.symbol();
     token.decimals = tokenContract.decimals();
+    token.totalSupply = tokenContract.totalSupply();
 
     token.save();
   }
@@ -305,7 +306,7 @@ export function handleSettle(event: SettleEvent): void {
   _updateAuctionLot(lotId, event.block, event.transaction.hash, null);
 
   // Iterate over all bids and update their status
-  updateBidsStatus(lotId);
+  //updateBidsStatus(lotId);
 }
 
 // Administrative events

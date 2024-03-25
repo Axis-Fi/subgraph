@@ -121,6 +121,7 @@ type Token @entity(immutable: true) {
   name: String!
   symbol: String!
   decimals: Int!
+  totalSupply: BigInt!
 }
 
 type BidDecrypted @entity(immutable: true) {

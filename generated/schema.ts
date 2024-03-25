@@ -271,19 +271,6 @@ export class AuctionLot extends Entity {
     this.set("wrapDerivative", Value.fromBoolean(value));
   }
 
-  get reference(): Bytes {
-    const value = this.get("reference");
-    if (!value || value.kind == ValueKind.NULL) {
-      throw new Error("Cannot return null for a required field.");
-    } else {
-      return value.toBytes();
-    }
-  }
-
-  set reference(value: Bytes) {
-    this.set("reference", Value.fromBytes(value));
-  }
-
   get capacity(): BigDecimal {
     const value = this.get("capacity");
     if (!value || value.kind == ValueKind.NULL) {
@@ -1383,6 +1370,19 @@ export class Token extends Entity {
 
   set decimals(value: i32) {
     this.set("decimals", Value.fromI32(value));
+  }
+
+  get totalSupply(): BigInt {
+    const value = this.get("totalSupply");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set totalSupply(value: BigInt) {
+    this.set("totalSupply", Value.fromBigInt(value));
   }
 }
 
