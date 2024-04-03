@@ -13,6 +13,7 @@ type AuctionLot @entity {
   conclusion: BigInt! # timestamp
   # Routing details
   auctionRef: Bytes! # bytes7
+  auctionType: String! # bytes7
   baseToken: Token! # address
   quoteToken: Token! # address
   owner: Bytes! # address
@@ -67,6 +68,12 @@ type Bid @entity {
   bidder: Bytes! # address
   amountIn: BigDecimal! # uint256
   amountOut: BigDecimal # uint256
+  rawAmountIn: BigInt!
+  rawAmountOut: BigInt
+  settledAmountOut: BigDecimal # uint256
+  submittedPrice: BigDecimal
+  rawMarginalPrice: BigInt
+  rawSubmittedPrice: BigInt
   blockNumber: BigInt!
   blockTimestamp: BigInt!
   transactionHash: Bytes!

@@ -1,7 +1,8 @@
+import { BigDecimal, BigInt } from "@graphprotocol/graph-ts";
 import { BidDecrypted as BidDecryptedEvent } from "../generated/EncryptedMarginalPriceAuctionModule/EncryptedMarginalPriceAuctionModule";
 import { Bid, BidDecrypted } from "../generated/schema";
 import { getAuctionLot } from "./helpers/auction";
-import { getBidId, updateBid } from "./helpers/bid";
+import { getBidId, updateBid, getAuctionModule } from "./helpers/bid";
 import { toDecimal } from "./helpers/number";
 
 export function handleBidDecrypted(event: BidDecryptedEvent): void {
@@ -33,9 +34,43 @@ export function handleBidDecrypted(event: BidDecryptedEvent): void {
   const bidEntity = Bid.load(getBidId(lotId, event.params.bidId));
   if (bidEntity) {
     bidEntity.amountOut = entity.amountOut;
+    bidEntity.rawAmountOut = event.params.amountOut;
     bidEntity.save();
   }
 
   // Update the bid status
   updateBid(lotId, event.params.bidId);
+}
+
+export function updateBidAmount(lotId: BigInt, bidId: BigInt): void {
+  const lot = getAuctionModule(); //TODO: make auction module generic
+
+  const entity = Bid.load(getBidId(lotId, bidId));
+  if (!entity) {
+    throw new Error("Bid not found: " + getBidId(lotId, bidId));
+  }
+  const auctionLot = getAuctionLot(lotId);
+
+  const rawMarginalPrice = lot.auctionData(lotId).getMarginalPrice();
+
+  const rawAmountOut = entity.rawAmountOut || BigInt.fromI32(0);
+
+  if (rawAmountOut && rawAmountOut.gt(BigInt.fromI32(0))) {
+    const rawSubmittedPrice = entity.rawAmountIn.div(rawAmountOut);
+    entity.rawSubmittedPrice = rawSubmittedPrice;
+    entity.rawMarginalPrice = rawMarginalPrice;
+
+    if (
+      rawSubmittedPrice.ge(rawMarginalPrice) &&
+      rawMarginalPrice.gt(BigInt.fromI32(0))
+    ) {
+      const rawSettledAmountOut = entity.rawAmountIn.div(rawMarginalPrice);
+      entity.settledAmountOut = toDecimal(
+        rawSettledAmountOut,
+        auctionLot.getBaseTokenDecimals()
+      );
+    }
+  }
+
+  entity.save();
 }

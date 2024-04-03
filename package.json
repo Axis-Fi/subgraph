@@ -14,7 +14,10 @@
     "test:force": "pnpm test --recompile",
     "update:constants": "node scripts/write-constants.js",
     "build": "pnpm update:constants && node scripts/build.js",
-    "deploy:graph": "pnpm build && node scripts/deploy.js"
+    "deploy:graph": "pnpm build && node scripts/deploy.js",
+    "create-local": "graph create --node http://localhost:8020/ axis-origin",
+    "remove-local": "graph remove --node http://localhost:8020/ axis-origin",
+    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 axis-origin"
   },
   "dependencies": {
     "@graphprotocol/graph-cli": "^0.67.0",

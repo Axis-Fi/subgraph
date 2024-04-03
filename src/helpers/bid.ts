@@ -7,8 +7,9 @@ import {
 } from "../../generated/EncryptedMarginalPriceAuctionModule/EncryptedMarginalPriceAuctionModule";
 import { AuctionLot, Bid } from "../../generated/schema";
 import { EMPAM_ADDRESS } from "../constants";
+import { updateBidAmount } from "../empam";
 
-function getAuctionModule(): EncryptedMarginalPriceAuctionModule {
+export function getAuctionModule(): EncryptedMarginalPriceAuctionModule {
   return EncryptedMarginalPriceAuctionModule.bind(
     Address.fromString(EMPAM_ADDRESS)
   );
@@ -74,10 +75,27 @@ export function updateBidsStatus(lotId: BigInt): void {
   const maxBidId = entity.maxBidId;
 
   for (
-    let i = BigInt.fromI32(0);
+    let i = BigInt.fromI32(1);
     i.lt(maxBidId);
     i = i.plus(BigInt.fromI32(1))
   ) {
     updateBid(lotId, i);
+  }
+}
+
+export function updateBidsAmounts(lotId: BigInt): void {
+  // Fetch the auction lot
+  const entity = AuctionLot.load(lotId.toString());
+  if (!entity) {
+    throw new Error("Auction lot not found: " + lotId.toString());
+  }
+  const maxBidId = entity.maxBidId;
+
+  for (
+    let i = BigInt.fromI32(1);
+    i.lt(maxBidId);
+    i = i.plus(BigInt.fromI32(1))
+  ) {
+    updateBidAmount(lotId, i);
   }
 }
