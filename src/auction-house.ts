@@ -44,6 +44,7 @@ import {
   getBidStatus,
   getEncryptedBid,
   updateBid,
+  updateBidsAmounts,
   updateBidsStatus,
 } from "./helpers/bid";
 import { toDecimal } from "./helpers/number";
@@ -65,6 +66,7 @@ function _getOrCreateToken(address: Bytes): Token {
     token.name = tokenContract.name();
     token.symbol = tokenContract.symbol();
     token.decimals = tokenContract.decimals();
+    token.totalSupply = tokenContract.totalSupply();
 
     token.save();
   }
@@ -159,6 +161,7 @@ export function handleAuctionCreated(event: AuctionCreatedEvent): void {
   auctionLot.start = auctionLotContractRecord.getStart();
   auctionLot.conclusion = auctionLotContractRecord.getConclusion();
   auctionLot.auctionRef = event.params.auctionRef;
+  auctionLot.auctionType = event.params.auctionRef.toString();
 
   const auctionHouse = getAuctionHouse();
   const auctionRouting = auctionHouse.lotRouting(lotId);
@@ -215,6 +218,7 @@ export function handleBid(event: BidEvent): void {
   entity.blockNumber = event.block.number;
   entity.blockTimestamp = event.block.timestamp;
   entity.transactionHash = event.transaction.hash;
+  entity.rawAmountIn = event.params.amount;
   entity.amountIn = toDecimal(
     event.params.amount,
     getAuctionLot(lotId).getQuoteTokenDecimals()
@@ -306,10 +310,10 @@ export function handleSettle(event: SettleEvent): void {
 
   // Iterate over all bids and update their status
   updateBidsStatus(lotId);
+  updateBidsAmounts(lotId);
 }
 
 // Administrative events
-
 export function handleModuleInstalled(event: ModuleInstalledEvent): void {
   const entity = new ModuleInstalled(
     event.transaction.hash.concatI32(event.logIndex.toI32())

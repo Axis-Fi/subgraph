@@ -1,4 +1,4 @@
-import { Address, BigInt } from "@graphprotocol/graph-ts";
+import { Address, BigDecimal, BigInt } from "@graphprotocol/graph-ts";
 
 import {
   EncryptedMarginalPriceAuctionModule,
@@ -7,8 +7,10 @@ import {
 } from "../../generated/EncryptedMarginalPriceAuctionModule/EncryptedMarginalPriceAuctionModule";
 import { AuctionLot, Bid } from "../../generated/schema";
 import { EMPAM_ADDRESS } from "../constants";
+import { updateBidAmount } from "../empam";
+import { getAuctionLot } from "./auction";
 
-function getAuctionModule(): EncryptedMarginalPriceAuctionModule {
+export function getAuctionModule(): EncryptedMarginalPriceAuctionModule {
   return EncryptedMarginalPriceAuctionModule.bind(
     Address.fromString(EMPAM_ADDRESS)
   );
@@ -42,9 +44,7 @@ export function getBidStatus(status: i32): string {
     case 1:
       return "decrypted";
     case 2:
-      return "won";
-    case 3:
-      return "refunded";
+      return "claimed";
     default:
       throw new Error("Unknown bid status: " + status.toString());
   }
@@ -53,6 +53,7 @@ export function getBidStatus(status: i32): string {
 export function updateBid(lotId: BigInt, bidId: BigInt): void {
   // Fetch the existing bid record
   const entity = Bid.load(getBidId(lotId, bidId));
+
   if (!entity) {
     throw new Error("Bid not found: " + getBidId(lotId, bidId));
   }
@@ -73,10 +74,31 @@ export function updateBidsStatus(lotId: BigInt): void {
   const maxBidId = entity.maxBidId;
 
   for (
-    let i = BigInt.fromI32(0);
-    i.lt(maxBidId);
+    let i = BigInt.fromI32(1);
+    i.le(maxBidId);
     i = i.plus(BigInt.fromI32(1))
   ) {
     updateBid(lotId, i);
+  }
+}
+
+export function updateBidsAmounts(lotId: BigInt): void {
+  // Fetch the auction lot
+  const entity = AuctionLot.load(lotId.toString());
+
+  if (!entity) {
+    throw new Error("Auction lot not found: " + lotId.toString());
+  }
+
+  const maxBidId = entity.maxBidId;
+  //let capacity = entity.capacityInitial;
+
+  for (
+    let i = BigInt.fromI32(1);
+    i.lt(maxBidId);
+    i = i.plus(BigInt.fromI32(1))
+  ) {
+    updateBidAmount(lotId, i);
+    //capacity = capacity.minus(remaining);
   }
 }

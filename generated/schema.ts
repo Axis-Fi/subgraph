@@ -180,6 +180,19 @@ export class AuctionLot extends Entity {
     this.set("auctionRef", Value.fromBytes(value));
   }
 
+  get auctionType(): string {
+    const value = this.get("auctionType");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set auctionType(value: string) {
+    this.set("auctionType", Value.fromString(value));
+  }
+
   get baseToken(): Bytes {
     const value = this.get("baseToken");
     if (!value || value.kind == ValueKind.NULL) {
@@ -269,19 +282,6 @@ export class AuctionLot extends Entity {
 
   set wrapDerivative(value: boolean) {
     this.set("wrapDerivative", Value.fromBoolean(value));
-  }
-
-  get reference(): Bytes {
-    const value = this.get("reference");
-    if (!value || value.kind == ValueKind.NULL) {
-      throw new Error("Cannot return null for a required field.");
-    } else {
-      return value.toBytes();
-    }
-  }
-
-  set reference(value: Bytes) {
-    this.set("reference", Value.fromBytes(value));
   }
 
   get capacity(): BigDecimal {
@@ -755,6 +755,121 @@ export class Bid extends Entity {
       this.unset("amountOut");
     } else {
       this.set("amountOut", Value.fromBigDecimal(<BigDecimal>value));
+    }
+  }
+
+  get rawAmountIn(): BigInt {
+    const value = this.get("rawAmountIn");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set rawAmountIn(value: BigInt) {
+    this.set("rawAmountIn", Value.fromBigInt(value));
+  }
+
+  get rawAmountOut(): BigInt | null {
+    const value = this.get("rawAmountOut");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set rawAmountOut(value: BigInt | null) {
+    if (!value) {
+      this.unset("rawAmountOut");
+    } else {
+      this.set("rawAmountOut", Value.fromBigInt(<BigInt>value));
+    }
+  }
+
+  get settledAmountOut(): BigDecimal | null {
+    const value = this.get("settledAmountOut");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigDecimal();
+    }
+  }
+
+  set settledAmountOut(value: BigDecimal | null) {
+    if (!value) {
+      this.unset("settledAmountOut");
+    } else {
+      this.set("settledAmountOut", Value.fromBigDecimal(<BigDecimal>value));
+    }
+  }
+
+  get submittedPrice(): BigDecimal | null {
+    const value = this.get("submittedPrice");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigDecimal();
+    }
+  }
+
+  set submittedPrice(value: BigDecimal | null) {
+    if (!value) {
+      this.unset("submittedPrice");
+    } else {
+      this.set("submittedPrice", Value.fromBigDecimal(<BigDecimal>value));
+    }
+  }
+
+  get rawMarginalPrice(): BigInt | null {
+    const value = this.get("rawMarginalPrice");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set rawMarginalPrice(value: BigInt | null) {
+    if (!value) {
+      this.unset("rawMarginalPrice");
+    } else {
+      this.set("rawMarginalPrice", Value.fromBigInt(<BigInt>value));
+    }
+  }
+
+  get rawSubmittedPrice(): BigInt | null {
+    const value = this.get("rawSubmittedPrice");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set rawSubmittedPrice(value: BigInt | null) {
+    if (!value) {
+      this.unset("rawSubmittedPrice");
+    } else {
+      this.set("rawSubmittedPrice", Value.fromBigInt(<BigInt>value));
+    }
+  }
+
+  get remainingCapacity(): BigDecimal | null {
+    const value = this.get("remainingCapacity");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigDecimal();
+    }
+  }
+
+  set remainingCapacity(value: BigDecimal | null) {
+    if (!value) {
+      this.unset("remainingCapacity");
+    } else {
+      this.set("remainingCapacity", Value.fromBigDecimal(<BigDecimal>value));
     }
   }
 
@@ -1383,6 +1498,19 @@ export class Token extends Entity {
 
   set decimals(value: i32) {
     this.set("decimals", Value.fromI32(value));
+  }
+
+  get totalSupply(): BigInt {
+    const value = this.get("totalSupply");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set totalSupply(value: BigInt) {
+    this.set("totalSupply", Value.fromBigInt(value));
   }
 }
 
