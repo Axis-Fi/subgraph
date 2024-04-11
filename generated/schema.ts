@@ -856,6 +856,23 @@ export class Bid extends Entity {
     }
   }
 
+  get remainingCapacity(): BigDecimal | null {
+    const value = this.get("remainingCapacity");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigDecimal();
+    }
+  }
+
+  set remainingCapacity(value: BigDecimal | null) {
+    if (!value) {
+      this.unset("remainingCapacity");
+    } else {
+      this.set("remainingCapacity", Value.fromBigDecimal(<BigDecimal>value));
+    }
+  }
+
   get blockNumber(): BigInt {
     const value = this.get("blockNumber");
     if (!value || value.kind == ValueKind.NULL) {

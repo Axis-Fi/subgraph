@@ -1,4 +1,4 @@
-import { Address, BigInt } from "@graphprotocol/graph-ts";
+import { Address, BigDecimal, BigInt } from "@graphprotocol/graph-ts";
 
 import {
   EncryptedMarginalPriceAuctionModule,
@@ -8,6 +8,7 @@ import {
 import { AuctionLot, Bid } from "../../generated/schema";
 import { EMPAM_ADDRESS } from "../constants";
 import { updateBidAmount } from "../empam";
+import { getAuctionLot } from "./auction";
 
 export function getAuctionModule(): EncryptedMarginalPriceAuctionModule {
   return EncryptedMarginalPriceAuctionModule.bind(
@@ -43,9 +44,7 @@ export function getBidStatus(status: i32): string {
     case 1:
       return "decrypted";
     case 2:
-      return "won";
-    case 3:
-      return "refunded";
+      return "claimed";
     default:
       throw new Error("Unknown bid status: " + status.toString());
   }
@@ -76,7 +75,7 @@ export function updateBidsStatus(lotId: BigInt): void {
 
   for (
     let i = BigInt.fromI32(1);
-    i.lt(maxBidId);
+    i.le(maxBidId);
     i = i.plus(BigInt.fromI32(1))
   ) {
     updateBid(lotId, i);
@@ -86,10 +85,13 @@ export function updateBidsStatus(lotId: BigInt): void {
 export function updateBidsAmounts(lotId: BigInt): void {
   // Fetch the auction lot
   const entity = AuctionLot.load(lotId.toString());
+
   if (!entity) {
     throw new Error("Auction lot not found: " + lotId.toString());
   }
+
   const maxBidId = entity.maxBidId;
+  //let capacity = entity.capacityInitial;
 
   for (
     let i = BigInt.fromI32(1);
@@ -97,5 +99,6 @@ export function updateBidsAmounts(lotId: BigInt): void {
     i = i.plus(BigInt.fromI32(1))
   ) {
     updateBidAmount(lotId, i);
+    //capacity = capacity.minus(remaining);
   }
 }

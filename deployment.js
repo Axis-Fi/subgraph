@@ -1,6 +1,6 @@
 /** The network to deploy the subgraph to
  * Must match files in @see networks.json */
-const TARGET_NETWORK = "blast-sepolia";
+const TARGET_NETWORK = "mode-testnet";
 
 /** The version that will it'll be deployed as */
 const VERSION = "0.0.27";

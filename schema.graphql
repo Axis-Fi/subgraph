@@ -74,6 +74,7 @@ type Bid @entity {
   submittedPrice: BigDecimal
   rawMarginalPrice: BigInt
   rawSubmittedPrice: BigInt
+  remainingCapacity: BigDecimal
   blockNumber: BigInt!
   blockTimestamp: BigInt!
   transactionHash: Bytes!
