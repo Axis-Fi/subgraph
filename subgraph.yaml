@@ -5,45 +5,36 @@ schema:
   file: ./schema.graphql
 dataSources:
   - kind: ethereum
-    name: AuctionHouse
+    name: AtomicAuctionHouse
     network: mode-testnet
     source:
-      abi: AuctionHouse
-      address: "0x0000000053307d4Ec2141c8b49fff0A04903F11D"
-      startBlock: 11539414
+      abi: AtomicAuctionHouse
+      address: "0xAa000000c0F79193A7f3a76C9a0b8b905e901fea"
+      startBlock: 13062629
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
       language: wasm/assemblyscript
       entities:
-        - AuctionCancelled
-        - AuctionCreated
-        - Bid
-        - Curated
-        - ModuleInstalled
-        - ModuleSunset
-        - OwnershipTransferred
-        - Purchase
-        - RefundBid
-        - Settle
+        - AtomicAuctionCancelled
+        - AtomicAuctionCreated
+        - AtomicAuctionCurated
+        - AtomicModuleInstalled
+        - AtomicModuleSunset
+        - AtomicAuctionHouseOwnershipTransferred
+        - AtomicPurchase
       abis:
-        - name: AuctionHouse
-          file: ./abis/AuctionHouse.json
-        - name: AuctionModule
-          file: ./abis/AuctionModule.json
+        - name: AtomicAuctionHouse
+          file: ./abis/AtomicAuctionHouse.json
+        - name: FixedPriceSale
+          file: ./abis/modules/FixedPriceSale.json
         - name: ERC20
           file: ./abis/ERC20.json
-        - name: EncryptedMarginalPriceAuctionModule
-          file: ./abis/EncryptedMarginalPriceAuctionModule.json
       eventHandlers:
         - event: AuctionCancelled(indexed uint96,indexed bytes7)
           handler: handleAuctionCancelled
         - event: AuctionCreated(indexed uint96,indexed bytes7,string)
           handler: handleAuctionCreated
-        - event: Bid(indexed uint96,indexed uint96,indexed address,uint256)
-          handler: handleBid
-        - event: RefundBid(indexed uint96,indexed uint96,indexed address)
-          handler: handleRefundBid
         - event: Curated(indexed uint96,indexed address)
           handler: handleCurated
         - event: ModuleInstalled(indexed bytes5,indexed uint8,indexed address)
@@ -54,16 +45,14 @@ dataSources:
           handler: handleOwnershipTransferred
         - event: Purchase(indexed uint96,indexed address,address,uint256,uint256)
           handler: handlePurchase
-        - event: Settle(indexed uint96)
-          handler: handleSettle
-      file: ./src/auction-house.ts
+      file: ./src/atomicAuctionHouse.ts
   - kind: ethereum
-    name: EncryptedMarginalPriceAuctionModule
+    name: FixedPriceSale
     network: mode-testnet
     source:
-      abi: EncryptedMarginalPriceAuctionModule
-      address: "0x0407910809D251c2E4c217576b63f263e3Fd1B59"
-      startBlock: 11539414
+      abi: FixedPriceSale
+      address: "0x8Db46375e73545226E99b5e8cBfe2794ac835D38"
+      startBlock: 13062650
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
