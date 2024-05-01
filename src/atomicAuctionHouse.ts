@@ -119,7 +119,9 @@ export function handleAuctionCreated(event: AuctionCreatedEvent): void {
 
   // Fee details
   const auctionFees = auctionHouse.lotFees(lotId);
-  auctionLot.curator = auctionFees.getCurator();
+  auctionLot.curator = auctionFees.getCurator().equals(Address.zero())
+    ? null
+    : auctionFees.getCurator();
   auctionLot.curatorApproved = false;
   auctionLot.curatorFee = toDecimal(auctionFees.getCuratorFee(), 10 ** 5);
   auctionLot.protocolFee = toDecimal(auctionFees.getProtocolFee(), 10 ** 5);

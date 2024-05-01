@@ -279,17 +279,21 @@ export class AtomicAuctionLot extends Entity {
     this.set("wrapDerivative", Value.fromBoolean(value));
   }
 
-  get curator(): Bytes {
+  get curator(): Bytes | null {
     const value = this.get("curator");
     if (!value || value.kind == ValueKind.NULL) {
-      throw new Error("Cannot return null for a required field.");
+      return null;
     } else {
       return value.toBytes();
     }
   }
 
-  set curator(value: Bytes) {
-    this.set("curator", Value.fromBytes(value));
+  set curator(value: Bytes | null) {
+    if (!value) {
+      this.unset("curator");
+    } else {
+      this.set("curator", Value.fromBytes(<Bytes>value));
+    }
   }
 
   get curatorApproved(): boolean {
@@ -1465,17 +1469,21 @@ export class BatchAuctionLot extends Entity {
     this.set("wrapDerivative", Value.fromBoolean(value));
   }
 
-  get curator(): Bytes {
+  get curator(): Bytes | null {
     const value = this.get("curator");
     if (!value || value.kind == ValueKind.NULL) {
-      throw new Error("Cannot return null for a required field.");
+      return null;
     } else {
       return value.toBytes();
     }
   }
 
-  set curator(value: Bytes) {
-    this.set("curator", Value.fromBytes(value));
+  set curator(value: Bytes | null) {
+    if (!value) {
+      this.unset("curator");
+    } else {
+      this.set("curator", Value.fromBytes(<Bytes>value));
+    }
   }
 
   get curatorApproved(): boolean {

@@ -28,7 +28,7 @@ type AtomicAuctionLot @entity {
   wrapDerivative: Boolean!
 
   # Fee details
-  curator: Bytes! # address
+  curator: Bytes # address
   curatorApproved: Boolean!
   curatorFee: BigDecimal! # uint256
   protocolFee: BigDecimal! # uint256
@@ -148,7 +148,7 @@ type BatchAuctionLot @entity {
   wrapDerivative: Boolean!
 
   # Fee details
-  curator: Bytes! # address
+  curator: Bytes # address
   curatorApproved: Boolean!
   curatorFee: BigDecimal! # uint256
   protocolFee: BigDecimal! # uint256
