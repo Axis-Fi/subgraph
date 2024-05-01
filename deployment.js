@@ -1,9 +1,9 @@
 /** The network to deploy the subgraph to
  * Must match files in @see networks.json */
-const TARGET_NETWORK = "mode-testnet";
+const TARGET_NETWORK = "blast-sepolia";
 
 /** The version that will it'll be deployed as */
-const VERSION = "0.0.27";
+const VERSION = "0.1.0";
 
 /**  Deployments to be deployed to Goldsky
  * otherwise they're deployed to Alchemy Subgraphs */
