@@ -4,11 +4,7 @@ import {
   BidDecrypted as BidDecryptedEvent,
   EncryptedMarginalPrice,
 } from "../generated/BatchAuctionHouse/EncryptedMarginalPrice";
-import {
-  BatchAuctionLot,
-  BatchBid,
-  BatchBidDecrypted,
-} from "../generated/schema";
+import { BatchAuctionLot, BatchBidDecrypted } from "../generated/schema";
 import { getAuctionLot } from "./helpers/atomicAuction";
 import { getLotRecord } from "./helpers/batchAuction";
 import { getBidId, getBidRecord, updateBid } from "./helpers/bid";
