@@ -21,8 +21,8 @@ dataSources:
         - AtomicAuctionCancelled
         - AtomicAuctionCurated
         - AtomicPurchase
-        - FixedPriceSaleLot
-        - LinearVestingLot
+        - AtomicFixedPriceSaleLot
+        - AtomicLinearVestingLot
         - AuctionHouseModuleInstalled
         - AuctionHouseModuleSunset
         - AuctionHouseOwnershipTransferred

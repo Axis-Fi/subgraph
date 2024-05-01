@@ -5,7 +5,10 @@ import {
   AuctionCreated,
 } from "../../generated/AtomicAuctionHouse/AtomicAuctionHouse";
 import { FixedPriceSale } from "../../generated/AtomicAuctionHouse/FixedPriceSale";
-import { AtomicAuctionLot, FixedPriceSaleLot } from "../../generated/schema";
+import {
+  AtomicAuctionLot,
+  AtomicFixedPriceSaleLot,
+} from "../../generated/schema";
 import { getAuctionHouse } from "../helpers/atomicAuction";
 import { toDecimal } from "../helpers/number";
 import { getOrCreateToken } from "../helpers/token";
@@ -27,7 +30,7 @@ export function createFixedPriceSaleLot(
   atomicAuctionLot: AtomicAuctionLot,
   createdEvent: AuctionCreated,
 ): void {
-  const fpsLot: FixedPriceSaleLot = new FixedPriceSaleLot(
+  const fpsLot: AtomicFixedPriceSaleLot = new AtomicFixedPriceSaleLot(
     createdEvent.transaction.hash.concatI32(createdEvent.logIndex.toI32()),
   );
   fpsLot.lot = atomicAuctionLot.id;

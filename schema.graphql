@@ -48,9 +48,9 @@ type AtomicAuctionLot @entity {
   cancelled: AtomicAuctionCancelled @derivedFrom(field: "lot")
   created: AtomicAuctionCreated! @derivedFrom(field: "lot")
   curated: AtomicAuctionCurated @derivedFrom(field: "lot")
-  fixedPriceSale: FixedPriceSaleLot @derivedFrom(field: "lot")
-  linearVesting: AtomicLinearVestingLot @derivedFrom(field: "lot")
   purchases: [AtomicPurchase!]! @derivedFrom(field: "lot")
+  fixedPriceSale: AtomicFixedPriceSaleLot @derivedFrom(field: "lot")
+  linearVesting: AtomicLinearVestingLot @derivedFrom(field: "lot")
 }
 
 type AtomicAuctionCreated @entity(immutable: true) {
@@ -100,7 +100,7 @@ type AtomicPurchase @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type FixedPriceSaleLot @entity(immutable: true) {
+type AtomicFixedPriceSaleLot @entity(immutable: true) {
   id: Bytes!
   lot: AtomicAuctionLot!
 

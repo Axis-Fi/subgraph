@@ -472,8 +472,16 @@ export class AtomicAuctionLot extends Entity {
     );
   }
 
-  get fixedPriceSale(): FixedPriceSaleLotLoader {
-    return new FixedPriceSaleLotLoader(
+  get purchases(): AtomicPurchaseLoader {
+    return new AtomicPurchaseLoader(
+      "AtomicAuctionLot",
+      this.get("id")!.toString(),
+      "purchases",
+    );
+  }
+
+  get fixedPriceSale(): AtomicFixedPriceSaleLotLoader {
+    return new AtomicFixedPriceSaleLotLoader(
       "AtomicAuctionLot",
       this.get("id")!.toString(),
       "fixedPriceSale",
@@ -485,14 +493,6 @@ export class AtomicAuctionLot extends Entity {
       "AtomicAuctionLot",
       this.get("id")!.toString(),
       "linearVesting",
-    );
-  }
-
-  get purchases(): AtomicPurchaseLoader {
-    return new AtomicPurchaseLoader(
-      "AtomicAuctionLot",
-      this.get("id")!.toString(),
-      "purchases",
     );
   }
 }
@@ -1027,7 +1027,7 @@ export class AtomicPurchase extends Entity {
   }
 }
 
-export class FixedPriceSaleLot extends Entity {
+export class AtomicFixedPriceSaleLot extends Entity {
   constructor(id: Bytes) {
     super();
     this.set("id", Value.fromBytes(id));
@@ -1035,25 +1035,28 @@ export class FixedPriceSaleLot extends Entity {
 
   save(): void {
     const id = this.get("id");
-    assert(id != null, "Cannot save FixedPriceSaleLot entity without an ID");
+    assert(
+      id != null,
+      "Cannot save AtomicFixedPriceSaleLot entity without an ID",
+    );
     if (id) {
       assert(
         id.kind == ValueKind.BYTES,
-        `Entities of type FixedPriceSaleLot must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+        `Entities of type AtomicFixedPriceSaleLot must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
       );
-      store.set("FixedPriceSaleLot", id.toBytes().toHexString(), this);
+      store.set("AtomicFixedPriceSaleLot", id.toBytes().toHexString(), this);
     }
   }
 
-  static loadInBlock(id: Bytes): FixedPriceSaleLot | null {
-    return changetype<FixedPriceSaleLot | null>(
-      store.get_in_block("FixedPriceSaleLot", id.toHexString()),
+  static loadInBlock(id: Bytes): AtomicFixedPriceSaleLot | null {
+    return changetype<AtomicFixedPriceSaleLot | null>(
+      store.get_in_block("AtomicFixedPriceSaleLot", id.toHexString()),
     );
   }
 
-  static load(id: Bytes): FixedPriceSaleLot | null {
-    return changetype<FixedPriceSaleLot | null>(
-      store.get("FixedPriceSaleLot", id.toHexString()),
+  static load(id: Bytes): AtomicFixedPriceSaleLot | null {
+    return changetype<AtomicFixedPriceSaleLot | null>(
+      store.get("AtomicFixedPriceSaleLot", id.toHexString()),
     );
   }
 
@@ -1805,7 +1808,7 @@ export class AtomicAuctionCuratedLoader extends Entity {
   }
 }
 
-export class FixedPriceSaleLotLoader extends Entity {
+export class AtomicPurchaseLoader extends Entity {
   _entity: string;
   _field: string;
   _id: string;
@@ -1817,9 +1820,27 @@ export class FixedPriceSaleLotLoader extends Entity {
     this._field = field;
   }
 
-  load(): FixedPriceSaleLot[] {
+  load(): AtomicPurchase[] {
     const value = store.loadRelated(this._entity, this._id, this._field);
-    return changetype<FixedPriceSaleLot[]>(value);
+    return changetype<AtomicPurchase[]>(value);
+  }
+}
+
+export class AtomicFixedPriceSaleLotLoader extends Entity {
+  _entity: string;
+  _field: string;
+  _id: string;
+
+  constructor(entity: string, id: string, field: string) {
+    super();
+    this._entity = entity;
+    this._id = id;
+    this._field = field;
+  }
+
+  load(): AtomicFixedPriceSaleLot[] {
+    const value = store.loadRelated(this._entity, this._id, this._field);
+    return changetype<AtomicFixedPriceSaleLot[]>(value);
   }
 }
 
@@ -1838,23 +1859,5 @@ export class AtomicLinearVestingLotLoader extends Entity {
   load(): AtomicLinearVestingLot[] {
     const value = store.loadRelated(this._entity, this._id, this._field);
     return changetype<AtomicLinearVestingLot[]>(value);
-  }
-}
-
-export class AtomicPurchaseLoader extends Entity {
-  _entity: string;
-  _field: string;
-  _id: string;
-
-  constructor(entity: string, id: string, field: string) {
-    super();
-    this._entity = entity;
-    this._id = id;
-    this._field = field;
-  }
-
-  load(): AtomicPurchase[] {
-    const value = store.loadRelated(this._entity, this._id, this._field);
-    return changetype<AtomicPurchase[]>(value);
   }
 }
