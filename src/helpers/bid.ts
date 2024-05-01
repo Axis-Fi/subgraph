@@ -10,8 +10,19 @@ import {
   updateBidAmount,
 } from "../modules/encryptedMarginalPrice";
 
-export function getBidId(lotId: BigInt, bidId: BigInt): string {
-  return lotId.toString().concat("-").concat(bidId.toString());
+export function getBidId(lot: BatchAuctionLot, bidId: BigInt): string {
+  return lot.id.concat("-").concat(bidId.toString());
+}
+
+export function getBidRecord(lot: BatchAuctionLot, bidId: BigInt): BatchBid {
+  const bidRecordId = getBidId(lot, bidId);
+  const entity = BatchBid.load(bidRecordId);
+
+  if (!entity) {
+    throw new Error("Bid not found: " + bidRecordId);
+  }
+
+  return entity as BatchBid;
 }
 
 export function getEncryptedBid(
@@ -58,17 +69,13 @@ export function getBidStatus(status: i32): string {
 export function updateBid(
   auctionHouseAddress: Address,
   auctionRef: Bytes,
-  lotId: BigInt,
+  lotRecord: BatchAuctionLot,
   bidId: BigInt,
 ): void {
   // Fetch the existing bid record
-  const entity = BatchBid.load(getBidId(lotId, bidId));
+  const entity = getBidRecord(lotRecord, bidId);
 
-  if (!entity) {
-    throw new Error("Bid not found: " + getBidId(lotId, bidId));
-  }
-
-  const bid = getBid(auctionHouseAddress, auctionRef, lotId, bidId);
+  const bid = getBid(auctionHouseAddress, auctionRef, lotRecord.lotId, bidId);
 
   entity.status = getBidStatus(bid.getStatus());
 
@@ -78,45 +85,34 @@ export function updateBid(
 export function updateBidsStatus(
   auctionHouseAddress: Address,
   auctionRef: Bytes,
-  lotId: BigInt,
+  lotRecord: BatchAuctionLot,
 ): void {
   // Fetch the auction lot
-  const entity = BatchAuctionLot.load(lotId.toString());
-  if (!entity) {
-    throw new Error("Auction lot not found: " + lotId.toString());
-  }
-  const maxBidId = entity.maxBidId;
+  const maxBidId = lotRecord.maxBidId;
 
   for (
     let i = BigInt.fromI32(1);
     i.le(maxBidId);
     i = i.plus(BigInt.fromI32(1))
   ) {
-    updateBid(auctionHouseAddress, auctionRef, lotId, i);
+    updateBid(auctionHouseAddress, auctionRef, lotRecord, i);
   }
 }
 
 export function updateBidsAmounts(
   auctionHouseAddress: Address,
   auctionRef: Bytes,
-  lotId: BigInt,
+  lotRecord: BatchAuctionLot,
 ): void {
-  // Fetch the auction lot
-  const entity = BatchAuctionLot.load(lotId.toString());
-
-  if (!entity) {
-    throw new Error("Auction lot not found: " + lotId.toString());
-  }
-
-  const maxBidId = entity.maxBidId;
-  // let capacity = entity.capacityInitial;
+  const maxBidId = lotRecord.maxBidId;
+  // let capacity = lotRecord.capacityInitial;
 
   for (
     let i = BigInt.fromI32(1);
     i.lt(maxBidId);
     i = i.plus(BigInt.fromI32(1))
   ) {
-    updateBidAmount(auctionHouseAddress, auctionRef, lotId, i);
+    updateBidAmount(auctionHouseAddress, auctionRef, lotRecord, i);
     // capacity = capacity.minus(remaining);
   }
 }

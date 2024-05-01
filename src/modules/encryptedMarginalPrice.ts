@@ -11,7 +11,7 @@ import {
   BatchEncryptedMarginalPriceLot,
 } from "../../generated/schema";
 import { getAuctionHouse } from "../helpers/batchAuction";
-import { getBidId } from "../helpers/bid";
+import { getBidId, getBidRecord } from "../helpers/bid";
 import { toDecimal } from "../helpers/number";
 import { getOrCreateToken } from "../helpers/token";
 
@@ -84,7 +84,7 @@ export function createEncryptedMarginalPriceLot(
 export function updateBidAmount(
   auctionHouseAddress: Address,
   auctionRef: Bytes,
-  lotId: BigInt,
+  lotRecord: BatchAuctionLot,
   bidId: BigInt,
   // remainingCapacity: BigDecimal
 ): BigDecimal {
@@ -92,14 +92,14 @@ export function updateBidAmount(
     auctionHouseAddress,
     auctionRef,
   );
-  const entity = BatchBid.load(getBidId(lotId, bidId));
 
-  if (!entity) {
-    throw new Error("Bid not found: " + getBidId(lotId, bidId));
-  }
+  // Get the bid record
+  const entity = getBidRecord(lotRecord, bidId);
 
   // Get marginal price from contract
-  const rawMarginalPrice = empModule.auctionData(lotId).getMarginalPrice();
+  const rawMarginalPrice = empModule
+    .auctionData(lotRecord.lotId)
+    .getMarginalPrice();
 
   // Get the raw amount out
   const rawAmountOut = entity.rawAmountOut || BigInt.fromI32(0);
