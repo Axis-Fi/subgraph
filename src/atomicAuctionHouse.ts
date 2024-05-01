@@ -6,65 +6,66 @@ import {
   ethereum,
 } from "@graphprotocol/graph-ts";
 
-import { AuctionCancelled as AuctionCancelledEvent, AuctionCreated as AuctionCreatedEvent, Curated as AuctionCuratedEvent, ModuleInstalled as ModuleInstalledEvent, ModuleSunset as ModuleSunsetEvent, OwnershipTransferred as OwnershipTransferredEvent,Purchase as PurchaseEvent } from "../generated/AtomicAuctionHouse/AtomicAuctionHouse";
-import { ERC20 } from "../generated/AtomicAuctionHouse/ERC20";
-import { AtomicAuctionCancelled, AtomicAuctionCreated, AtomicAuctionCurated, AtomicAuctionHouseOwnershipTransferred, AtomicAuctionLot, AtomicModuleInstalled, AtomicModuleSunset, AtomicPurchase, Token } from "../generated/schema";
-import { getAuctionCuration, getAuctionHouse, getAuctionLot } from "./helpers/atomicAuction";
+import {
+  AuctionCancelled as AuctionCancelledEvent,
+  AuctionCreated as AuctionCreatedEvent,
+  Curated as AuctionCuratedEvent,
+  ModuleInstalled as ModuleInstalledEvent,
+  ModuleSunset as ModuleSunsetEvent,
+  OwnershipTransferred as OwnershipTransferredEvent,
+  Purchase as PurchaseEvent,
+} from "../generated/AtomicAuctionHouse/AtomicAuctionHouse";
+import {
+  AtomicAuctionCancelled,
+  AtomicAuctionCreated,
+  AtomicAuctionCurated,
+  AtomicAuctionLot,
+  AtomicPurchase,
+  AuctionHouseModuleInstalled,
+  AuctionHouseModuleSunset,
+  AuctionHouseOwnershipTransferred,
+} from "../generated/schema";
+import {
+  getAuctionCuration,
+  getAuctionHouse,
+  getAuctionLot,
+} from "./helpers/atomicAuction";
 import { toISO8601String } from "./helpers/date";
 import { toDecimal } from "./helpers/number";
+import { getOrCreateToken } from "./helpers/token";
+import {
+  createLinearVestingLot,
+  LV_KEYCODE,
+} from "./modules/atomicLinearVesting";
+import { createFixedPriceSaleLot, FPS_KEYCODE } from "./modules/fixedPriceSale";
 
-function _getERC20Contract(address: Bytes): ERC20 {
-  return ERC20.bind(Address.fromBytes(address));
-}
-
-function _getOrCreateToken(address: Bytes): Token {
-  let token = Token.load(address);
-  if (token == null) {
-    token = new Token(address);
-
-    // Populate token data
-    token.address = address;
-
-    const tokenContract: ERC20 = _getERC20Contract(address);
-
-    token.name = tokenContract.name();
-    token.symbol = tokenContract.symbol();
-    token.decimals = tokenContract.decimals();
-    token.totalSupply = tokenContract.totalSupply();
-
-    token.save();
-  }
-
-  return token as Token;
-}
-
-function _getLotRecordId(
-  auctionHouseAddress: Address,
-  lotId: BigInt
-): string {
-  return dataSource.network() + "-" + auctionHouseAddress.toHexString() + "-" + lotId.toString();
+function _getLotRecordId(auctionHouseAddress: Address, lotId: BigInt): string {
+  return (
+    dataSource.network() +
+    "-" +
+    auctionHouseAddress.toHexString() +
+    "-" +
+    lotId.toString()
+  );
 }
 
 function _updateAuctionLot(
   auctionHouseAddress: Address,
   lotId: BigInt,
   block: ethereum.Block,
-  transactionHash: Bytes
+  transactionHash: Bytes,
 ): void {
   const auctionLot = getAuctionLot(auctionHouseAddress, lotId);
 
   // Get the auction lot record
-  const entity = AtomicAuctionLot.load(_getLotRecordId(
-    auctionHouseAddress,
-    lotId
-  ));
+  const entity = AtomicAuctionLot.load(
+    _getLotRecordId(auctionHouseAddress, lotId),
+  );
 
   if (entity == null) {
     throw new Error(
-      "Expected auction lot to exist for lotId " + _getLotRecordId(
-        auctionHouseAddress,
-        lotId
-      )
+      "Expected auction lot to exist for lotId " +
+        _getLotRecordId(auctionHouseAddress, lotId),
     );
   }
 
@@ -73,15 +74,15 @@ function _updateAuctionLot(
     auctionLot.getCapacity(),
     auctionLot.getCapacityInQuote()
       ? auctionLot.getQuoteTokenDecimals()
-      : auctionLot.getBaseTokenDecimals()
+      : auctionLot.getBaseTokenDecimals(),
   );
   entity.sold = toDecimal(
     auctionLot.getSold(),
-    auctionLot.getBaseTokenDecimals()
+    auctionLot.getBaseTokenDecimals(),
   );
   entity.purchased = toDecimal(
     auctionLot.getPurchased(),
-    auctionLot.getQuoteTokenDecimals()
+    auctionLot.getQuoteTokenDecimals(),
   );
   entity.lastUpdatedBlockNumber = block.number;
   entity.lastUpdatedBlockTimestamp = block.timestamp;
@@ -98,10 +99,9 @@ export function handleAuctionCreated(event: AuctionCreatedEvent): void {
   const lotId = event.params.lotId;
 
   // Create an AtomicAuctionLot record
-  const auctionLot = new AtomicAuctionLot(_getLotRecordId(
-    event.address,
-    lotId
-  ));
+  const auctionLot = new AtomicAuctionLot(
+    _getLotRecordId(event.address, lotId),
+  );
   auctionLot.chain = dataSource.network();
   auctionLot.auctionHouse = event.address;
   auctionLot.lotId = lotId;
@@ -118,7 +118,7 @@ export function handleAuctionCreated(event: AuctionCreatedEvent): void {
     auctionLotContractRecord.getCapacity(),
     auctionLotContractRecord.getCapacityInQuote()
       ? auctionLotContractRecord.getQuoteTokenDecimals()
-      : auctionLotContractRecord.getBaseTokenDecimals()
+      : auctionLotContractRecord.getBaseTokenDecimals(),
   );
   auctionLot.start = auctionLotContractRecord.getStart();
   auctionLot.conclusion = auctionLotContractRecord.getConclusion();
@@ -128,38 +128,32 @@ export function handleAuctionCreated(event: AuctionCreatedEvent): void {
   const auctionRouting = auctionHouse.lotRouting(lotId);
   auctionLot.auctionRef = event.params.auctionRef;
   auctionLot.auctionType = event.params.auctionRef.toString();
-  auctionLot.baseToken = _getOrCreateToken(auctionRouting.getBaseToken()).id;
-  auctionLot.quoteToken = _getOrCreateToken(auctionRouting.getQuoteToken()).id;
+  auctionLot.baseToken = getOrCreateToken(auctionRouting.getBaseToken()).id;
+  auctionLot.quoteToken = getOrCreateToken(auctionRouting.getQuoteToken()).id;
   auctionLot.seller = auctionRouting.getSeller();
-  auctionLot.derivativeRef = auctionRouting.getDerivativeReference();
+  auctionLot.derivativeRef =
+    auctionRouting.getDerivativeReference() == Address.zero()
+      ? null
+      : auctionRouting.getDerivativeReference();
   auctionLot.wrapDerivative = auctionRouting.getWrapDerivative();
 
   // Fee details
   const auctionFees = auctionHouse.lotFees(lotId);
   auctionLot.curator = auctionFees.getCurator();
   auctionLot.curatorApproved = false;
-  auctionLot.curatorFee = toDecimal(
-    auctionFees.getCuratorFee(),
-    10 ** 5
-  );
-  auctionLot.protocolFee = toDecimal(
-    auctionFees.getProtocolFee(),
-    10 ** 5
-  );
-  auctionLot.referrerFee = toDecimal(
-    auctionFees.getReferrerFee(),
-    10 ** 5
-  );
+  auctionLot.curatorFee = toDecimal(auctionFees.getCuratorFee(), 10 ** 5);
+  auctionLot.protocolFee = toDecimal(auctionFees.getProtocolFee(), 10 ** 5);
+  auctionLot.referrerFee = toDecimal(auctionFees.getReferrerFee(), 10 ** 5);
 
   // Set initial values
   auctionLot.capacity = auctionLot.capacityInitial;
   auctionLot.sold = toDecimal(
     auctionLotContractRecord.getSold(),
-    auctionLotContractRecord.getBaseTokenDecimals()
+    auctionLotContractRecord.getBaseTokenDecimals(),
   );
   auctionLot.purchased = toDecimal(
     auctionLotContractRecord.getPurchased(),
-    auctionLotContractRecord.getQuoteTokenDecimals()
+    auctionLotContractRecord.getQuoteTokenDecimals(),
   );
   auctionLot.lastUpdatedBlockNumber = event.block.number;
   auctionLot.lastUpdatedBlockTimestamp = event.block.timestamp;
@@ -168,9 +162,23 @@ export function handleAuctionCreated(event: AuctionCreatedEvent): void {
 
   auctionLot.save();
 
+  // If using FixedPriceSale, save details
+  if (auctionLot.auctionType.includes(FPS_KEYCODE)) {
+    createFixedPriceSaleLot(auctionLot, event);
+  }
+
+  // If using LinearVesting, save details
+  if (auctionLot.auctionType.includes(LV_KEYCODE)) {
+    createLinearVestingLot(
+      auctionLot,
+      event,
+      auctionRouting.getDerivativeParams(),
+    );
+  }
+
   // Create the event
   const entity = new AtomicAuctionCreated(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
+    event.transaction.hash.concatI32(event.logIndex.toI32()),
   );
   entity.lot = auctionLot.id;
   entity.infoHash = event.params.infoHash;
@@ -186,7 +194,7 @@ export function handleAuctionCancelled(event: AuctionCancelledEvent): void {
   const lotId = event.params.lotId;
 
   const entity = new AtomicAuctionCancelled(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
+    event.transaction.hash.concatI32(event.logIndex.toI32()),
   );
   entity.lot = lotId.toString();
   entity.auctionRef = event.params.auctionRef;
@@ -204,7 +212,7 @@ export function handleCurated(event: AuctionCuratedEvent): void {
   const lotId = event.params.lotId;
 
   const entity = new AtomicAuctionCurated(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
+    event.transaction.hash.concatI32(event.logIndex.toI32()),
   );
   entity.lot = lotId.toString();
   entity.curator = event.params.curator;
@@ -222,7 +230,7 @@ export function handlePurchase(event: PurchaseEvent): void {
   const lotId = event.params.lotId;
 
   const entity = new AtomicPurchase(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
+    event.transaction.hash.concatI32(event.logIndex.toI32()),
   );
   entity.lot = lotId.toString();
   entity.buyer = event.params.buyer;
@@ -230,11 +238,11 @@ export function handlePurchase(event: PurchaseEvent): void {
   const auctionLot = getAuctionLot(event.address, lotId);
   entity.amount = toDecimal(
     event.params.amount,
-    auctionLot.getQuoteTokenDecimals()
+    auctionLot.getQuoteTokenDecimals(),
   );
   entity.payout = toDecimal(
     event.params.payout,
-    auctionLot.getBaseTokenDecimals()
+    auctionLot.getBaseTokenDecimals(),
   );
 
   entity.blockNumber = event.block.number;
@@ -249,8 +257,8 @@ export function handlePurchase(event: PurchaseEvent): void {
 
 // Administrative events
 export function handleModuleInstalled(event: ModuleInstalledEvent): void {
-  const entity = new AtomicModuleInstalled(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
+  const entity = new AuctionHouseModuleInstalled(
+    event.transaction.hash.concatI32(event.logIndex.toI32()),
   );
   entity.auctionHouse = event.address;
   entity.keycode = event.params.keycode;
@@ -265,8 +273,8 @@ export function handleModuleInstalled(event: ModuleInstalledEvent): void {
 }
 
 export function handleModuleSunset(event: ModuleSunsetEvent): void {
-  const entity = new AtomicModuleSunset(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
+  const entity = new AuctionHouseModuleSunset(
+    event.transaction.hash.concatI32(event.logIndex.toI32()),
   );
   entity.auctionHouse = event.address;
   entity.keycode = event.params.keycode;
@@ -279,10 +287,10 @@ export function handleModuleSunset(event: ModuleSunsetEvent): void {
 }
 
 export function handleOwnershipTransferred(
-  event: OwnershipTransferredEvent
+  event: OwnershipTransferredEvent,
 ): void {
-  const entity = new AtomicAuctionHouseOwnershipTransferred(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
+  const entity = new AuctionHouseOwnershipTransferred(
+    event.transaction.hash.concatI32(event.logIndex.toI32()),
   );
   entity.auctionHouse = event.address;
   entity.caller = event.params.user;

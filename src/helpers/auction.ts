@@ -8,7 +8,6 @@ import {
   AuctionModule,
   AuctionModule__lotDataResult,
 } from "../../generated/AuctionHouse/AuctionModule";
-
 import { AUCTION_HOUSE_ADDRESS } from "../constants";
 
 export function getAuctionHouse(): AuctionHouse {
@@ -17,7 +16,7 @@ export function getAuctionHouse(): AuctionHouse {
 
 export function getAuctionModule(
   auctionHouse: AuctionHouse,
-  lotId: BigInt
+  lotId: BigInt,
 ): AuctionModule {
   return AuctionModule.bind(auctionHouse.getModuleForId(lotId));
 }

@@ -25,10 +25,8 @@ type AtomicAuctionLot @entity {
   baseToken: Token! # address
   quoteToken: Token! # address
   seller: Bytes! # address
-  derivativeRef: Bytes! # bytes7
+  derivativeRef: Bytes # bytes7
   wrapDerivative: Boolean!
-
-  # TODO consider how to include data from the auction module
 
   # Fee details
   curator: Bytes! # address
@@ -50,6 +48,8 @@ type AtomicAuctionLot @entity {
   cancelled: AtomicAuctionCancelled @derivedFrom(field: "lot")
   created: AtomicAuctionCreated! @derivedFrom(field: "lot")
   curated: AtomicAuctionCurated @derivedFrom(field: "lot")
+  fixedPriceSale: FixedPriceSaleLot @derivedFrom(field: "lot")
+  linearVesting: AtomicLinearVestingLot @derivedFrom(field: "lot")
   purchases: [AtomicPurchase!]! @derivedFrom(field: "lot")
 }
 
@@ -100,40 +100,24 @@ type AtomicPurchase @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type AtomicModuleInstalled @entity(immutable: true) {
+type FixedPriceSaleLot @entity(immutable: true) {
   id: Bytes!
-  auctionHouse: Bytes! # address
-  keycode: Bytes! # bytes5
-  version: Int! # uint8
-  address: Bytes! # address
+  lot: AtomicAuctionLot!
 
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  date: String!
-  transactionHash: Bytes!
+  price: BigDecimal! # uint256
+  maxPayout: BigDecimal! # uint256
 }
 
-type AtomicModuleSunset @entity(immutable: true) {
+type AtomicLinearVestingLot @entity(immutable: true) {
   id: Bytes!
-  auctionHouse: Bytes! # address
-  keycode: Bytes! # bytes5
+  lot: AtomicAuctionLot!
 
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  date: String!
-  transactionHash: Bytes!
-}
+  startTimestamp: BigInt!
+  startDate: String!
+  expiryTimestamp: BigInt!
+  expiryDate: String!
 
-type AtomicAuctionHouseOwnershipTransferred @entity(immutable: true) {
-  id: Bytes!
-  auctionHouse: Bytes! # address
-  caller: Bytes! # address
-  newOwner: Bytes! # address
-
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  date: String!
-  transactionHash: Bytes!
+  # TODO consider timeseries data for redemption/vesting
 }
 
 ### Batch Auctions
@@ -312,4 +296,40 @@ type Token @entity(immutable: true) {
   symbol: String!
   decimals: Int!
   totalSupply: BigInt!
+}
+
+type AuctionHouseOwnershipTransferred @entity(immutable: true) {
+  id: Bytes!
+  auctionHouse: Bytes! # address
+  caller: Bytes! # address
+  newOwner: Bytes! # address
+
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  date: String!
+  transactionHash: Bytes!
+}
+
+type AuctionHouseModuleInstalled @entity(immutable: true) {
+  id: Bytes!
+  auctionHouse: Bytes! # address
+  keycode: Bytes! # bytes5
+  version: Int! # uint8
+  address: Bytes! # address
+
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  date: String!
+  transactionHash: Bytes!
+}
+
+type AuctionHouseModuleSunset @entity(immutable: true) {
+  id: Bytes!
+  auctionHouse: Bytes! # address
+  keycode: Bytes! # bytes5
+
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  date: String!
+  transactionHash: Bytes!
 }

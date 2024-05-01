@@ -448,10 +448,14 @@ export class AtomicAuctionModule extends ethereum.SmartContract {
   }
 
   priceFor(lotId_: BigInt, payout_: BigInt): BigInt {
-    const result = super.call("priceFor", "priceFor(uint96,uint256):(uint256)", [
-      ethereum.Value.fromUnsignedBigInt(lotId_),
-      ethereum.Value.fromUnsignedBigInt(payout_),
-    ]);
+    const result = super.call(
+      "priceFor",
+      "priceFor(uint96,uint256):(uint256)",
+      [
+        ethereum.Value.fromUnsignedBigInt(lotId_),
+        ethereum.Value.fromUnsignedBigInt(payout_),
+      ],
+    );
 
     return result[0].toBigInt();
   }
