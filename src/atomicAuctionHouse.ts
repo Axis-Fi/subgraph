@@ -29,6 +29,8 @@ import {
   getAuctionCuration,
   getAuctionHouse,
   getAuctionLot,
+  getLotRecord,
+  getLotRecordId,
 } from "./helpers/atomicAuction";
 import { toISO8601String } from "./helpers/date";
 import { toDecimal } from "./helpers/number";
@@ -39,16 +41,6 @@ import {
 } from "./modules/atomicLinearVesting";
 import { createFixedPriceSaleLot, FPS_KEYCODE } from "./modules/fixedPriceSale";
 
-function _getLotRecordId(auctionHouseAddress: Address, lotId: BigInt): string {
-  return (
-    dataSource.network() +
-    "-" +
-    auctionHouseAddress.toHexString() +
-    "-" +
-    lotId.toString()
-  );
-}
-
 function _updateAuctionLot(
   auctionHouseAddress: Address,
   lotId: BigInt,
@@ -58,16 +50,7 @@ function _updateAuctionLot(
   const auctionLot = getAuctionLot(auctionHouseAddress, lotId);
 
   // Get the auction lot record
-  const entity = AtomicAuctionLot.load(
-    _getLotRecordId(auctionHouseAddress, lotId),
-  );
-
-  if (entity == null) {
-    throw new Error(
-      "Expected auction lot to exist for lotId " +
-        _getLotRecordId(auctionHouseAddress, lotId),
-    );
-  }
+  const entity = getLotRecord(auctionHouseAddress, lotId);
 
   // Update the auction lot record
   entity.capacity = toDecimal(
@@ -99,9 +82,7 @@ export function handleAuctionCreated(event: AuctionCreatedEvent): void {
   const lotId = event.params.lotId;
 
   // Create an AtomicAuctionLot record
-  const auctionLot = new AtomicAuctionLot(
-    _getLotRecordId(event.address, lotId),
-  );
+  const auctionLot = new AtomicAuctionLot(getLotRecordId(event.address, lotId));
   auctionLot.chain = dataSource.network();
   auctionLot.auctionHouse = event.address;
   auctionLot.lotId = lotId;

@@ -57,14 +57,12 @@ export function getLotRecord(
   auctionHouseAddress: Address,
   lotId: BigInt,
 ): BatchAuctionLot {
-  const entity = BatchAuctionLot.load(
-    getLotRecordId(auctionHouseAddress, lotId),
-  );
+  const recordId = getLotRecordId(auctionHouseAddress, lotId);
+  const entity = BatchAuctionLot.load(recordId);
 
   if (entity == null) {
     throw new Error(
-      "Expected auction lot to exist for lotId " +
-        getLotRecordId(auctionHouseAddress, lotId),
+      "Expected batch auction lot to exist for record id " + recordId,
     );
   }
 
