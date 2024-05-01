@@ -26,6 +26,8 @@ dataSources:
       abis:
         - name: AtomicAuctionHouse
           file: ./abis/AtomicAuctionHouse.json
+        - name: AtomicAuctionModule
+          file: ./abis/modules/AtomicAuctionModule.json
         - name: FixedPriceSale
           file: ./abis/modules/FixedPriceSale.json
         - name: ERC20
@@ -46,29 +48,29 @@ dataSources:
         - event: Purchase(indexed uint96,indexed address,address,uint256,uint256)
           handler: handlePurchase
       file: ./src/atomicAuctionHouse.ts
-  - kind: ethereum
-    name: FixedPriceSale
-    network: mode-testnet
-    source:
-      abi: FixedPriceSale
-      address: "0x8Db46375e73545226E99b5e8cBfe2794ac835D38"
-      startBlock: 13062650
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.7
-      language: wasm/assemblyscript
-      entities:
-        - BidDecrypted
-      abis:
-        - name: AuctionHouse
-          file: ./abis/AuctionHouse.json
-        - name: AuctionModule
-          file: ./abis/AuctionModule.json
-        - name: ERC20
-          file: ./abis/ERC20.json
-        - name: EncryptedMarginalPriceAuctionModule
-          file: ./abis/EncryptedMarginalPriceAuctionModule.json
-      eventHandlers:
-        - event: BidDecrypted(indexed uint96,indexed uint64,uint96,uint96)
-          handler: handleBidDecrypted
-      file: ./src/empam.ts
+  # - kind: ethereum
+  #   name: FixedPriceSale
+  #   network: mode-testnet
+  #   source:
+  #     abi: FixedPriceSale
+  #     address: "0x8Db46375e73545226E99b5e8cBfe2794ac835D38"
+  #     startBlock: 13062650
+  #   mapping:
+  #     kind: ethereum/events
+  #     apiVersion: 0.0.7
+  #     language: wasm/assemblyscript
+  #     entities:
+  #       - BidDecrypted
+  #     abis:
+  #       - name: AuctionHouse
+  #         file: ./abis/AuctionHouse.json
+  #       - name: AuctionModule
+  #         file: ./abis/AuctionModule.json
+  #       - name: ERC20
+  #         file: ./abis/ERC20.json
+  #       - name: EncryptedMarginalPriceAuctionModule
+  #         file: ./abis/EncryptedMarginalPriceAuctionModule.json
+  #     eventHandlers:
+  #       - event: BidDecrypted(indexed uint96,indexed uint64,uint96,uint96)
+  #         handler: handleBidDecrypted
+  #     file: ./src/empam.ts

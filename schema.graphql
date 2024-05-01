@@ -24,7 +24,7 @@ type AtomicAuctionLot @entity {
   auctionType: String! # bytes7
   baseToken: Token! # address
   quoteToken: Token! # address
-  owner: Bytes! # address
+  seller: Bytes! # address
   derivativeRef: Bytes! # bytes7
   wrapDerivative: Boolean!
 
@@ -55,7 +55,7 @@ type AtomicAuctionLot @entity {
 
 type AtomicAuctionCreated @entity(immutable: true) {
   id: Bytes!
-  lot: AuctionLot!
+  lot: AtomicAuctionLot!
   infoHash: String! # IPFS info hash
 
   blockNumber: BigInt!
@@ -66,7 +66,7 @@ type AtomicAuctionCreated @entity(immutable: true) {
 
 type AtomicAuctionCancelled @entity(immutable: true) {
   id: Bytes!
-  lot: AuctionLot!
+  lot: AtomicAuctionLot!
   auctionRef: Bytes! # bytes7
 
   blockNumber: BigInt!
@@ -77,7 +77,7 @@ type AtomicAuctionCancelled @entity(immutable: true) {
 
 type AtomicAuctionCurated @entity(immutable: true) {
   id: Bytes!
-  lot: AuctionLot!
+  lot: AtomicAuctionLot!
   curator: Bytes! # address
 
   blockNumber: BigInt!
@@ -88,7 +88,7 @@ type AtomicAuctionCurated @entity(immutable: true) {
 
 type AtomicPurchase @entity(immutable: true) {
   id: Bytes!
-  lot: AuctionLot!
+  lot: AtomicAuctionLot!
   buyer: Bytes! # address
   referrer: Bytes! # address
   amount: BigDecimal! # uint256
@@ -138,130 +138,172 @@ type AtomicAuctionHouseOwnershipTransferred @entity(immutable: true) {
 
 ### Batch Auctions
 
-type AuctionLot @entity {
-  id: String! # lotId
-  lotId: BigInt!
-  createdBlockNumber: BigInt!
-  createdBlockTimestamp: BigInt!
-  createdTransactionHash: Bytes!
-  chain: String!
+# type AuctionLot @entity {
+#   id: String! # lotId
+#   lotId: BigInt!
+#   createdBlockNumber: BigInt!
+#   createdBlockTimestamp: BigInt!
+#   createdTransactionHash: Bytes!
+#   chain: String!
 
-  # Lot details
-  capacityInQuote: Boolean!
-  capacityInitial: BigDecimal! # uint256
-  start: BigInt! # timestamp
-  conclusion: BigInt! # timestamp
-  # Routing details
-  auctionRef: Bytes! # bytes7
-  auctionType: String! # bytes7
-  baseToken: Token! # address
-  quoteToken: Token! # address
-  owner: Bytes! # address
-  curator: Bytes! # address
-  curatorApproved: Boolean!
-  derivativeRef: Bytes! # bytes7
-  wrapDerivative: Boolean!
-  #reference: Bytes!
+#   # Lot details
+#   capacityInQuote: Boolean!
+#   capacityInitial: BigDecimal! # uint256
+#   start: BigInt! # timestamp
+#   conclusion: BigInt! # timestamp
+#   # Routing details
+#   auctionRef: Bytes! # bytes7
+#   auctionType: String! # bytes7
+#   baseToken: Token! # address
+#   quoteToken: Token! # address
+#   owner: Bytes! # address
+#   curator: Bytes! # address
+#   curatorApproved: Boolean!
+#   derivativeRef: Bytes! # bytes7
+#   wrapDerivative: Boolean!
+#   #reference: Bytes!
 
-  # These values are updated when events occur
-  capacity: BigDecimal! # uint256
-  sold: BigDecimal! # uint256
-  purchased: BigDecimal! # uint256
-  lastUpdatedBlockNumber: BigInt!
-  lastUpdatedBlockTimestamp: BigInt!
-  lastUpdatedTransactionHash: Bytes!
+#   # These values are updated when events occur
+#   capacity: BigDecimal! # uint256
+#   sold: BigDecimal! # uint256
+#   purchased: BigDecimal! # uint256
+#   lastUpdatedBlockNumber: BigInt!
+#   lastUpdatedBlockTimestamp: BigInt!
+#   lastUpdatedTransactionHash: Bytes!
 
-  maxBidId: BigInt! # uint96
-  # Reverse lookups
-  cancelled: AuctionCancelled @derivedFrom(field: "lot")
-  created: AuctionCreated! @derivedFrom(field: "lot")
-  curated: Curated @derivedFrom(field: "lot")
-  bids: [Bid!]! @derivedFrom(field: "lot")
-  bidsDecrypted: [BidDecrypted!]! @derivedFrom(field: "lot")
-  purchases: [Purchase!]! @derivedFrom(field: "lot")
-  refundedBids: [RefundBid!]! @derivedFrom(field: "lot")
-  settle: Settle @derivedFrom(field: "lot")
-}
+#   maxBidId: BigInt! # uint96
+#   # Reverse lookups
+#   cancelled: AuctionCancelled @derivedFrom(field: "lot")
+#   created: AuctionCreated! @derivedFrom(field: "lot")
+#   curated: Curated @derivedFrom(field: "lot")
+#   bids: [Bid!]! @derivedFrom(field: "lot")
+#   bidsDecrypted: [BidDecrypted!]! @derivedFrom(field: "lot")
+#   purchases: [Purchase!]! @derivedFrom(field: "lot")
+#   refundedBids: [RefundBid!]! @derivedFrom(field: "lot")
+#   settle: Settle @derivedFrom(field: "lot")
+# }
 
-type AuctionCancelled @entity(immutable: true) {
-  id: Bytes!
-  lot: AuctionLot!
-  auctionRef: Bytes! # bytes7
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
+# type AuctionCancelled @entity(immutable: true) {
+#   id: Bytes!
+#   lot: AuctionLot!
+#   auctionRef: Bytes! # bytes7
+#   blockNumber: BigInt!
+#   blockTimestamp: BigInt!
+#   transactionHash: Bytes!
+# }
 
-type AuctionCreated @entity(immutable: true) {
-  id: Bytes!
-  lot: AuctionLot!
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-  infoHash: String! # IPFS info hash
-}
+# type AuctionCreated @entity(immutable: true) {
+#   id: Bytes!
+#   lot: AuctionLot!
+#   blockNumber: BigInt!
+#   blockTimestamp: BigInt!
+#   transactionHash: Bytes!
+#   infoHash: String! # IPFS info hash
+# }
 
-type Bid @entity {
-  id: String! # lotId + bidId
-  lot: AuctionLot!
-  bidId: BigInt! # uint96
-  bidder: Bytes! # address
-  amountIn: BigDecimal! # uint256
-  amountOut: BigDecimal # uint256
-  rawAmountIn: BigInt!
-  rawAmountOut: BigInt
-  settledAmountOut: BigDecimal # uint256
-  submittedPrice: BigDecimal
-  rawMarginalPrice: BigInt
-  rawSubmittedPrice: BigInt
-  remainingCapacity: BigDecimal
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-  status: String! # enum: "submitted" | "decrypted" | "won" | "refunded"
-  # Reverse lookups
-  decrypted: BidDecrypted @derivedFrom(field: "bid")
-  refunded: RefundBid @derivedFrom(field: "bid")
-}
+# type Bid @entity {
+#   id: String! # lotId + bidId
+#   lot: AuctionLot!
+#   bidId: BigInt! # uint96
+#   bidder: Bytes! # address
+#   amountIn: BigDecimal! # uint256
+#   amountOut: BigDecimal # uint256
+#   rawAmountIn: BigInt!
+#   rawAmountOut: BigInt
+#   settledAmountOut: BigDecimal # uint256
+#   submittedPrice: BigDecimal
+#   rawMarginalPrice: BigInt
+#   rawSubmittedPrice: BigInt
+#   remainingCapacity: BigDecimal
+#   blockNumber: BigInt!
+#   blockTimestamp: BigInt!
+#   transactionHash: Bytes!
+#   status: String! # enum: "submitted" | "decrypted" | "won" | "refunded"
+#   # Reverse lookups
+#   decrypted: BidDecrypted @derivedFrom(field: "bid")
+#   refunded: RefundBid @derivedFrom(field: "bid")
+# }
 
-type RefundBid @entity(immutable: true) {
-  id: Bytes!
-  lot: AuctionLot!
-  bid: Bid!
-  bidder: Bytes! # address
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
+# type RefundBid @entity(immutable: true) {
+#   id: Bytes!
+#   lot: AuctionLot!
+#   bid: Bid!
+#   bidder: Bytes! # address
+#   blockNumber: BigInt!
+#   blockTimestamp: BigInt!
+#   transactionHash: Bytes!
+# }
 
-type Curated @entity(immutable: true) {
-  id: Bytes!
-  lot: AuctionLot!
-  curator: Bytes! # address
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
+# type Curated @entity(immutable: true) {
+#   id: Bytes!
+#   lot: AuctionLot!
+#   curator: Bytes! # address
+#   blockNumber: BigInt!
+#   blockTimestamp: BigInt!
+#   transactionHash: Bytes!
+# }
 
-type Purchase @entity(immutable: true) {
-  id: Bytes!
-  lot: AuctionLot!
-  buyer: Bytes! # address
-  referrer: Bytes! # address
-  amount: BigDecimal! # uint256
-  payout: BigDecimal! # uint256
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
+# type Purchase @entity(immutable: true) {
+#   id: Bytes!
+#   lot: AuctionLot!
+#   buyer: Bytes! # address
+#   referrer: Bytes! # address
+#   amount: BigDecimal! # uint256
+#   payout: BigDecimal! # uint256
+#   blockNumber: BigInt!
+#   blockTimestamp: BigInt!
+#   transactionHash: Bytes!
+# }
 
-type Settle @entity(immutable: true) {
-  id: Bytes!
-  lot: AuctionLot!
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
+# type Settle @entity(immutable: true) {
+#   id: Bytes!
+#   lot: AuctionLot!
+#   blockNumber: BigInt!
+#   blockTimestamp: BigInt!
+#   transactionHash: Bytes!
+# }
+
+# type BidDecrypted @entity(immutable: true) {
+#   id: Bytes!
+#   lot: AuctionLot!
+#   bid: Bid!
+#   amountIn: BigDecimal!
+#   amountOut: BigDecimal!
+#   blockNumber: BigInt!
+#   blockTimestamp: BigInt!
+#   transactionHash: Bytes!
+# }
+
+# # Administrative events
+
+# type ModuleInstalled @entity(immutable: true) {
+#   id: Bytes!
+#   keycode: Bytes! # bytes5
+#   version: Int! # uint8
+#   address: Bytes! # address
+#   blockNumber: BigInt!
+#   blockTimestamp: BigInt!
+#   transactionHash: Bytes!
+# }
+
+# type ModuleSunset @entity(immutable: true) {
+#   id: Bytes!
+#   keycode: Bytes! # bytes5
+#   blockNumber: BigInt!
+#   blockTimestamp: BigInt!
+#   transactionHash: Bytes!
+# }
+
+# type OwnershipTransferred @entity(immutable: true) {
+#   id: Bytes!
+#   caller: Bytes! # address
+#   newOwner: Bytes! # address
+#   blockNumber: BigInt!
+#   blockTimestamp: BigInt!
+#   transactionHash: Bytes!
+# }
+
+### Shared types
 
 type Token @entity(immutable: true) {
   id: Bytes!
@@ -270,44 +312,4 @@ type Token @entity(immutable: true) {
   symbol: String!
   decimals: Int!
   totalSupply: BigInt!
-}
-
-type BidDecrypted @entity(immutable: true) {
-  id: Bytes!
-  lot: AuctionLot!
-  bid: Bid!
-  amountIn: BigDecimal!
-  amountOut: BigDecimal!
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-# Administrative events
-
-type ModuleInstalled @entity(immutable: true) {
-  id: Bytes!
-  keycode: Bytes! # bytes5
-  version: Int! # uint8
-  address: Bytes! # address
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type ModuleSunset @entity(immutable: true) {
-  id: Bytes!
-  keycode: Bytes! # bytes5
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type OwnershipTransferred @entity(immutable: true) {
-  id: Bytes!
-  caller: Bytes! # address
-  newOwner: Bytes! # address
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
 }
