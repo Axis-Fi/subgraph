@@ -38,7 +38,7 @@ export function createFixedPriceSaleLot(
   // Get the FixedPriceSale module
   const fixedPriceSale = _getFixedPriceSaleModule(
     Address.fromBytes(atomicAuctionLot.auctionHouse),
-    atomicAuctionLot.auctionRef,
+    Bytes.fromUTF8(atomicAuctionLot.auctionType),
   );
 
   const baseToken = getOrCreateToken(atomicAuctionLot.baseToken);

@@ -1,23 +1,20 @@
 import { BigInt, Bytes } from "@graphprotocol/graph-ts";
 
-import { AuctionCreated } from "../../generated/AtomicAuctionHouse/AtomicAuctionHouse";
-import {
-  AtomicAuctionLot,
-  AtomicLinearVestingLot,
-} from "../../generated/schema";
+import { AuctionCreated } from "../../generated/BatchAuctionHouse/BatchAuctionHouse";
+import { BatchAuctionLot, BatchLinearVestingLot } from "../../generated/schema";
 import { toISO8601String } from "../helpers/date";
 
 export const LV_KEYCODE = "LIV";
 
 export function createLinearVestingLot(
-  atomicAuctionLot: AtomicAuctionLot,
+  batchAuctionLot: BatchAuctionLot,
   createdEvent: AuctionCreated,
   derivativeParams: Bytes,
 ): void {
-  const lvLot: AtomicLinearVestingLot = new AtomicLinearVestingLot(
+  const lvLot: BatchLinearVestingLot = new BatchLinearVestingLot(
     createdEvent.transaction.hash.concatI32(createdEvent.logIndex.toI32()),
   );
-  lvLot.lot = atomicAuctionLot.id;
+  lvLot.lot = batchAuctionLot.id;
 
   // Decode the parameters
   // uint48, uint48, address

@@ -1,39 +1,44 @@
-import { Address, BigDecimal, BigInt } from "@graphprotocol/graph-ts";
+import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
 
 import {
-  EncryptedMarginalPriceAuctionModule,
-  EncryptedMarginalPriceAuctionModule__bidsResult,
-  EncryptedMarginalPriceAuctionModule__encryptedBidsResult,
-} from "../../generated/EncryptedMarginalPriceAuctionModule/EncryptedMarginalPriceAuctionModule";
-import { AuctionLot, Bid } from "../../generated/schema";
-import { EMPAM_ADDRESS } from "../constants";
-import { updateBidAmount } from "../empam";
-import { getAuctionLot } from "./auction";
-
-export function getAuctionModule(): EncryptedMarginalPriceAuctionModule {
-  return EncryptedMarginalPriceAuctionModule.bind(
-    Address.fromString(EMPAM_ADDRESS)
-  );
-}
+  EncryptedMarginalPrice__bidsResult,
+  EncryptedMarginalPrice__encryptedBidsResult,
+} from "../../generated/BatchAuctionHouse/EncryptedMarginalPrice";
+import { BatchAuctionLot, BatchBid } from "../../generated/schema";
+import {
+  getEncryptedMarginalPriceModule,
+  updateBidAmount,
+} from "../modules/encryptedMarginalPrice";
 
 export function getBidId(lotId: BigInt, bidId: BigInt): string {
   return lotId.toString().concat("-").concat(bidId.toString());
 }
 
 export function getEncryptedBid(
+  auctionHouseAddress: Address,
+  auctionRef: Bytes,
   lotId: BigInt,
-  bidId: BigInt
-): EncryptedMarginalPriceAuctionModule__encryptedBidsResult {
-  const auctionModule = getAuctionModule();
+  bidId: BigInt,
+): EncryptedMarginalPrice__encryptedBidsResult {
+  const auctionModule = getEncryptedMarginalPriceModule(
+    auctionHouseAddress,
+    auctionRef,
+  );
 
   return auctionModule.encryptedBids(lotId, bidId);
 }
 
 export function getBid(
+  auctionHouseAddress: Address,
+  auctionRef: Bytes,
   lotId: BigInt,
-  bidId: BigInt
-): EncryptedMarginalPriceAuctionModule__bidsResult {
-  const auctionModule = getAuctionModule();
+  bidId: BigInt,
+): EncryptedMarginalPrice__bidsResult {
+  const auctionModule = getEncryptedMarginalPriceModule(
+    auctionHouseAddress,
+    auctionRef,
+  );
+
   return auctionModule.bids(lotId, bidId);
 }
 
@@ -50,24 +55,33 @@ export function getBidStatus(status: i32): string {
   }
 }
 
-export function updateBid(lotId: BigInt, bidId: BigInt): void {
+export function updateBid(
+  auctionHouseAddress: Address,
+  auctionRef: Bytes,
+  lotId: BigInt,
+  bidId: BigInt,
+): void {
   // Fetch the existing bid record
-  const entity = Bid.load(getBidId(lotId, bidId));
+  const entity = BatchBid.load(getBidId(lotId, bidId));
 
   if (!entity) {
     throw new Error("Bid not found: " + getBidId(lotId, bidId));
   }
 
-  const bid = getBid(lotId, bidId);
+  const bid = getBid(auctionHouseAddress, auctionRef, lotId, bidId);
 
   entity.status = getBidStatus(bid.getStatus());
 
   entity.save();
 }
 
-export function updateBidsStatus(lotId: BigInt): void {
+export function updateBidsStatus(
+  auctionHouseAddress: Address,
+  auctionRef: Bytes,
+  lotId: BigInt,
+): void {
   // Fetch the auction lot
-  const entity = AuctionLot.load(lotId.toString());
+  const entity = BatchAuctionLot.load(lotId.toString());
   if (!entity) {
     throw new Error("Auction lot not found: " + lotId.toString());
   }
@@ -78,27 +92,31 @@ export function updateBidsStatus(lotId: BigInt): void {
     i.le(maxBidId);
     i = i.plus(BigInt.fromI32(1))
   ) {
-    updateBid(lotId, i);
+    updateBid(auctionHouseAddress, auctionRef, lotId, i);
   }
 }
 
-export function updateBidsAmounts(lotId: BigInt): void {
+export function updateBidsAmounts(
+  auctionHouseAddress: Address,
+  auctionRef: Bytes,
+  lotId: BigInt,
+): void {
   // Fetch the auction lot
-  const entity = AuctionLot.load(lotId.toString());
+  const entity = BatchAuctionLot.load(lotId.toString());
 
   if (!entity) {
     throw new Error("Auction lot not found: " + lotId.toString());
   }
 
   const maxBidId = entity.maxBidId;
-  //let capacity = entity.capacityInitial;
+  // let capacity = entity.capacityInitial;
 
   for (
     let i = BigInt.fromI32(1);
     i.lt(maxBidId);
     i = i.plus(BigInt.fromI32(1))
   ) {
-    updateBidAmount(lotId, i);
-    //capacity = capacity.minus(remaining);
+    updateBidAmount(auctionHouseAddress, auctionRef, lotId, i);
+    // capacity = capacity.minus(remaining);
   }
 }

@@ -9,72 +9,71 @@ import {
 import {
   AuctionCancelled as AuctionCancelledEvent,
   AuctionCreated as AuctionCreatedEvent,
-  Curated as AuctionCuratedEvent,
+  Bid as BidEvent,
+  ClaimBid as ClaimBidEvent,
+  Curated as CuratedEvent,
   ModuleInstalled as ModuleInstalledEvent,
   ModuleSunset as ModuleSunsetEvent,
   OwnershipTransferred as OwnershipTransferredEvent,
-  Purchase as PurchaseEvent,
-} from "../generated/AtomicAuctionHouse/AtomicAuctionHouse";
+  RefundBid as RefundBidEvent,
+  Settle as SettleEvent,
+} from "../generated/BatchAuctionHouse/BatchAuctionHouse";
 import {
-  AtomicAuctionCancelled,
-  AtomicAuctionCreated,
-  AtomicAuctionCurated,
-  AtomicAuctionLot,
-  AtomicPurchase,
   AuctionHouseModuleInstalled,
   AuctionHouseModuleSunset,
   AuctionHouseOwnershipTransferred,
+  BatchAuctionCancelled,
+  BatchAuctionCreated,
+  BatchAuctionCurated,
+  BatchAuctionLot,
+  BatchAuctionSettled,
+  BatchBid,
+  BatchBidClaimed,
+  BatchBidRefunded,
 } from "../generated/schema";
 import {
   getAuctionCuration,
   getAuctionHouse,
   getAuctionLot,
-} from "./helpers/atomicAuction";
+  getLotRecord,
+  getLotRecordId,
+} from "./helpers/batchAuction";
+import {
+  getBid,
+  getBidId,
+  getBidStatus,
+  updateBid,
+  updateBidsAmounts,
+  updateBidsStatus,
+} from "./helpers/bid";
 import { toISO8601String } from "./helpers/date";
 import { toDecimal } from "./helpers/number";
 import { getOrCreateToken } from "./helpers/token";
 import {
   createLinearVestingLot,
   LV_KEYCODE,
-} from "./modules/atomicLinearVesting";
-import { createFixedPriceSaleLot, FPS_KEYCODE } from "./modules/fixedPriceSale";
-
-function _getLotRecordId(auctionHouseAddress: Address, lotId: BigInt): string {
-  return (
-    dataSource.network() +
-    "-" +
-    auctionHouseAddress.toHexString() +
-    "-" +
-    lotId.toString()
-  );
-}
+} from "./modules/batchLinearVesting";
+import {
+  createEncryptedMarginalPriceLot,
+  EMP_KEYCODE,
+} from "./modules/encryptedMarginalPrice";
 
 function _updateAuctionLot(
   auctionHouseAddress: Address,
   lotId: BigInt,
   block: ethereum.Block,
   transactionHash: Bytes,
+  bidId: BigInt | null,
 ): void {
   const auctionLot = getAuctionLot(auctionHouseAddress, lotId);
 
   // Get the auction lot record
-  const entity = AtomicAuctionLot.load(
-    _getLotRecordId(auctionHouseAddress, lotId),
-  );
-
-  if (entity == null) {
-    throw new Error(
-      "Expected auction lot to exist for lotId " +
-        _getLotRecordId(auctionHouseAddress, lotId),
-    );
-  }
+  const entity = getLotRecord(auctionHouseAddress, lotId);
 
   // Update the auction lot record
   entity.capacity = toDecimal(
     auctionLot.getCapacity(),
-    auctionLot.getCapacityInQuote()
-      ? auctionLot.getQuoteTokenDecimals()
-      : auctionLot.getBaseTokenDecimals(),
+    auctionLot.getBaseTokenDecimals(),
   );
   entity.sold = toDecimal(
     auctionLot.getSold(),
@@ -89,6 +88,11 @@ function _updateAuctionLot(
   entity.lastUpdatedDate = toISO8601String(block.timestamp);
   entity.lastUpdatedTransactionHash = transactionHash;
 
+  // Update the maxBidId if applicable
+  if (bidId !== null && entity.maxBidId.lt(bidId)) {
+    entity.maxBidId = bidId;
+  }
+
   const auctionCuration = getAuctionCuration(auctionHouseAddress, lotId);
   entity.curatorApproved = auctionCuration.getCurated();
 
@@ -98,10 +102,8 @@ function _updateAuctionLot(
 export function handleAuctionCreated(event: AuctionCreatedEvent): void {
   const lotId = event.params.lotId;
 
-  // Create an AtomicAuctionLot record
-  const auctionLot = new AtomicAuctionLot(
-    _getLotRecordId(event.address, lotId),
-  );
+  // Create a BatchAuctionLot record
+  const auctionLot = new BatchAuctionLot(getLotRecordId(event.address, lotId));
   auctionLot.chain = dataSource.network();
   auctionLot.auctionHouse = event.address;
   auctionLot.lotId = lotId;
@@ -113,12 +115,9 @@ export function handleAuctionCreated(event: AuctionCreatedEvent): void {
 
   // Lot details
   const auctionLotContractRecord = getAuctionLot(event.address, lotId);
-  auctionLot.capacityInQuote = auctionLotContractRecord.getCapacityInQuote();
   auctionLot.capacityInitial = toDecimal(
     auctionLotContractRecord.getCapacity(),
-    auctionLotContractRecord.getCapacityInQuote()
-      ? auctionLotContractRecord.getQuoteTokenDecimals()
-      : auctionLotContractRecord.getBaseTokenDecimals(),
+    auctionLotContractRecord.getBaseTokenDecimals(),
   );
   auctionLot.start = auctionLotContractRecord.getStart();
   auctionLot.conclusion = auctionLotContractRecord.getConclusion();
@@ -154,6 +153,8 @@ export function handleAuctionCreated(event: AuctionCreatedEvent): void {
     auctionLotContractRecord.getPurchased(),
     auctionLotContractRecord.getQuoteTokenDecimals(),
   );
+  auctionLot.maxBidId = BigInt.fromI32(0);
+
   auctionLot.lastUpdatedBlockNumber = event.block.number;
   auctionLot.lastUpdatedBlockTimestamp = event.block.timestamp;
   auctionLot.lastUpdatedDate = toISO8601String(event.block.timestamp);
@@ -161,9 +162,9 @@ export function handleAuctionCreated(event: AuctionCreatedEvent): void {
 
   auctionLot.save();
 
-  // If using FixedPriceSale, save details
-  if (auctionLot.auctionType.includes(FPS_KEYCODE)) {
-    createFixedPriceSaleLot(auctionLot, event);
+  // If using EncryptedMarginalPrice, save details
+  if (auctionLot.auctionType.includes(EMP_KEYCODE)) {
+    createEncryptedMarginalPriceLot(auctionLot, event);
   }
 
   // If using LinearVesting, save details
@@ -180,7 +181,7 @@ export function handleAuctionCreated(event: AuctionCreatedEvent): void {
   }
 
   // Create the event
-  const entity = new AtomicAuctionCreated(
+  const entity = new BatchAuctionCreated(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   );
   entity.lot = auctionLot.id;
@@ -196,7 +197,7 @@ export function handleAuctionCreated(event: AuctionCreatedEvent): void {
 export function handleAuctionCancelled(event: AuctionCancelledEvent): void {
   const lotId = event.params.lotId;
 
-  const entity = new AtomicAuctionCancelled(
+  const entity = new BatchAuctionCancelled(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   );
   entity.lot = lotId.toString();
@@ -208,13 +209,19 @@ export function handleAuctionCancelled(event: AuctionCancelledEvent): void {
   entity.transactionHash = event.transaction.hash;
   entity.save();
 
-  _updateAuctionLot(event.address, lotId, event.block, event.transaction.hash);
+  _updateAuctionLot(
+    event.address,
+    lotId,
+    event.block,
+    event.transaction.hash,
+    null,
+  );
 }
 
-export function handleCurated(event: AuctionCuratedEvent): void {
+export function handleCurated(event: CuratedEvent): void {
   const lotId = event.params.lotId;
 
-  const entity = new AtomicAuctionCurated(
+  const entity = new BatchAuctionCurated(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   );
   entity.lot = lotId.toString();
@@ -226,27 +233,75 @@ export function handleCurated(event: AuctionCuratedEvent): void {
   entity.transactionHash = event.transaction.hash;
   entity.save();
 
-  _updateAuctionLot(event.address, lotId, event.block, event.transaction.hash);
+  _updateAuctionLot(
+    event.address,
+    lotId,
+    event.block,
+    event.transaction.hash,
+    null,
+  );
 }
 
-export function handlePurchase(event: PurchaseEvent): void {
+export function handleSettle(event: SettleEvent): void {
   const lotId = event.params.lotId;
 
-  const entity = new AtomicPurchase(
+  const entity = new BatchAuctionSettled(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   );
   entity.lot = lotId.toString();
-  entity.buyer = event.params.buyer;
-  entity.referrer = event.params.referrer;
-  const auctionLot = getAuctionLot(event.address, lotId);
-  entity.amount = toDecimal(
+  entity.blockNumber = event.block.number;
+  entity.blockTimestamp = event.block.timestamp;
+  entity.date = toISO8601String(event.block.timestamp);
+  entity.transactionHash = event.transaction.hash;
+  entity.save();
+
+  _updateAuctionLot(
+    event.address,
+    lotId,
+    event.block,
+    event.transaction.hash,
+    null,
+  );
+
+  // Iterate over all bids and update their status
+  const auctionLot: BatchAuctionLot = getLotRecord(event.address, lotId);
+  updateBidsStatus(
+    event.address,
+    Bytes.fromUTF8(auctionLot.auctionType),
+    lotId,
+  );
+  updateBidsAmounts(
+    event.address,
+    Bytes.fromUTF8(auctionLot.auctionType),
+    lotId,
+  );
+}
+
+export function handleBid(event: BidEvent): void {
+  const lotId = event.params.lotId;
+  const bidId = event.params.bidId;
+
+  // Get the encrypted bid
+  const auctionLot: BatchAuctionLot = getLotRecord(event.address, lotId);
+  const bid = getBid(
+    event.address,
+    Bytes.fromUTF8(auctionLot.auctionType),
+    lotId,
+    bidId,
+  );
+
+  const entity = new BatchBid(getBidId(lotId, bidId));
+  entity.lot = lotId.toString();
+  entity.bidId = bidId;
+  entity.bidder = event.params.bidder;
+
+  entity.amountIn = toDecimal(
     event.params.amount,
-    auctionLot.getQuoteTokenDecimals(),
+    getAuctionLot(event.address, lotId).getQuoteTokenDecimals(),
   );
-  entity.payout = toDecimal(
-    event.params.payout,
-    auctionLot.getBaseTokenDecimals(),
-  );
+  entity.rawAmountIn = event.params.amount;
+
+  entity.status = getBidStatus(bid.getStatus());
 
   entity.blockNumber = event.block.number;
   entity.blockTimestamp = event.block.timestamp;
@@ -255,7 +310,85 @@ export function handlePurchase(event: PurchaseEvent): void {
 
   entity.save();
 
-  _updateAuctionLot(event.address, lotId, event.block, event.transaction.hash);
+  _updateAuctionLot(
+    event.address,
+    lotId,
+    event.block,
+    event.transaction.hash,
+    bidId,
+  );
+}
+
+export function handleRefundBid(event: RefundBidEvent): void {
+  const lotId = event.params.lotId;
+
+  const entity = new BatchBidRefunded(
+    event.transaction.hash.concatI32(event.logIndex.toI32()),
+  );
+  entity.lot = lotId.toString();
+  entity.bid = getBidId(lotId, event.params.bidId);
+  entity.bidder = event.params.bidder;
+
+  entity.blockNumber = event.block.number;
+  entity.blockTimestamp = event.block.timestamp;
+  entity.date = toISO8601String(event.block.timestamp);
+  entity.transactionHash = event.transaction.hash;
+
+  entity.save();
+
+  // Update the bid record
+  const auctionLot: BatchAuctionLot = getLotRecord(event.address, lotId);
+  updateBid(
+    event.address,
+    Bytes.fromUTF8(auctionLot.auctionType),
+    lotId,
+    event.params.bidId,
+  );
+
+  // Update the auction record
+  _updateAuctionLot(
+    event.address,
+    lotId,
+    event.block,
+    event.transaction.hash,
+    null,
+  );
+}
+
+export function handleBidClaimed(event: ClaimBidEvent): void {
+  const lotId = event.params.lotId;
+
+  const entity = new BatchBidClaimed(
+    event.transaction.hash.concatI32(event.logIndex.toI32()),
+  );
+  entity.lot = lotId.toString();
+  entity.bid = getBidId(lotId, event.params.bidId);
+  entity.bidder = event.params.bidder;
+
+  entity.blockNumber = event.block.number;
+  entity.blockTimestamp = event.block.timestamp;
+  entity.date = toISO8601String(event.block.timestamp);
+  entity.transactionHash = event.transaction.hash;
+
+  entity.save();
+
+  // Update the bid record
+  const auctionLot: BatchAuctionLot = getLotRecord(event.address, lotId);
+  updateBid(
+    event.address,
+    Bytes.fromUTF8(auctionLot.auctionType),
+    lotId,
+    event.params.bidId,
+  );
+
+  // Update the auction record
+  _updateAuctionLot(
+    event.address,
+    lotId,
+    event.block,
+    event.transaction.hash,
+    null,
+  );
 }
 
 // Administrative events

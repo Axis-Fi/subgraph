@@ -197,19 +197,6 @@ export class AtomicAuctionLot extends Entity {
     this.set("conclusion", Value.fromBigInt(value));
   }
 
-  get auctionRef(): Bytes {
-    const value = this.get("auctionRef");
-    if (!value || value.kind == ValueKind.NULL) {
-      throw new Error("Cannot return null for a required field.");
-    } else {
-      return value.toBytes();
-    }
-  }
-
-  set auctionRef(value: Bytes) {
-    this.set("auctionRef", Value.fromBytes(value));
-  }
-
   get auctionType(): string {
     const value = this.get("auctionType");
     if (!value || value.kind == ValueKind.NULL) {
@@ -262,20 +249,20 @@ export class AtomicAuctionLot extends Entity {
     this.set("seller", Value.fromBytes(value));
   }
 
-  get derivativeRef(): Bytes | null {
-    const value = this.get("derivativeRef");
+  get derivativeType(): string | null {
+    const value = this.get("derivativeType");
     if (!value || value.kind == ValueKind.NULL) {
       return null;
     } else {
-      return value.toBytes();
+      return value.toString();
     }
   }
 
-  set derivativeRef(value: Bytes | null) {
+  set derivativeType(value: string | null) {
     if (!value) {
-      this.unset("derivativeRef");
+      this.unset("derivativeType");
     } else {
-      this.set("derivativeRef", Value.fromBytes(<Bytes>value));
+      this.set("derivativeType", Value.fromString(<string>value));
     }
   }
 
@@ -1225,6 +1212,1963 @@ export class AtomicLinearVestingLot extends Entity {
   }
 }
 
+export class BatchAuctionLot extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    const id = this.get("id");
+    assert(id != null, "Cannot save BatchAuctionLot entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type BatchAuctionLot must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+      );
+      store.set("BatchAuctionLot", id.toString(), this);
+    }
+  }
+
+  static loadInBlock(id: string): BatchAuctionLot | null {
+    return changetype<BatchAuctionLot | null>(
+      store.get_in_block("BatchAuctionLot", id),
+    );
+  }
+
+  static load(id: string): BatchAuctionLot | null {
+    return changetype<BatchAuctionLot | null>(store.get("BatchAuctionLot", id));
+  }
+
+  get id(): string {
+    const value = this.get("id");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get chain(): string {
+    const value = this.get("chain");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set chain(value: string) {
+    this.set("chain", Value.fromString(value));
+  }
+
+  get auctionHouse(): Bytes {
+    const value = this.get("auctionHouse");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set auctionHouse(value: Bytes) {
+    this.set("auctionHouse", Value.fromBytes(value));
+  }
+
+  get lotId(): BigInt {
+    const value = this.get("lotId");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set lotId(value: BigInt) {
+    this.set("lotId", Value.fromBigInt(value));
+  }
+
+  get createdBlockNumber(): BigInt {
+    const value = this.get("createdBlockNumber");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set createdBlockNumber(value: BigInt) {
+    this.set("createdBlockNumber", Value.fromBigInt(value));
+  }
+
+  get createdBlockTimestamp(): BigInt {
+    const value = this.get("createdBlockTimestamp");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set createdBlockTimestamp(value: BigInt) {
+    this.set("createdBlockTimestamp", Value.fromBigInt(value));
+  }
+
+  get createdDate(): string {
+    const value = this.get("createdDate");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set createdDate(value: string) {
+    this.set("createdDate", Value.fromString(value));
+  }
+
+  get createdTransactionHash(): Bytes {
+    const value = this.get("createdTransactionHash");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set createdTransactionHash(value: Bytes) {
+    this.set("createdTransactionHash", Value.fromBytes(value));
+  }
+
+  get capacityInitial(): BigDecimal {
+    const value = this.get("capacityInitial");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigDecimal();
+    }
+  }
+
+  set capacityInitial(value: BigDecimal) {
+    this.set("capacityInitial", Value.fromBigDecimal(value));
+  }
+
+  get start(): BigInt {
+    const value = this.get("start");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set start(value: BigInt) {
+    this.set("start", Value.fromBigInt(value));
+  }
+
+  get conclusion(): BigInt {
+    const value = this.get("conclusion");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set conclusion(value: BigInt) {
+    this.set("conclusion", Value.fromBigInt(value));
+  }
+
+  get auctionType(): string {
+    const value = this.get("auctionType");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set auctionType(value: string) {
+    this.set("auctionType", Value.fromString(value));
+  }
+
+  get baseToken(): Bytes {
+    const value = this.get("baseToken");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set baseToken(value: Bytes) {
+    this.set("baseToken", Value.fromBytes(value));
+  }
+
+  get quoteToken(): Bytes {
+    const value = this.get("quoteToken");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set quoteToken(value: Bytes) {
+    this.set("quoteToken", Value.fromBytes(value));
+  }
+
+  get seller(): Bytes {
+    const value = this.get("seller");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set seller(value: Bytes) {
+    this.set("seller", Value.fromBytes(value));
+  }
+
+  get derivativeType(): string | null {
+    const value = this.get("derivativeType");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set derivativeType(value: string | null) {
+    if (!value) {
+      this.unset("derivativeType");
+    } else {
+      this.set("derivativeType", Value.fromString(<string>value));
+    }
+  }
+
+  get wrapDerivative(): boolean {
+    const value = this.get("wrapDerivative");
+    if (!value || value.kind == ValueKind.NULL) {
+      return false;
+    } else {
+      return value.toBoolean();
+    }
+  }
+
+  set wrapDerivative(value: boolean) {
+    this.set("wrapDerivative", Value.fromBoolean(value));
+  }
+
+  get curator(): Bytes {
+    const value = this.get("curator");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set curator(value: Bytes) {
+    this.set("curator", Value.fromBytes(value));
+  }
+
+  get curatorApproved(): boolean {
+    const value = this.get("curatorApproved");
+    if (!value || value.kind == ValueKind.NULL) {
+      return false;
+    } else {
+      return value.toBoolean();
+    }
+  }
+
+  set curatorApproved(value: boolean) {
+    this.set("curatorApproved", Value.fromBoolean(value));
+  }
+
+  get curatorFee(): BigDecimal {
+    const value = this.get("curatorFee");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigDecimal();
+    }
+  }
+
+  set curatorFee(value: BigDecimal) {
+    this.set("curatorFee", Value.fromBigDecimal(value));
+  }
+
+  get protocolFee(): BigDecimal {
+    const value = this.get("protocolFee");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigDecimal();
+    }
+  }
+
+  set protocolFee(value: BigDecimal) {
+    this.set("protocolFee", Value.fromBigDecimal(value));
+  }
+
+  get referrerFee(): BigDecimal {
+    const value = this.get("referrerFee");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigDecimal();
+    }
+  }
+
+  set referrerFee(value: BigDecimal) {
+    this.set("referrerFee", Value.fromBigDecimal(value));
+  }
+
+  get capacity(): BigDecimal {
+    const value = this.get("capacity");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigDecimal();
+    }
+  }
+
+  set capacity(value: BigDecimal) {
+    this.set("capacity", Value.fromBigDecimal(value));
+  }
+
+  get sold(): BigDecimal {
+    const value = this.get("sold");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigDecimal();
+    }
+  }
+
+  set sold(value: BigDecimal) {
+    this.set("sold", Value.fromBigDecimal(value));
+  }
+
+  get purchased(): BigDecimal {
+    const value = this.get("purchased");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigDecimal();
+    }
+  }
+
+  set purchased(value: BigDecimal) {
+    this.set("purchased", Value.fromBigDecimal(value));
+  }
+
+  get lastUpdatedBlockNumber(): BigInt {
+    const value = this.get("lastUpdatedBlockNumber");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set lastUpdatedBlockNumber(value: BigInt) {
+    this.set("lastUpdatedBlockNumber", Value.fromBigInt(value));
+  }
+
+  get lastUpdatedBlockTimestamp(): BigInt {
+    const value = this.get("lastUpdatedBlockTimestamp");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set lastUpdatedBlockTimestamp(value: BigInt) {
+    this.set("lastUpdatedBlockTimestamp", Value.fromBigInt(value));
+  }
+
+  get lastUpdatedDate(): string {
+    const value = this.get("lastUpdatedDate");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set lastUpdatedDate(value: string) {
+    this.set("lastUpdatedDate", Value.fromString(value));
+  }
+
+  get lastUpdatedTransactionHash(): Bytes {
+    const value = this.get("lastUpdatedTransactionHash");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set lastUpdatedTransactionHash(value: Bytes) {
+    this.set("lastUpdatedTransactionHash", Value.fromBytes(value));
+  }
+
+  get maxBidId(): BigInt {
+    const value = this.get("maxBidId");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set maxBidId(value: BigInt) {
+    this.set("maxBidId", Value.fromBigInt(value));
+  }
+
+  get cancelled(): BatchAuctionCancelledLoader {
+    return new BatchAuctionCancelledLoader(
+      "BatchAuctionLot",
+      this.get("id")!.toString(),
+      "cancelled",
+    );
+  }
+
+  get created(): BatchAuctionCreatedLoader {
+    return new BatchAuctionCreatedLoader(
+      "BatchAuctionLot",
+      this.get("id")!.toString(),
+      "created",
+    );
+  }
+
+  get curated(): BatchAuctionCuratedLoader {
+    return new BatchAuctionCuratedLoader(
+      "BatchAuctionLot",
+      this.get("id")!.toString(),
+      "curated",
+    );
+  }
+
+  get settled(): BatchAuctionSettledLoader {
+    return new BatchAuctionSettledLoader(
+      "BatchAuctionLot",
+      this.get("id")!.toString(),
+      "settled",
+    );
+  }
+
+  get bids(): BatchBidLoader {
+    return new BatchBidLoader(
+      "BatchAuctionLot",
+      this.get("id")!.toString(),
+      "bids",
+    );
+  }
+
+  get bidsDecrypted(): BatchBidDecryptedLoader {
+    return new BatchBidDecryptedLoader(
+      "BatchAuctionLot",
+      this.get("id")!.toString(),
+      "bidsDecrypted",
+    );
+  }
+
+  get bidsClaimed(): BatchBidClaimedLoader {
+    return new BatchBidClaimedLoader(
+      "BatchAuctionLot",
+      this.get("id")!.toString(),
+      "bidsClaimed",
+    );
+  }
+
+  get bidsRefunded(): BatchBidRefundedLoader {
+    return new BatchBidRefundedLoader(
+      "BatchAuctionLot",
+      this.get("id")!.toString(),
+      "bidsRefunded",
+    );
+  }
+
+  get encryptedMarginalPrice(): BatchEncryptedMarginalPriceLotLoader {
+    return new BatchEncryptedMarginalPriceLotLoader(
+      "BatchAuctionLot",
+      this.get("id")!.toString(),
+      "encryptedMarginalPrice",
+    );
+  }
+
+  get linearVesting(): BatchLinearVestingLotLoader {
+    return new BatchLinearVestingLotLoader(
+      "BatchAuctionLot",
+      this.get("id")!.toString(),
+      "linearVesting",
+    );
+  }
+}
+
+export class BatchAuctionCreated extends Entity {
+  constructor(id: Bytes) {
+    super();
+    this.set("id", Value.fromBytes(id));
+  }
+
+  save(): void {
+    const id = this.get("id");
+    assert(id != null, "Cannot save BatchAuctionCreated entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.BYTES,
+        `Entities of type BatchAuctionCreated must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+      );
+      store.set("BatchAuctionCreated", id.toBytes().toHexString(), this);
+    }
+  }
+
+  static loadInBlock(id: Bytes): BatchAuctionCreated | null {
+    return changetype<BatchAuctionCreated | null>(
+      store.get_in_block("BatchAuctionCreated", id.toHexString()),
+    );
+  }
+
+  static load(id: Bytes): BatchAuctionCreated | null {
+    return changetype<BatchAuctionCreated | null>(
+      store.get("BatchAuctionCreated", id.toHexString()),
+    );
+  }
+
+  get id(): Bytes {
+    const value = this.get("id");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set id(value: Bytes) {
+    this.set("id", Value.fromBytes(value));
+  }
+
+  get lot(): string {
+    const value = this.get("lot");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set lot(value: string) {
+    this.set("lot", Value.fromString(value));
+  }
+
+  get infoHash(): string {
+    const value = this.get("infoHash");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set infoHash(value: string) {
+    this.set("infoHash", Value.fromString(value));
+  }
+
+  get blockNumber(): BigInt {
+    const value = this.get("blockNumber");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set blockNumber(value: BigInt) {
+    this.set("blockNumber", Value.fromBigInt(value));
+  }
+
+  get blockTimestamp(): BigInt {
+    const value = this.get("blockTimestamp");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set blockTimestamp(value: BigInt) {
+    this.set("blockTimestamp", Value.fromBigInt(value));
+  }
+
+  get date(): string {
+    const value = this.get("date");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set date(value: string) {
+    this.set("date", Value.fromString(value));
+  }
+
+  get transactionHash(): Bytes {
+    const value = this.get("transactionHash");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set transactionHash(value: Bytes) {
+    this.set("transactionHash", Value.fromBytes(value));
+  }
+}
+
+export class BatchAuctionCancelled extends Entity {
+  constructor(id: Bytes) {
+    super();
+    this.set("id", Value.fromBytes(id));
+  }
+
+  save(): void {
+    const id = this.get("id");
+    assert(
+      id != null,
+      "Cannot save BatchAuctionCancelled entity without an ID",
+    );
+    if (id) {
+      assert(
+        id.kind == ValueKind.BYTES,
+        `Entities of type BatchAuctionCancelled must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+      );
+      store.set("BatchAuctionCancelled", id.toBytes().toHexString(), this);
+    }
+  }
+
+  static loadInBlock(id: Bytes): BatchAuctionCancelled | null {
+    return changetype<BatchAuctionCancelled | null>(
+      store.get_in_block("BatchAuctionCancelled", id.toHexString()),
+    );
+  }
+
+  static load(id: Bytes): BatchAuctionCancelled | null {
+    return changetype<BatchAuctionCancelled | null>(
+      store.get("BatchAuctionCancelled", id.toHexString()),
+    );
+  }
+
+  get id(): Bytes {
+    const value = this.get("id");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set id(value: Bytes) {
+    this.set("id", Value.fromBytes(value));
+  }
+
+  get lot(): string {
+    const value = this.get("lot");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set lot(value: string) {
+    this.set("lot", Value.fromString(value));
+  }
+
+  get auctionRef(): Bytes {
+    const value = this.get("auctionRef");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set auctionRef(value: Bytes) {
+    this.set("auctionRef", Value.fromBytes(value));
+  }
+
+  get blockNumber(): BigInt {
+    const value = this.get("blockNumber");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set blockNumber(value: BigInt) {
+    this.set("blockNumber", Value.fromBigInt(value));
+  }
+
+  get blockTimestamp(): BigInt {
+    const value = this.get("blockTimestamp");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set blockTimestamp(value: BigInt) {
+    this.set("blockTimestamp", Value.fromBigInt(value));
+  }
+
+  get date(): string {
+    const value = this.get("date");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set date(value: string) {
+    this.set("date", Value.fromString(value));
+  }
+
+  get transactionHash(): Bytes {
+    const value = this.get("transactionHash");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set transactionHash(value: Bytes) {
+    this.set("transactionHash", Value.fromBytes(value));
+  }
+}
+
+export class BatchAuctionCurated extends Entity {
+  constructor(id: Bytes) {
+    super();
+    this.set("id", Value.fromBytes(id));
+  }
+
+  save(): void {
+    const id = this.get("id");
+    assert(id != null, "Cannot save BatchAuctionCurated entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.BYTES,
+        `Entities of type BatchAuctionCurated must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+      );
+      store.set("BatchAuctionCurated", id.toBytes().toHexString(), this);
+    }
+  }
+
+  static loadInBlock(id: Bytes): BatchAuctionCurated | null {
+    return changetype<BatchAuctionCurated | null>(
+      store.get_in_block("BatchAuctionCurated", id.toHexString()),
+    );
+  }
+
+  static load(id: Bytes): BatchAuctionCurated | null {
+    return changetype<BatchAuctionCurated | null>(
+      store.get("BatchAuctionCurated", id.toHexString()),
+    );
+  }
+
+  get id(): Bytes {
+    const value = this.get("id");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set id(value: Bytes) {
+    this.set("id", Value.fromBytes(value));
+  }
+
+  get lot(): string {
+    const value = this.get("lot");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set lot(value: string) {
+    this.set("lot", Value.fromString(value));
+  }
+
+  get curator(): Bytes {
+    const value = this.get("curator");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set curator(value: Bytes) {
+    this.set("curator", Value.fromBytes(value));
+  }
+
+  get blockNumber(): BigInt {
+    const value = this.get("blockNumber");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set blockNumber(value: BigInt) {
+    this.set("blockNumber", Value.fromBigInt(value));
+  }
+
+  get blockTimestamp(): BigInt {
+    const value = this.get("blockTimestamp");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set blockTimestamp(value: BigInt) {
+    this.set("blockTimestamp", Value.fromBigInt(value));
+  }
+
+  get date(): string {
+    const value = this.get("date");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set date(value: string) {
+    this.set("date", Value.fromString(value));
+  }
+
+  get transactionHash(): Bytes {
+    const value = this.get("transactionHash");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set transactionHash(value: Bytes) {
+    this.set("transactionHash", Value.fromBytes(value));
+  }
+}
+
+export class BatchAuctionSettled extends Entity {
+  constructor(id: Bytes) {
+    super();
+    this.set("id", Value.fromBytes(id));
+  }
+
+  save(): void {
+    const id = this.get("id");
+    assert(id != null, "Cannot save BatchAuctionSettled entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.BYTES,
+        `Entities of type BatchAuctionSettled must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+      );
+      store.set("BatchAuctionSettled", id.toBytes().toHexString(), this);
+    }
+  }
+
+  static loadInBlock(id: Bytes): BatchAuctionSettled | null {
+    return changetype<BatchAuctionSettled | null>(
+      store.get_in_block("BatchAuctionSettled", id.toHexString()),
+    );
+  }
+
+  static load(id: Bytes): BatchAuctionSettled | null {
+    return changetype<BatchAuctionSettled | null>(
+      store.get("BatchAuctionSettled", id.toHexString()),
+    );
+  }
+
+  get id(): Bytes {
+    const value = this.get("id");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set id(value: Bytes) {
+    this.set("id", Value.fromBytes(value));
+  }
+
+  get lot(): string {
+    const value = this.get("lot");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set lot(value: string) {
+    this.set("lot", Value.fromString(value));
+  }
+
+  get blockNumber(): BigInt {
+    const value = this.get("blockNumber");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set blockNumber(value: BigInt) {
+    this.set("blockNumber", Value.fromBigInt(value));
+  }
+
+  get blockTimestamp(): BigInt {
+    const value = this.get("blockTimestamp");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set blockTimestamp(value: BigInt) {
+    this.set("blockTimestamp", Value.fromBigInt(value));
+  }
+
+  get date(): string {
+    const value = this.get("date");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set date(value: string) {
+    this.set("date", Value.fromString(value));
+  }
+
+  get transactionHash(): Bytes {
+    const value = this.get("transactionHash");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set transactionHash(value: Bytes) {
+    this.set("transactionHash", Value.fromBytes(value));
+  }
+}
+
+export class BatchBid extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    const id = this.get("id");
+    assert(id != null, "Cannot save BatchBid entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type BatchBid must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+      );
+      store.set("BatchBid", id.toString(), this);
+    }
+  }
+
+  static loadInBlock(id: string): BatchBid | null {
+    return changetype<BatchBid | null>(store.get_in_block("BatchBid", id));
+  }
+
+  static load(id: string): BatchBid | null {
+    return changetype<BatchBid | null>(store.get("BatchBid", id));
+  }
+
+  get id(): string {
+    const value = this.get("id");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get lot(): string {
+    const value = this.get("lot");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set lot(value: string) {
+    this.set("lot", Value.fromString(value));
+  }
+
+  get bidId(): BigInt {
+    const value = this.get("bidId");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set bidId(value: BigInt) {
+    this.set("bidId", Value.fromBigInt(value));
+  }
+
+  get bidder(): Bytes {
+    const value = this.get("bidder");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set bidder(value: Bytes) {
+    this.set("bidder", Value.fromBytes(value));
+  }
+
+  get amountIn(): BigDecimal {
+    const value = this.get("amountIn");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigDecimal();
+    }
+  }
+
+  set amountIn(value: BigDecimal) {
+    this.set("amountIn", Value.fromBigDecimal(value));
+  }
+
+  get amountOut(): BigDecimal | null {
+    const value = this.get("amountOut");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigDecimal();
+    }
+  }
+
+  set amountOut(value: BigDecimal | null) {
+    if (!value) {
+      this.unset("amountOut");
+    } else {
+      this.set("amountOut", Value.fromBigDecimal(<BigDecimal>value));
+    }
+  }
+
+  get rawAmountIn(): BigInt {
+    const value = this.get("rawAmountIn");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set rawAmountIn(value: BigInt) {
+    this.set("rawAmountIn", Value.fromBigInt(value));
+  }
+
+  get rawAmountOut(): BigInt | null {
+    const value = this.get("rawAmountOut");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set rawAmountOut(value: BigInt | null) {
+    if (!value) {
+      this.unset("rawAmountOut");
+    } else {
+      this.set("rawAmountOut", Value.fromBigInt(<BigInt>value));
+    }
+  }
+
+  get settledAmountOut(): BigDecimal | null {
+    const value = this.get("settledAmountOut");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigDecimal();
+    }
+  }
+
+  set settledAmountOut(value: BigDecimal | null) {
+    if (!value) {
+      this.unset("settledAmountOut");
+    } else {
+      this.set("settledAmountOut", Value.fromBigDecimal(<BigDecimal>value));
+    }
+  }
+
+  get submittedPrice(): BigDecimal | null {
+    const value = this.get("submittedPrice");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigDecimal();
+    }
+  }
+
+  set submittedPrice(value: BigDecimal | null) {
+    if (!value) {
+      this.unset("submittedPrice");
+    } else {
+      this.set("submittedPrice", Value.fromBigDecimal(<BigDecimal>value));
+    }
+  }
+
+  get rawMarginalPrice(): BigInt | null {
+    const value = this.get("rawMarginalPrice");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set rawMarginalPrice(value: BigInt | null) {
+    if (!value) {
+      this.unset("rawMarginalPrice");
+    } else {
+      this.set("rawMarginalPrice", Value.fromBigInt(<BigInt>value));
+    }
+  }
+
+  get rawSubmittedPrice(): BigInt | null {
+    const value = this.get("rawSubmittedPrice");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set rawSubmittedPrice(value: BigInt | null) {
+    if (!value) {
+      this.unset("rawSubmittedPrice");
+    } else {
+      this.set("rawSubmittedPrice", Value.fromBigInt(<BigInt>value));
+    }
+  }
+
+  get remainingCapacity(): BigDecimal | null {
+    const value = this.get("remainingCapacity");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigDecimal();
+    }
+  }
+
+  set remainingCapacity(value: BigDecimal | null) {
+    if (!value) {
+      this.unset("remainingCapacity");
+    } else {
+      this.set("remainingCapacity", Value.fromBigDecimal(<BigDecimal>value));
+    }
+  }
+
+  get status(): string {
+    const value = this.get("status");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set status(value: string) {
+    this.set("status", Value.fromString(value));
+  }
+
+  get blockNumber(): BigInt {
+    const value = this.get("blockNumber");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set blockNumber(value: BigInt) {
+    this.set("blockNumber", Value.fromBigInt(value));
+  }
+
+  get blockTimestamp(): BigInt {
+    const value = this.get("blockTimestamp");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set blockTimestamp(value: BigInt) {
+    this.set("blockTimestamp", Value.fromBigInt(value));
+  }
+
+  get date(): string {
+    const value = this.get("date");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set date(value: string) {
+    this.set("date", Value.fromString(value));
+  }
+
+  get transactionHash(): Bytes {
+    const value = this.get("transactionHash");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set transactionHash(value: Bytes) {
+    this.set("transactionHash", Value.fromBytes(value));
+  }
+
+  get decrypted(): BatchBidDecryptedLoader {
+    return new BatchBidDecryptedLoader(
+      "BatchBid",
+      this.get("id")!.toString(),
+      "decrypted",
+    );
+  }
+
+  get refunded(): BatchBidRefundedLoader {
+    return new BatchBidRefundedLoader(
+      "BatchBid",
+      this.get("id")!.toString(),
+      "refunded",
+    );
+  }
+
+  get claimed(): BatchBidClaimedLoader {
+    return new BatchBidClaimedLoader(
+      "BatchBid",
+      this.get("id")!.toString(),
+      "claimed",
+    );
+  }
+}
+
+export class BatchBidRefunded extends Entity {
+  constructor(id: Bytes) {
+    super();
+    this.set("id", Value.fromBytes(id));
+  }
+
+  save(): void {
+    const id = this.get("id");
+    assert(id != null, "Cannot save BatchBidRefunded entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.BYTES,
+        `Entities of type BatchBidRefunded must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+      );
+      store.set("BatchBidRefunded", id.toBytes().toHexString(), this);
+    }
+  }
+
+  static loadInBlock(id: Bytes): BatchBidRefunded | null {
+    return changetype<BatchBidRefunded | null>(
+      store.get_in_block("BatchBidRefunded", id.toHexString()),
+    );
+  }
+
+  static load(id: Bytes): BatchBidRefunded | null {
+    return changetype<BatchBidRefunded | null>(
+      store.get("BatchBidRefunded", id.toHexString()),
+    );
+  }
+
+  get id(): Bytes {
+    const value = this.get("id");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set id(value: Bytes) {
+    this.set("id", Value.fromBytes(value));
+  }
+
+  get lot(): string {
+    const value = this.get("lot");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set lot(value: string) {
+    this.set("lot", Value.fromString(value));
+  }
+
+  get bid(): string {
+    const value = this.get("bid");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set bid(value: string) {
+    this.set("bid", Value.fromString(value));
+  }
+
+  get bidder(): Bytes {
+    const value = this.get("bidder");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set bidder(value: Bytes) {
+    this.set("bidder", Value.fromBytes(value));
+  }
+
+  get blockNumber(): BigInt {
+    const value = this.get("blockNumber");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set blockNumber(value: BigInt) {
+    this.set("blockNumber", Value.fromBigInt(value));
+  }
+
+  get blockTimestamp(): BigInt {
+    const value = this.get("blockTimestamp");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set blockTimestamp(value: BigInt) {
+    this.set("blockTimestamp", Value.fromBigInt(value));
+  }
+
+  get date(): string {
+    const value = this.get("date");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set date(value: string) {
+    this.set("date", Value.fromString(value));
+  }
+
+  get transactionHash(): Bytes {
+    const value = this.get("transactionHash");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set transactionHash(value: Bytes) {
+    this.set("transactionHash", Value.fromBytes(value));
+  }
+}
+
+export class BatchBidDecrypted extends Entity {
+  constructor(id: Bytes) {
+    super();
+    this.set("id", Value.fromBytes(id));
+  }
+
+  save(): void {
+    const id = this.get("id");
+    assert(id != null, "Cannot save BatchBidDecrypted entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.BYTES,
+        `Entities of type BatchBidDecrypted must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+      );
+      store.set("BatchBidDecrypted", id.toBytes().toHexString(), this);
+    }
+  }
+
+  static loadInBlock(id: Bytes): BatchBidDecrypted | null {
+    return changetype<BatchBidDecrypted | null>(
+      store.get_in_block("BatchBidDecrypted", id.toHexString()),
+    );
+  }
+
+  static load(id: Bytes): BatchBidDecrypted | null {
+    return changetype<BatchBidDecrypted | null>(
+      store.get("BatchBidDecrypted", id.toHexString()),
+    );
+  }
+
+  get id(): Bytes {
+    const value = this.get("id");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set id(value: Bytes) {
+    this.set("id", Value.fromBytes(value));
+  }
+
+  get lot(): string {
+    const value = this.get("lot");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set lot(value: string) {
+    this.set("lot", Value.fromString(value));
+  }
+
+  get bid(): string {
+    const value = this.get("bid");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set bid(value: string) {
+    this.set("bid", Value.fromString(value));
+  }
+
+  get amountIn(): BigDecimal {
+    const value = this.get("amountIn");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigDecimal();
+    }
+  }
+
+  set amountIn(value: BigDecimal) {
+    this.set("amountIn", Value.fromBigDecimal(value));
+  }
+
+  get amountOut(): BigDecimal {
+    const value = this.get("amountOut");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigDecimal();
+    }
+  }
+
+  set amountOut(value: BigDecimal) {
+    this.set("amountOut", Value.fromBigDecimal(value));
+  }
+
+  get blockNumber(): BigInt {
+    const value = this.get("blockNumber");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set blockNumber(value: BigInt) {
+    this.set("blockNumber", Value.fromBigInt(value));
+  }
+
+  get blockTimestamp(): BigInt {
+    const value = this.get("blockTimestamp");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set blockTimestamp(value: BigInt) {
+    this.set("blockTimestamp", Value.fromBigInt(value));
+  }
+
+  get date(): string {
+    const value = this.get("date");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set date(value: string) {
+    this.set("date", Value.fromString(value));
+  }
+
+  get transactionHash(): Bytes {
+    const value = this.get("transactionHash");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set transactionHash(value: Bytes) {
+    this.set("transactionHash", Value.fromBytes(value));
+  }
+}
+
+export class BatchBidClaimed extends Entity {
+  constructor(id: Bytes) {
+    super();
+    this.set("id", Value.fromBytes(id));
+  }
+
+  save(): void {
+    const id = this.get("id");
+    assert(id != null, "Cannot save BatchBidClaimed entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.BYTES,
+        `Entities of type BatchBidClaimed must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+      );
+      store.set("BatchBidClaimed", id.toBytes().toHexString(), this);
+    }
+  }
+
+  static loadInBlock(id: Bytes): BatchBidClaimed | null {
+    return changetype<BatchBidClaimed | null>(
+      store.get_in_block("BatchBidClaimed", id.toHexString()),
+    );
+  }
+
+  static load(id: Bytes): BatchBidClaimed | null {
+    return changetype<BatchBidClaimed | null>(
+      store.get("BatchBidClaimed", id.toHexString()),
+    );
+  }
+
+  get id(): Bytes {
+    const value = this.get("id");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set id(value: Bytes) {
+    this.set("id", Value.fromBytes(value));
+  }
+
+  get lot(): string {
+    const value = this.get("lot");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set lot(value: string) {
+    this.set("lot", Value.fromString(value));
+  }
+
+  get bid(): string {
+    const value = this.get("bid");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set bid(value: string) {
+    this.set("bid", Value.fromString(value));
+  }
+
+  get bidder(): Bytes {
+    const value = this.get("bidder");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set bidder(value: Bytes) {
+    this.set("bidder", Value.fromBytes(value));
+  }
+
+  get blockNumber(): BigInt {
+    const value = this.get("blockNumber");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set blockNumber(value: BigInt) {
+    this.set("blockNumber", Value.fromBigInt(value));
+  }
+
+  get blockTimestamp(): BigInt {
+    const value = this.get("blockTimestamp");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set blockTimestamp(value: BigInt) {
+    this.set("blockTimestamp", Value.fromBigInt(value));
+  }
+
+  get date(): string {
+    const value = this.get("date");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set date(value: string) {
+    this.set("date", Value.fromString(value));
+  }
+
+  get transactionHash(): Bytes {
+    const value = this.get("transactionHash");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set transactionHash(value: Bytes) {
+    this.set("transactionHash", Value.fromBytes(value));
+  }
+}
+
+export class BatchEncryptedMarginalPriceLot extends Entity {
+  constructor(id: Bytes) {
+    super();
+    this.set("id", Value.fromBytes(id));
+  }
+
+  save(): void {
+    const id = this.get("id");
+    assert(
+      id != null,
+      "Cannot save BatchEncryptedMarginalPriceLot entity without an ID",
+    );
+    if (id) {
+      assert(
+        id.kind == ValueKind.BYTES,
+        `Entities of type BatchEncryptedMarginalPriceLot must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+      );
+      store.set(
+        "BatchEncryptedMarginalPriceLot",
+        id.toBytes().toHexString(),
+        this,
+      );
+    }
+  }
+
+  static loadInBlock(id: Bytes): BatchEncryptedMarginalPriceLot | null {
+    return changetype<BatchEncryptedMarginalPriceLot | null>(
+      store.get_in_block("BatchEncryptedMarginalPriceLot", id.toHexString()),
+    );
+  }
+
+  static load(id: Bytes): BatchEncryptedMarginalPriceLot | null {
+    return changetype<BatchEncryptedMarginalPriceLot | null>(
+      store.get("BatchEncryptedMarginalPriceLot", id.toHexString()),
+    );
+  }
+
+  get id(): Bytes {
+    const value = this.get("id");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set id(value: Bytes) {
+    this.set("id", Value.fromBytes(value));
+  }
+
+  get lot(): string {
+    const value = this.get("lot");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set lot(value: string) {
+    this.set("lot", Value.fromString(value));
+  }
+
+  get status(): string {
+    const value = this.get("status");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set status(value: string) {
+    this.set("status", Value.fromString(value));
+  }
+
+  get marginalPrice(): BigDecimal | null {
+    const value = this.get("marginalPrice");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigDecimal();
+    }
+  }
+
+  set marginalPrice(value: BigDecimal | null) {
+    if (!value) {
+      this.unset("marginalPrice");
+    } else {
+      this.set("marginalPrice", Value.fromBigDecimal(<BigDecimal>value));
+    }
+  }
+
+  get minPrice(): BigDecimal {
+    const value = this.get("minPrice");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigDecimal();
+    }
+  }
+
+  set minPrice(value: BigDecimal) {
+    this.set("minPrice", Value.fromBigDecimal(value));
+  }
+
+  get minFilled(): BigDecimal {
+    const value = this.get("minFilled");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigDecimal();
+    }
+  }
+
+  set minFilled(value: BigDecimal) {
+    this.set("minFilled", Value.fromBigDecimal(value));
+  }
+
+  get minBidSize(): BigDecimal {
+    const value = this.get("minBidSize");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigDecimal();
+    }
+  }
+
+  set minBidSize(value: BigDecimal) {
+    this.set("minBidSize", Value.fromBigDecimal(value));
+  }
+}
+
+export class BatchLinearVestingLot extends Entity {
+  constructor(id: Bytes) {
+    super();
+    this.set("id", Value.fromBytes(id));
+  }
+
+  save(): void {
+    const id = this.get("id");
+    assert(
+      id != null,
+      "Cannot save BatchLinearVestingLot entity without an ID",
+    );
+    if (id) {
+      assert(
+        id.kind == ValueKind.BYTES,
+        `Entities of type BatchLinearVestingLot must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+      );
+      store.set("BatchLinearVestingLot", id.toBytes().toHexString(), this);
+    }
+  }
+
+  static loadInBlock(id: Bytes): BatchLinearVestingLot | null {
+    return changetype<BatchLinearVestingLot | null>(
+      store.get_in_block("BatchLinearVestingLot", id.toHexString()),
+    );
+  }
+
+  static load(id: Bytes): BatchLinearVestingLot | null {
+    return changetype<BatchLinearVestingLot | null>(
+      store.get("BatchLinearVestingLot", id.toHexString()),
+    );
+  }
+
+  get id(): Bytes {
+    const value = this.get("id");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set id(value: Bytes) {
+    this.set("id", Value.fromBytes(value));
+  }
+
+  get lot(): string {
+    const value = this.get("lot");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set lot(value: string) {
+    this.set("lot", Value.fromString(value));
+  }
+
+  get startTimestamp(): BigInt {
+    const value = this.get("startTimestamp");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set startTimestamp(value: BigInt) {
+    this.set("startTimestamp", Value.fromBigInt(value));
+  }
+
+  get startDate(): string {
+    const value = this.get("startDate");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set startDate(value: string) {
+    this.set("startDate", Value.fromString(value));
+  }
+
+  get expiryTimestamp(): BigInt {
+    const value = this.get("expiryTimestamp");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set expiryTimestamp(value: BigInt) {
+    this.set("expiryTimestamp", Value.fromBigInt(value));
+  }
+
+  get expiryDate(): string {
+    const value = this.get("expiryDate");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set expiryDate(value: string) {
+    this.set("expiryDate", Value.fromString(value));
+  }
+}
+
 export class Token extends Entity {
   constructor(id: Bytes) {
     super();
@@ -1859,5 +3803,185 @@ export class AtomicLinearVestingLotLoader extends Entity {
   load(): AtomicLinearVestingLot[] {
     const value = store.loadRelated(this._entity, this._id, this._field);
     return changetype<AtomicLinearVestingLot[]>(value);
+  }
+}
+
+export class BatchAuctionCancelledLoader extends Entity {
+  _entity: string;
+  _field: string;
+  _id: string;
+
+  constructor(entity: string, id: string, field: string) {
+    super();
+    this._entity = entity;
+    this._id = id;
+    this._field = field;
+  }
+
+  load(): BatchAuctionCancelled[] {
+    const value = store.loadRelated(this._entity, this._id, this._field);
+    return changetype<BatchAuctionCancelled[]>(value);
+  }
+}
+
+export class BatchAuctionCreatedLoader extends Entity {
+  _entity: string;
+  _field: string;
+  _id: string;
+
+  constructor(entity: string, id: string, field: string) {
+    super();
+    this._entity = entity;
+    this._id = id;
+    this._field = field;
+  }
+
+  load(): BatchAuctionCreated[] {
+    const value = store.loadRelated(this._entity, this._id, this._field);
+    return changetype<BatchAuctionCreated[]>(value);
+  }
+}
+
+export class BatchAuctionCuratedLoader extends Entity {
+  _entity: string;
+  _field: string;
+  _id: string;
+
+  constructor(entity: string, id: string, field: string) {
+    super();
+    this._entity = entity;
+    this._id = id;
+    this._field = field;
+  }
+
+  load(): BatchAuctionCurated[] {
+    const value = store.loadRelated(this._entity, this._id, this._field);
+    return changetype<BatchAuctionCurated[]>(value);
+  }
+}
+
+export class BatchAuctionSettledLoader extends Entity {
+  _entity: string;
+  _field: string;
+  _id: string;
+
+  constructor(entity: string, id: string, field: string) {
+    super();
+    this._entity = entity;
+    this._id = id;
+    this._field = field;
+  }
+
+  load(): BatchAuctionSettled[] {
+    const value = store.loadRelated(this._entity, this._id, this._field);
+    return changetype<BatchAuctionSettled[]>(value);
+  }
+}
+
+export class BatchBidLoader extends Entity {
+  _entity: string;
+  _field: string;
+  _id: string;
+
+  constructor(entity: string, id: string, field: string) {
+    super();
+    this._entity = entity;
+    this._id = id;
+    this._field = field;
+  }
+
+  load(): BatchBid[] {
+    const value = store.loadRelated(this._entity, this._id, this._field);
+    return changetype<BatchBid[]>(value);
+  }
+}
+
+export class BatchBidDecryptedLoader extends Entity {
+  _entity: string;
+  _field: string;
+  _id: string;
+
+  constructor(entity: string, id: string, field: string) {
+    super();
+    this._entity = entity;
+    this._id = id;
+    this._field = field;
+  }
+
+  load(): BatchBidDecrypted[] {
+    const value = store.loadRelated(this._entity, this._id, this._field);
+    return changetype<BatchBidDecrypted[]>(value);
+  }
+}
+
+export class BatchBidClaimedLoader extends Entity {
+  _entity: string;
+  _field: string;
+  _id: string;
+
+  constructor(entity: string, id: string, field: string) {
+    super();
+    this._entity = entity;
+    this._id = id;
+    this._field = field;
+  }
+
+  load(): BatchBidClaimed[] {
+    const value = store.loadRelated(this._entity, this._id, this._field);
+    return changetype<BatchBidClaimed[]>(value);
+  }
+}
+
+export class BatchBidRefundedLoader extends Entity {
+  _entity: string;
+  _field: string;
+  _id: string;
+
+  constructor(entity: string, id: string, field: string) {
+    super();
+    this._entity = entity;
+    this._id = id;
+    this._field = field;
+  }
+
+  load(): BatchBidRefunded[] {
+    const value = store.loadRelated(this._entity, this._id, this._field);
+    return changetype<BatchBidRefunded[]>(value);
+  }
+}
+
+export class BatchEncryptedMarginalPriceLotLoader extends Entity {
+  _entity: string;
+  _field: string;
+  _id: string;
+
+  constructor(entity: string, id: string, field: string) {
+    super();
+    this._entity = entity;
+    this._id = id;
+    this._field = field;
+  }
+
+  load(): BatchEncryptedMarginalPriceLot[] {
+    const value = store.loadRelated(this._entity, this._id, this._field);
+    return changetype<BatchEncryptedMarginalPriceLot[]>(value);
+  }
+}
+
+export class BatchLinearVestingLotLoader extends Entity {
+  _entity: string;
+  _field: string;
+  _id: string;
+
+  constructor(entity: string, id: string, field: string) {
+    super();
+    this._entity = entity;
+    this._id = id;
+    this._field = field;
+  }
+
+  load(): BatchLinearVestingLot[] {
+    const value = store.loadRelated(this._entity, this._id, this._field);
+    return changetype<BatchLinearVestingLot[]>(value);
   }
 }
