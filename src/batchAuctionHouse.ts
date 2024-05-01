@@ -199,10 +199,12 @@ export function handleAuctionCreated(event: AuctionCreatedEvent): void {
 export function handleAuctionCancelled(event: AuctionCancelledEvent): void {
   const lotId = event.params.lotId;
 
+  const lotRecord = getLotRecord(event.address, lotId);
+
   const entity = new BatchAuctionCancelled(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   );
-  entity.lot = lotId.toString();
+  entity.lot = lotRecord.id;
   entity.auctionRef = event.params.auctionRef;
 
   entity.blockNumber = event.block.number;
@@ -223,10 +225,12 @@ export function handleAuctionCancelled(event: AuctionCancelledEvent): void {
 export function handleCurated(event: CuratedEvent): void {
   const lotId = event.params.lotId;
 
+  const lotRecord = getLotRecord(event.address, lotId);
+
   const entity = new BatchAuctionCurated(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   );
-  entity.lot = lotId.toString();
+  entity.lot = lotRecord.id;
   entity.curator = event.params.curator;
 
   entity.blockNumber = event.block.number;
@@ -247,10 +251,12 @@ export function handleCurated(event: CuratedEvent): void {
 export function handleSettle(event: SettleEvent): void {
   const lotId = event.params.lotId;
 
+  const lotRecord = getLotRecord(event.address, lotId);
+
   const entity = new BatchAuctionSettled(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   );
-  entity.lot = lotId.toString();
+  entity.lot = lotRecord.id;
   entity.blockNumber = event.block.number;
   entity.blockTimestamp = event.block.timestamp;
   entity.date = toISO8601String(event.block.timestamp);
@@ -266,7 +272,6 @@ export function handleSettle(event: SettleEvent): void {
   );
 
   // Iterate over all bids and update their status
-  const lotRecord: BatchAuctionLot = getLotRecord(event.address, lotId);
   updateBidsStatus(
     event.address,
     Bytes.fromUTF8(lotRecord.auctionType),
@@ -293,7 +298,7 @@ export function handleBid(event: BidEvent): void {
   );
 
   const entity = new BatchBid(getBidId(lotRecord, bidId));
-  entity.lot = lotId.toString();
+  entity.lot = lotRecord.id;
   entity.bidId = bidId;
   entity.bidder = event.params.bidder;
 
@@ -329,7 +334,7 @@ export function handleRefundBid(event: RefundBidEvent): void {
   const entity = new BatchBidRefunded(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   );
-  entity.lot = lotId.toString();
+  entity.lot = lotRecord.id;
   entity.bid = getBidId(lotRecord, event.params.bidId);
   entity.bidder = event.params.bidder;
 
@@ -341,10 +346,9 @@ export function handleRefundBid(event: RefundBidEvent): void {
   entity.save();
 
   // Update the bid record
-  const auctionLot: BatchAuctionLot = getLotRecord(event.address, lotId);
   updateBid(
     event.address,
-    Bytes.fromUTF8(auctionLot.auctionType),
+    Bytes.fromUTF8(lotRecord.auctionType),
     lotRecord,
     event.params.bidId,
   );
@@ -367,7 +371,7 @@ export function handleBidClaimed(event: ClaimBidEvent): void {
   const entity = new BatchBidClaimed(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   );
-  entity.lot = lotId.toString();
+  entity.lot = lotRecord.id;
   entity.bid = getBidId(lotRecord, event.params.bidId);
   entity.bidder = event.params.bidder;
 

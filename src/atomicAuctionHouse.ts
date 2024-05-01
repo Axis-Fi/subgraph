@@ -179,10 +179,12 @@ export function handleAuctionCreated(event: AuctionCreatedEvent): void {
 export function handleAuctionCancelled(event: AuctionCancelledEvent): void {
   const lotId = event.params.lotId;
 
+  const lotRecord = getLotRecord(event.address, lotId);
+
   const entity = new AtomicAuctionCancelled(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   );
-  entity.lot = lotId.toString();
+  entity.lot = lotRecord.id;
   entity.auctionRef = event.params.auctionRef;
 
   entity.blockNumber = event.block.number;
@@ -197,10 +199,12 @@ export function handleAuctionCancelled(event: AuctionCancelledEvent): void {
 export function handleCurated(event: AuctionCuratedEvent): void {
   const lotId = event.params.lotId;
 
+  const lotRecord = getLotRecord(event.address, lotId);
+
   const entity = new AtomicAuctionCurated(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   );
-  entity.lot = lotId.toString();
+  entity.lot = lotRecord.id;
   entity.curator = event.params.curator;
 
   entity.blockNumber = event.block.number;
@@ -215,10 +219,12 @@ export function handleCurated(event: AuctionCuratedEvent): void {
 export function handlePurchase(event: PurchaseEvent): void {
   const lotId = event.params.lotId;
 
+  const lotRecord = getLotRecord(event.address, lotId);
+
   const entity = new AtomicPurchase(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   );
-  entity.lot = lotId.toString();
+  entity.lot = lotRecord.id;
   entity.buyer = event.params.buyer;
   entity.referrer = event.params.referrer;
   const auctionLot = getAuctionLot(event.address, lotId);
