@@ -5,8 +5,7 @@ import {
   EncryptedMarginalPrice,
 } from "../generated/BatchAuctionHouse/EncryptedMarginalPrice";
 import { BatchAuctionLot, BatchBidDecrypted } from "../generated/schema";
-import { getAuctionLot } from "./helpers/atomicAuction";
-import { getLotRecord } from "./helpers/batchAuction";
+import { getAuctionLot, getLotRecord } from "./helpers/batchAuction";
 import { getBidId, getBidRecord, updateBid } from "./helpers/bid";
 import { toDecimal } from "./helpers/number";
 
