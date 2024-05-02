@@ -7,11 +7,11 @@ dataSources:
   # AtomicAuctionHouse
   - kind: ethereum
     name: AtomicAuctionHouse
-    network: blast-sepolia
+    network: {{network}}
     source:
       abi: AtomicAuctionHouse
-      address: "0xaa000000F812284225Ec15cDB90419C468921814"
-      startBlock: 4652072
+      address: "{{AtomicAuctionHouse-address}}"
+      startBlock: {{AtomicAuctionHouse-startBlock}}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -56,11 +56,11 @@ dataSources:
   # BatchAuctionHouse
   - kind: ethereum
     name: BatchAuctionHouse
-    network: blast-sepolia
+    network: {{network}}
     source:
       abi: BatchAuctionHouse
-      address: "0xBA000000dAF253566F209323bE7E2e555eE36330"
-      startBlock: 4652077
+      address: "{{BatchAuctionHouse-address}}"
+      startBlock: {{BatchAuctionHouse-startBlock}}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -112,11 +112,11 @@ dataSources:
       file: ./src/batchAuctionHouse.ts
   - kind: ethereum
     name: EncryptedMarginalPrice
-    network: blast-sepolia
+    network: {{network}}
     source:
       abi: EncryptedMarginalPrice
-      address: "0xe2141BAd93C70D3448Aa69180d6B6581E2166B63"
-      startBlock: 4652087
+      address: "{{EncryptedMarginalPrice-address}}"
+      startBlock: {{EncryptedMarginalPrice-startBlock}}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
