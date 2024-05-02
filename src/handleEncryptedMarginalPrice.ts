@@ -7,6 +7,7 @@ import {
 import { BatchAuctionLot, BatchBidDecrypted } from "../generated/schema";
 import { getAuctionLot, getLotRecord } from "./helpers/batchAuction";
 import { getBidId, getBidRecord, updateBid } from "./helpers/bid";
+import { toISO8601String } from "./helpers/date";
 import { toDecimal } from "./helpers/number";
 
 export function handleBidDecrypted(event: BidDecryptedEvent): void {
@@ -37,6 +38,7 @@ export function handleBidDecrypted(event: BidDecryptedEvent): void {
 
   entity.blockNumber = event.block.number;
   entity.blockTimestamp = event.block.timestamp;
+  entity.date = toISO8601String(event.block.timestamp);
   entity.transactionHash = event.transaction.hash;
 
   entity.save();
