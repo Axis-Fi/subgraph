@@ -564,7 +564,7 @@
     },
     {
       "type": "error",
-      "name": "Auction_MarketActive",
+      "name": "Auction_LotActive",
       "inputs": [
         {
           "name": "lotId",
@@ -575,7 +575,18 @@
     },
     {
       "type": "error",
-      "name": "Auction_MarketNotActive",
+      "name": "Auction_LotNotActive",
+      "inputs": [
+        {
+          "name": "lotId",
+          "type": "uint96",
+          "internalType": "uint96"
+        }
+      ]
+    },
+    {
+      "type": "error",
+      "name": "Auction_LotNotConcluded",
       "inputs": [
         {
           "name": "lotId",
@@ -596,7 +607,7 @@
     },
     {
       "type": "error",
-      "name": "Auction_OnlyMarketOwner",
+      "name": "Auction_OnlyLotOwner",
       "inputs": []
     },
     {

@@ -108,7 +108,8 @@ dataSources:
           handler: handleRefundBid
         - event: Settle(indexed uint96)
           handler: handleSettle
-        # TODO add abort handler
+        - event: Abort(indexed uint96)
+          handler: handleAbort
       file: ./src/batchAuctionHouse.ts
   - kind: ethereum
     name: EncryptedMarginalPrice

@@ -1,5 +1,3 @@
-# TODO Split into Atomic and Batch auction lots
-
 ### Atomic Auctions
 
 type AtomicAuctionLot @entity {
@@ -170,6 +168,7 @@ type BatchAuctionLot @entity {
   created: BatchAuctionCreated! @derivedFrom(field: "lot")
   curated: BatchAuctionCurated @derivedFrom(field: "lot")
   settled: BatchAuctionSettled @derivedFrom(field: "lot")
+  aborted: BatchAuctionAborted @derivedFrom(field: "lot")
   bids: [BatchBid!]! @derivedFrom(field: "lot")
   bidsDecrypted: [BatchBidDecrypted!]! @derivedFrom(field: "lot")
   bidsClaimed: [BatchBidClaimed!]! @derivedFrom(field: "lot")
@@ -212,6 +211,16 @@ type BatchAuctionCurated @entity(immutable: true) {
 }
 
 type BatchAuctionSettled @entity(immutable: true) {
+  id: Bytes!
+  lot: BatchAuctionLot!
+
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  date: String!
+  transactionHash: Bytes!
+}
+
+type BatchAuctionAborted @entity(immutable: true) {
   id: Bytes!
   lot: BatchAuctionLot!
 

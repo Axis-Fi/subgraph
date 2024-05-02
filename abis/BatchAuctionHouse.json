@@ -23,6 +23,19 @@
     },
     {
       "type": "function",
+      "name": "abort",
+      "inputs": [
+        {
+          "name": "lotId_",
+          "type": "uint96",
+          "internalType": "uint96"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
       "name": "auction",
       "inputs": [
         {
@@ -245,24 +258,6 @@
           "name": "bidIds_",
           "type": "uint64[]",
           "internalType": "uint64[]"
-        }
-      ],
-      "outputs": [],
-      "stateMutability": "nonpayable"
-    },
-    {
-      "type": "function",
-      "name": "claimProceeds",
-      "inputs": [
-        {
-          "name": "lotId_",
-          "type": "uint96",
-          "internalType": "uint96"
-        },
-        {
-          "name": "callbackData_",
-          "type": "bytes",
-          "internalType": "bytes"
         }
       ],
       "outputs": [],
@@ -861,6 +856,16 @@
           "name": "lotId_",
           "type": "uint96",
           "internalType": "uint96"
+        },
+        {
+          "name": "num_",
+          "type": "uint256",
+          "internalType": "uint256"
+        },
+        {
+          "name": "callbackData_",
+          "type": "bytes",
+          "internalType": "bytes"
         }
       ],
       "outputs": [
@@ -873,6 +878,11 @@
           "name": "totalOut",
           "type": "uint256",
           "internalType": "uint256"
+        },
+        {
+          "name": "finished",
+          "type": "bool",
+          "internalType": "bool"
         },
         {
           "name": "auctionOutput",
@@ -907,6 +917,19 @@
       ],
       "outputs": [],
       "stateMutability": "nonpayable"
+    },
+    {
+      "type": "event",
+      "name": "Abort",
+      "inputs": [
+        {
+          "name": "lotId",
+          "type": "uint96",
+          "indexed": true,
+          "internalType": "uint96"
+        }
+      ],
+      "anonymous": false
     },
     {
       "type": "event",
@@ -1001,25 +1024,6 @@
         },
         {
           "name": "bidder",
-          "type": "address",
-          "indexed": true,
-          "internalType": "address"
-        }
-      ],
-      "anonymous": false
-    },
-    {
-      "type": "event",
-      "name": "ClaimProceeds",
-      "inputs": [
-        {
-          "name": "lotId",
-          "type": "uint96",
-          "indexed": true,
-          "internalType": "uint96"
-        },
-        {
-          "name": "seller",
           "type": "address",
           "indexed": true,
           "internalType": "address"
