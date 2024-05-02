@@ -10,8 +10,8 @@ dataSources:
     network: {{network}}
     source:
       abi: AtomicAuctionHouse
-      address: "{{AtomicAuctionHouse-address}}"
-      startBlock: {{AtomicAuctionHouse-startBlock}}
+      address: "{{AtomicAuctionHouse.address}}"
+      startBlock: {{AtomicAuctionHouse.startBlock}}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -59,8 +59,8 @@ dataSources:
     network: {{network}}
     source:
       abi: BatchAuctionHouse
-      address: "{{BatchAuctionHouse-address}}"
-      startBlock: {{BatchAuctionHouse-startBlock}}
+      address: "{{BatchAuctionHouse.address}}"
+      startBlock: {{BatchAuctionHouse.startBlock}}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -115,8 +115,8 @@ dataSources:
     network: {{network}}
     source:
       abi: EncryptedMarginalPrice
-      address: "{{EncryptedMarginalPrice-address}}"
-      startBlock: {{EncryptedMarginalPrice-startBlock}}
+      address: "{{EncryptedMarginalPrice.address}}"
+      startBlock: {{EncryptedMarginalPrice.startBlock}}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7

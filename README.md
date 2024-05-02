@@ -12,3 +12,5 @@ Subgraph definition for Axis Origin contracts
 >
 > - authenticate first, [see how here](https://docs.goldsky.com/subgraphs/deploying-subgraphs)
 > - add the network name to `GOLDSKY_DEPLOYMENTS`
+
+TODO: document use of templating, why not use graph-cli
