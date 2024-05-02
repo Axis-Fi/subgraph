@@ -21,8 +21,6 @@ const subgraphTemplate = readFileSync("subgraph-template.yaml").toString();
 // Render the template with the network values
 const templatedSubgraphManifest = Mustache.render(subgraphTemplate, networkValues);
 
-// TODO find any template values that were not replaced, remove them from the YAML file
-
 // Write to file
 writeFileSync("subgraph.yaml", templatedSubgraphManifest);
 
