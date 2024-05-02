@@ -92,6 +92,10 @@ dataSources:
           handler: handleAuctionCancelled
         - event: AuctionCreated(indexed uint96,indexed bytes7,string)
           handler: handleAuctionCreated
+        - event: Bid(indexed uint96,indexed uint96,indexed address,uint256)
+          handler: handleBid
+        - event: ClaimBid(indexed uint96,indexed uint96,indexed address)
+          handler: handleBidClaimed
         - event: Curated(indexed uint96,indexed address)
           handler: handleCurated
         - event: ModuleInstalled(indexed bytes5,indexed uint8,indexed address)
@@ -100,6 +104,11 @@ dataSources:
           handler: handleModuleSunset
         - event: OwnershipTransferred(indexed address,indexed address)
           handler: handleOwnershipTransferred
+        - event: RefundBid(indexed uint96,indexed uint96,indexed address)
+          handler: handleBidRefunded
+        - event: Settle(indexed uint96)
+          handler: handleSettled
+        # TODO add abort handler
       file: ./src/batchAuctionHouse.ts
   - kind: ethereum
     name: EncryptedMarginalPrice
