@@ -1,32 +1,44 @@
 {
   "blast-sepolia": {
-    "AuctionHouse": {
-      "address": "0x000000009DB7a64d0B3f92E2F0e026a2AF9Cf9b3",
-      "startBlock": 3087856
+    "AtomicAuctionHouse": {
+      "address": "0xaa000000F812284225Ec15cDB90419C468921814",
+      "startBlock": 4652072
     },
-    "EncryptedMarginalPriceAuctionModule": {
-      "address": "0xF3e2578C66071a637F06cc02b1c11DeC0784C1A6",
-      "startBlock": 3087856
+    "BatchAuctionHouse": {
+      "address": "0xBA000000dAF253566F209323bE7E2e555eE36330",
+      "startBlock": 4652077
+    },
+    "EncryptedMarginalPrice": {
+      "address": "0xe2141BAd93C70D3448Aa69180d6B6581E2166B63",
+      "startBlock": 4652087
     }
   },
   "arbitrum-sepolia": {
-    "AuctionHouse": {
-      "address": "0x00000000dca78197E4B82b17AFc5C263a097ef3e",
-      "startBlock": 25134248
+    "AtomicAuctionHouse": {
+      "address": "0xAa000000c0F79193A7f3a76C9a0b8b905e901fea",
+      "startBlock": 37149532
     },
-    "EncryptedMarginalPriceAuctionModule": {
-      "address": "0x605A7105CA51FD5F107258362f52d8269eeA851A",
-      "startBlock": 25134248
+    "BatchAuctionHouse": {
+      "address": "0xBA0000004d9B5D528077C97dD0097b8DC836F173",
+      "startBlock": 37149534
+    },
+    "EncryptedMarginalPrice": {
+      "address": "0x4a7D9A72C29C6f1e74Ce6a972c5CAD1b1B00dff9",
+      "startBlock": 37149542
     }
   },
   "mode-testnet": {
-    "AuctionHouse": {
-      "address": "0x0000000053307d4Ec2141c8b49fff0A04903F11D",
-      "startBlock": 11539414
+    "AtomicAuctionHouse": {
+      "address": "0xAa000000c0F79193A7f3a76C9a0b8b905e901fea",
+      "startBlock": 13062629
     },
-    "EncryptedMarginalPriceAuctionModule": {
-      "address": "0x0407910809D251c2E4c217576b63f263e3Fd1B59",
-      "startBlock": 11539414
+    "BatchAuctionHouse": {
+      "address": "0xBA0000004d9B5D528077C97dD0097b8DC836F173",
+      "startBlock": 13062632
+    },
+    "EncryptedMarginalPrice": {
+      "address": "0x16006e7C3015dC53CD102A9a5eCcfB9749779D91",
+      "startBlock": 13062643
     }
   }
 }
