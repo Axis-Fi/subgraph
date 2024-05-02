@@ -40,5 +40,4 @@ console.log(
   `Deploying ${config.TARGET_NETWORK}/${config.VERSION} to ${isGoldsky ? "GoldSky" : "Alchemy"}\n`
 );
 
-// TODO enable
-// execute(deployCommand);
+execute(deployCommand);
