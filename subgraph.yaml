@@ -105,9 +105,9 @@ dataSources:
         - event: OwnershipTransferred(indexed address,indexed address)
           handler: handleOwnershipTransferred
         - event: RefundBid(indexed uint96,indexed uint96,indexed address)
-          handler: handleBidRefunded
+          handler: handleRefundBid
         - event: Settle(indexed uint96)
-          handler: handleSettled
+          handler: handleSettle
         # TODO add abort handler
       file: ./src/batchAuctionHouse.ts
   - kind: ethereum
