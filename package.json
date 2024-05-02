@@ -15,7 +15,7 @@
     "test:force": "pnpm test --recompile",
     "update:constants": "node scripts/write-constants.js",
     "build": "graph build",
-    "deploy:graph": "pnpm build && node scripts/deploy.js",
+    "deploy:graph": "node scripts/deploy.js",
     "create-local": "graph create --node http://localhost:8020/ axis-origin",
     "remove-local": "graph remove --node http://localhost:8020/ axis-origin",
     "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 axis-origin"
