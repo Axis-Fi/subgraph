@@ -1,4 +1,10 @@
-import { Address, BigDecimal, BigInt, Bytes } from "@graphprotocol/graph-ts";
+import {
+  Address,
+  BigDecimal,
+  BigInt,
+  Bytes,
+  log,
+} from "@graphprotocol/graph-ts";
 
 import {
   AuctionCreated,
@@ -49,6 +55,7 @@ export function createEncryptedMarginalPriceLot(
       createdEvent.transaction.hash.concatI32(createdEvent.logIndex.toI32()),
     );
   empLot.lot = batchAuctionLot.id;
+  log.info("Adding BatchEncryptedMarginalPriceLot for lot: {}", [empLot.lot]);
 
   // Get the EncryptedMarginalPrice module
   const encryptedMarginalPrice = getEncryptedMarginalPriceModule(

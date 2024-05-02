@@ -1,4 +1,4 @@
-import { BigInt, Bytes } from "@graphprotocol/graph-ts";
+import { BigInt, Bytes, log } from "@graphprotocol/graph-ts";
 
 import { AuctionCreated } from "../../generated/BatchAuctionHouse/BatchAuctionHouse";
 import { BatchAuctionLot, BatchLinearVestingLot } from "../../generated/schema";
@@ -16,6 +16,7 @@ export function createLinearVestingLot(
     createdEvent.transaction.hash.concatI32(createdEvent.logIndex.toI32()),
   );
   lvLot.lot = batchAuctionLot.id;
+  log.info("Adding BatchLinearVestingLot for lot: {}", [lvLot.lot]);
 
   // Decode the parameters
   // uint48, uint48

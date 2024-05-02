@@ -4,6 +4,7 @@ import {
   Bytes,
   dataSource,
   ethereum,
+  log,
 } from "@graphprotocol/graph-ts";
 
 import {
@@ -103,7 +104,10 @@ export function handleAuctionCreated(event: AuctionCreatedEvent): void {
   const lotId = event.params.lotId;
 
   // Create a BatchAuctionLot record
-  const auctionLot = new BatchAuctionLot(getLotRecordId(event.address, lotId));
+  const recordId = getLotRecordId(event.address, lotId);
+  log.info("Adding BatchAuctionLot record with id: {}", [recordId]);
+
+  const auctionLot = new BatchAuctionLot(recordId);
   auctionLot.chain = dataSource.network();
   auctionLot.auctionHouse = event.address;
   auctionLot.lotId = lotId;
@@ -301,6 +305,10 @@ export function handleBid(event: BidEvent): void {
   entity.lot = lotRecord.id;
   entity.bidId = bidId;
   entity.bidder = event.params.bidder;
+  log.info("Adding BatchBid for lot ({}) with bid id: {}", [
+    entity.lot,
+    entity.bidId.toString(),
+  ]);
 
   entity.amountIn = toDecimal(
     event.params.amount,
