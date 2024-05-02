@@ -1,13 +1,14 @@
+import { BigInt } from "@graphprotocol/graph-ts";
 import {
+  afterAll,
   assert,
+  beforeAll,
+  clearStore,
   describe,
   test,
-  clearStore,
-  beforeAll,
-  afterAll,
 } from "matchstick-as/assembly/index";
-import { BigInt } from "@graphprotocol/graph-ts";
-import { handleBidDecrypted } from "../src/empam";
+
+import { handleBidDecrypted } from "../src/handleEncryptedMarginalPrice";
 import { createBidDecryptedEvent } from "./empam-utils";
 
 // Tests structure (matchstick-as >=0.5.0)
@@ -15,11 +16,11 @@ import { createBidDecryptedEvent } from "./empam-utils";
 
 describe("Describe entity assertions", () => {
   beforeAll(() => {
-    let lotId = BigInt.fromI32(234);
-    let bidId = BigInt.fromI32(234);
-    let amountIn = BigInt.fromI32(234);
-    let amountOut = BigInt.fromI32(234);
-    let newBidDecryptedEvent = createBidDecryptedEvent(
+    const lotId = BigInt.fromI32(234);
+    const bidId = BigInt.fromI32(234);
+    const amountIn = BigInt.fromI32(234);
+    const amountOut = BigInt.fromI32(234);
+    const newBidDecryptedEvent = createBidDecryptedEvent(
       lotId,
       bidId,
       amountIn,

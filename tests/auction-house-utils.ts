@@ -1,25 +1,26 @@
+import { Address, BigInt, Bytes, ethereum } from "@graphprotocol/graph-ts";
 import { newMockEvent } from "matchstick-as";
-import { ethereum, BigInt, Bytes, Address } from "@graphprotocol/graph-ts";
+
+import { Purchase } from "../generated/AtomicAuctionHouse/AtomicAuctionHouse";
 import {
   AuctionCancelled,
   AuctionCreated,
   Bid,
-  RefundBid,
   Curated,
   ModuleInstalled,
   ModuleSunset,
   OwnershipTransferred,
-  Purchase,
+  RefundBid,
   Settle,
-} from "../generated/AuctionHouse/AuctionHouse";
+} from "../generated/BatchAuctionHouse/BatchAuctionHouse";
 
 export function createAuctionCancelledEvent(
   id: BigInt,
   auctionRef: Bytes,
 ): AuctionCancelled {
-  let auctionCancelledEvent = changetype<AuctionCancelled>(newMockEvent());
+  const auctionCancelledEvent = changetype<AuctionCancelled>(newMockEvent());
 
-  auctionCancelledEvent.parameters = new Array();
+  auctionCancelledEvent.parameters = [];
 
   auctionCancelledEvent.parameters.push(
     new ethereum.EventParam("id", ethereum.Value.fromUnsignedBigInt(id)),
@@ -40,9 +41,9 @@ export function createAuctionCreatedEvent(
   baseToken: Address,
   quoteToken: Address,
 ): AuctionCreated {
-  let auctionCreatedEvent = changetype<AuctionCreated>(newMockEvent());
+  const auctionCreatedEvent = changetype<AuctionCreated>(newMockEvent());
 
-  auctionCreatedEvent.parameters = new Array();
+  auctionCreatedEvent.parameters = [];
 
   auctionCreatedEvent.parameters.push(
     new ethereum.EventParam("id", ethereum.Value.fromUnsignedBigInt(id)),
@@ -72,9 +73,9 @@ export function createBidEvent(
   bidder: Address,
   amount: BigInt,
 ): Bid {
-  let bidEvent = changetype<Bid>(newMockEvent());
+  const bidEvent = changetype<Bid>(newMockEvent());
 
-  bidEvent.parameters = new Array();
+  bidEvent.parameters = [];
 
   bidEvent.parameters.push(
     new ethereum.EventParam(
@@ -106,9 +107,9 @@ export function createCancelBidEvent(
   bidId_: BigInt,
   bidder: Address,
 ): RefundBid {
-  let cancelBidEvent = changetype<RefundBid>(newMockEvent());
+  const cancelBidEvent = changetype<RefundBid>(newMockEvent());
 
-  cancelBidEvent.parameters = new Array();
+  cancelBidEvent.parameters = [];
 
   cancelBidEvent.parameters.push(
     new ethereum.EventParam(
@@ -130,9 +131,9 @@ export function createCancelBidEvent(
 }
 
 export function createCuratedEvent(id: BigInt, curator: Address): Curated {
-  let curatedEvent = changetype<Curated>(newMockEvent());
+  const curatedEvent = changetype<Curated>(newMockEvent());
 
-  curatedEvent.parameters = new Array();
+  curatedEvent.parameters = [];
 
   curatedEvent.parameters.push(
     new ethereum.EventParam("id", ethereum.Value.fromUnsignedBigInt(id)),
@@ -149,9 +150,9 @@ export function createModuleInstalledEvent(
   version_: i32,
   address_: Address,
 ): ModuleInstalled {
-  let moduleInstalledEvent = changetype<ModuleInstalled>(newMockEvent());
+  const moduleInstalledEvent = changetype<ModuleInstalled>(newMockEvent());
 
-  moduleInstalledEvent.parameters = new Array();
+  moduleInstalledEvent.parameters = [];
 
   moduleInstalledEvent.parameters.push(
     new ethereum.EventParam(
@@ -173,9 +174,9 @@ export function createModuleInstalledEvent(
 }
 
 export function createModuleSunsetEvent(keycode_: Bytes): ModuleSunset {
-  let moduleSunsetEvent = changetype<ModuleSunset>(newMockEvent());
+  const moduleSunsetEvent = changetype<ModuleSunset>(newMockEvent());
 
-  moduleSunsetEvent.parameters = new Array();
+  moduleSunsetEvent.parameters = [];
 
   moduleSunsetEvent.parameters.push(
     new ethereum.EventParam(
@@ -191,10 +192,10 @@ export function createOwnershipTransferredEvent(
   user: Address,
   newOwner: Address,
 ): OwnershipTransferred {
-  let ownershipTransferredEvent =
+  const ownershipTransferredEvent =
     changetype<OwnershipTransferred>(newMockEvent());
 
-  ownershipTransferredEvent.parameters = new Array();
+  ownershipTransferredEvent.parameters = [];
 
   ownershipTransferredEvent.parameters.push(
     new ethereum.EventParam("user", ethereum.Value.fromAddress(user)),
@@ -213,9 +214,9 @@ export function createPurchaseEvent(
   amount: BigInt,
   payout: BigInt,
 ): Purchase {
-  let purchaseEvent = changetype<Purchase>(newMockEvent());
+  const purchaseEvent = changetype<Purchase>(newMockEvent());
 
-  purchaseEvent.parameters = new Array();
+  purchaseEvent.parameters = [];
 
   purchaseEvent.parameters.push(
     new ethereum.EventParam(
@@ -246,9 +247,9 @@ export function createPurchaseEvent(
 }
 
 export function createSettleEvent(lotId_: BigInt): Settle {
-  let settleEvent = changetype<Settle>(newMockEvent());
+  const settleEvent = changetype<Settle>(newMockEvent());
 
-  settleEvent.parameters = new Array();
+  settleEvent.parameters = [];
 
   settleEvent.parameters.push(
     new ethereum.EventParam(
