@@ -6,6 +6,7 @@ import {
   AtomicLinearVestingLot,
 } from "../../generated/schema";
 import { toISO8601String } from "../helpers/date";
+import { fromSlicedBytes } from "../helpers/number";
 
 export const LV_KEYCODE = "LIV";
 
@@ -20,12 +21,12 @@ export function createLinearVestingLot(
   lvLot.lot = atomicAuctionLot.id;
 
   // Decode the parameters
-  // uint48, uint48, address
+  // uint48, uint48
 
-  // Get the first 6 bytes of the derivativeParams
-  const start = BigInt.fromByteArray(derivativeParams.slice(0, 6) as Bytes);
-  // Get the next 6 bytes of the derivativeParams
-  const expiry = BigInt.fromByteArray(derivativeParams.slice(6, 12) as Bytes);
+  // Get the first 32 characters of the derivativeParams
+  const start: BigInt = fromSlicedBytes(derivativeParams, 0, 32);
+  // Get the next 32 characters of the derivativeParams
+  const expiry: BigInt = fromSlicedBytes(derivativeParams, 32, 64);
 
   lvLot.startTimestamp = start;
   lvLot.startDate = toISO8601String(start);
