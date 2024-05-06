@@ -1,44 +1,44 @@
 {
   "arbitrum-sepolia": {
     "AtomicAuctionHouse": {
-      "address": "0xAa000000c0F79193A7f3a76C9a0b8b905e901fea",
-      "startBlock": 37149532
+      "address": "0xAA0000003E38C00379513d73FFbcEAFafcF1bB4C",
+      "startBlock": 40352077
     },
     "BatchAuctionHouse": {
-      "address": "0xBA0000004d9B5D528077C97dD0097b8DC836F173",
-      "startBlock": 37149534
+      "address": "0xBA000000878cD72315d797b6de67b151Ae547038",
+      "startBlock": 40352083
     },
     "EncryptedMarginalPrice": {
-      "address": "0x4a7D9A72C29C6f1e74Ce6a972c5CAD1b1B00dff9",
-      "startBlock": 37149542
+      "address": "0x2B63Aa737a1AD617A6d6894698Abd043F95cCecb",
+      "startBlock": 40352095
     }
   },
   "blast-sepolia": {
     "AtomicAuctionHouse": {
-      "address": "0xaa000000F812284225Ec15cDB90419C468921814",
-      "startBlock": 4652072
+      "address": "0xAA000000721026c5B83e3b3d969DC5A7Dac20B7F",
+      "startBlock": 5050647
     },
     "BatchAuctionHouse": {
-      "address": "0xBA000000dAF253566F209323bE7E2e555eE36330",
-      "startBlock": 4652077
+      "address": "0xBA00000073E5050EE216afbcE08ca4666DB37232",
+      "startBlock": 5050650
     },
     "EncryptedMarginalPrice": {
-      "address": "0xe2141BAd93C70D3448Aa69180d6B6581E2166B63",
-      "startBlock": 4652087
+      "address": "0x8dA4D2f56d6f353E36220f567221aD4e1E84cB04",
+      "startBlock": 5050662
     }
   },
   "mode-testnet": {
     "AtomicAuctionHouse": {
-      "address": "0xAa000000c0F79193A7f3a76C9a0b8b905e901fea",
-      "startBlock": 13062629
+      "address": "0xAA0000003E38C00379513d73FFbcEAFafcF1bB4C",
+      "startBlock": 13461504
     },
     "BatchAuctionHouse": {
-      "address": "0xBA0000004d9B5D528077C97dD0097b8DC836F173",
-      "startBlock": 13062632
+      "address": "0xBA000000878cD72315d797b6de67b151Ae547038",
+      "startBlock": 13461507
     },
     "EncryptedMarginalPrice": {
-      "address": "0x16006e7C3015dC53CD102A9a5eCcfB9749779D91",
-      "startBlock": 13062643
+      "address": "0x0e4996960731Fec8E7C9DBbD51383fC71174DD88",
+      "startBlock": 13461518
     }
   }
 }
