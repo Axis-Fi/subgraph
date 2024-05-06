@@ -15,7 +15,7 @@
     "test:force": "pnpm test --recompile",
     "update:constants": "node scripts/write-constants.js",
     "build": "graph build",
-    "deploy:graph": "pnpm build && node scripts/deploy.js",
+    "deploy:graph": "node scripts/deploy.js",
     "create-local": "graph create --node http://localhost:8020/ axis-origin",
     "remove-local": "graph remove --node http://localhost:8020/ axis-origin",
     "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 axis-origin"
@@ -35,6 +35,7 @@
     "eslint": "^8.16.0",
     "eslint-plugin-simple-import-sort": "^10.0.0",
     "matchstick-as": "^0.6.0",
+    "mustache": "^4.2.0",
     "prettier": "^3.2.0",
     "typescript": "^4.6.4"
   }
