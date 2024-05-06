@@ -1,13 +1,14 @@
+import { BigInt } from "@graphprotocol/graph-ts";
 import {
+  afterAll,
   assert,
+  beforeAll,
+  clearStore,
   describe,
   test,
-  clearStore,
-  beforeAll,
-  afterAll,
 } from "matchstick-as/assembly/index";
-import { BigInt } from "@graphprotocol/graph-ts";
-import { handleBidDecrypted } from "../src/empam";
+
+import { handleBidDecrypted } from "../src/handleEncryptedMarginalPrice";
 import { createBidDecryptedEvent } from "./empam-utils";
 
 // Tests structure (matchstick-as >=0.5.0)
@@ -15,15 +16,15 @@ import { createBidDecryptedEvent } from "./empam-utils";
 
 describe("Describe entity assertions", () => {
   beforeAll(() => {
-    let lotId = BigInt.fromI32(234);
-    let bidId = BigInt.fromI32(234);
-    let amountIn = BigInt.fromI32(234);
-    let amountOut = BigInt.fromI32(234);
-    let newBidDecryptedEvent = createBidDecryptedEvent(
+    const lotId = BigInt.fromI32(234);
+    const bidId = BigInt.fromI32(234);
+    const amountIn = BigInt.fromI32(234);
+    const amountOut = BigInt.fromI32(234);
+    const newBidDecryptedEvent = createBidDecryptedEvent(
       lotId,
       bidId,
       amountIn,
-      amountOut
+      amountOut,
     );
     handleBidDecrypted(newBidDecryptedEvent);
   });
@@ -43,25 +44,25 @@ describe("Describe entity assertions", () => {
       "BidDecrypted",
       "0xa16081f360e3847006db660bae1c6d1b2e17ec2a-1",
       "lotId",
-      "234"
+      "234",
     );
     assert.fieldEquals(
       "BidDecrypted",
       "0xa16081f360e3847006db660bae1c6d1b2e17ec2a-1",
       "bidId",
-      "234"
+      "234",
     );
     assert.fieldEquals(
       "BidDecrypted",
       "0xa16081f360e3847006db660bae1c6d1b2e17ec2a-1",
       "amountIn",
-      "234"
+      "234",
     );
     assert.fieldEquals(
       "BidDecrypted",
       "0xa16081f360e3847006db660bae1c6d1b2e17ec2a-1",
       "amountOut",
-      "234"
+      "234",
     );
 
     // More assert options:

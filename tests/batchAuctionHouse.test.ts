@@ -1,13 +1,14 @@
+import { BigInt, Bytes } from "@graphprotocol/graph-ts";
 import {
+  afterAll,
   assert,
+  beforeAll,
+  clearStore,
   describe,
   test,
-  clearStore,
-  beforeAll,
-  afterAll,
 } from "matchstick-as/assembly/index";
-import { BigInt, Bytes } from "@graphprotocol/graph-ts";
-import { handleAuctionCancelled } from "../src/auction-house";
+
+import { handleAuctionCancelled } from "../src/batchAuctionHouse";
 import { createAuctionCancelledEvent } from "./auction-house-utils";
 
 // Tests structure (matchstick-as >=0.5.0)
@@ -15,9 +16,12 @@ import { createAuctionCancelledEvent } from "./auction-house-utils";
 
 describe("Describe entity assertions", () => {
   beforeAll(() => {
-    let id = BigInt.fromI32(234);
-    let auctionRef = Bytes.fromI32(1234567890);
-    let newAuctionCancelledEvent = createAuctionCancelledEvent(id, auctionRef);
+    const id = BigInt.fromI32(234);
+    const auctionRef = Bytes.fromI32(1234567890);
+    const newAuctionCancelledEvent = createAuctionCancelledEvent(
+      id,
+      auctionRef,
+    );
     handleAuctionCancelled(newAuctionCancelledEvent);
   });
 
@@ -36,7 +40,7 @@ describe("Describe entity assertions", () => {
       "AuctionCancelled",
       "0xa16081f360e3847006db660bae1c6d1b2e17ec2a-1",
       "auctionRef",
-      "1234567890"
+      "1234567890",
     );
 
     // More assert options:

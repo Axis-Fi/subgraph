@@ -1,0 +1,1310 @@
+{
+  "abi": [
+    {
+      "type": "constructor",
+      "inputs": [
+        {
+          "name": "owner_",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "protocol_",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "permit2_",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "auction",
+      "inputs": [
+        {
+          "name": "routing_",
+          "type": "tuple",
+          "internalType": "struct IAuctionHouse.RoutingParams",
+          "components": [
+            {
+              "name": "auctionType",
+              "type": "bytes5",
+              "internalType": "Keycode"
+            },
+            {
+              "name": "baseToken",
+              "type": "address",
+              "internalType": "address"
+            },
+            {
+              "name": "quoteToken",
+              "type": "address",
+              "internalType": "address"
+            },
+            {
+              "name": "curator",
+              "type": "address",
+              "internalType": "address"
+            },
+            {
+              "name": "callbacks",
+              "type": "address",
+              "internalType": "contract ICallback"
+            },
+            {
+              "name": "callbackData",
+              "type": "bytes",
+              "internalType": "bytes"
+            },
+            {
+              "name": "derivativeType",
+              "type": "bytes5",
+              "internalType": "Keycode"
+            },
+            {
+              "name": "derivativeParams",
+              "type": "bytes",
+              "internalType": "bytes"
+            },
+            {
+              "name": "wrapDerivative",
+              "type": "bool",
+              "internalType": "bool"
+            }
+          ]
+        },
+        {
+          "name": "params_",
+          "type": "tuple",
+          "internalType": "struct IAuction.AuctionParams",
+          "components": [
+            {
+              "name": "start",
+              "type": "uint48",
+              "internalType": "uint48"
+            },
+            {
+              "name": "duration",
+              "type": "uint48",
+              "internalType": "uint48"
+            },
+            {
+              "name": "capacityInQuote",
+              "type": "bool",
+              "internalType": "bool"
+            },
+            {
+              "name": "capacity",
+              "type": "uint256",
+              "internalType": "uint256"
+            },
+            {
+              "name": "implParams",
+              "type": "bytes",
+              "internalType": "bytes"
+            }
+          ]
+        },
+        {
+          "name": "infoHash_",
+          "type": "string",
+          "internalType": "string"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "lotId",
+          "type": "uint96",
+          "internalType": "uint96"
+        }
+      ],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "bid",
+      "inputs": [
+        {
+          "name": "params_",
+          "type": "tuple",
+          "internalType": "struct IBatchAuctionHouse.BidParams",
+          "components": [
+            {
+              "name": "lotId",
+              "type": "uint96",
+              "internalType": "uint96"
+            },
+            {
+              "name": "referrer",
+              "type": "address",
+              "internalType": "address"
+            },
+            {
+              "name": "amount",
+              "type": "uint256",
+              "internalType": "uint256"
+            },
+            {
+              "name": "auctionData",
+              "type": "bytes",
+              "internalType": "bytes"
+            },
+            {
+              "name": "permit2Data",
+              "type": "bytes",
+              "internalType": "bytes"
+            }
+          ]
+        },
+        {
+          "name": "callbackData_",
+          "type": "bytes",
+          "internalType": "bytes"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "bidId",
+          "type": "uint64",
+          "internalType": "uint64"
+        }
+      ],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "calculateQuoteFees",
+      "inputs": [
+        {
+          "name": "protocolFee_",
+          "type": "uint48",
+          "internalType": "uint48"
+        },
+        {
+          "name": "referrerFee_",
+          "type": "uint48",
+          "internalType": "uint48"
+        },
+        {
+          "name": "hasReferrer_",
+          "type": "bool",
+          "internalType": "bool"
+        },
+        {
+          "name": "amount_",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "toReferrer",
+          "type": "uint256",
+          "internalType": "uint256"
+        },
+        {
+          "name": "toProtocol",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "stateMutability": "pure"
+    },
+    {
+      "type": "function",
+      "name": "cancel",
+      "inputs": [
+        {
+          "name": "lotId_",
+          "type": "uint96",
+          "internalType": "uint96"
+        },
+        {
+          "name": "callbackData_",
+          "type": "bytes",
+          "internalType": "bytes"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "claimBids",
+      "inputs": [
+        {
+          "name": "lotId_",
+          "type": "uint96",
+          "internalType": "uint96"
+        },
+        {
+          "name": "bidIds_",
+          "type": "uint64[]",
+          "internalType": "uint64[]"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "claimProceeds",
+      "inputs": [
+        {
+          "name": "lotId_",
+          "type": "uint96",
+          "internalType": "uint96"
+        },
+        {
+          "name": "callbackData_",
+          "type": "bytes",
+          "internalType": "bytes"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "claimRewards",
+      "inputs": [
+        {
+          "name": "token_",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "condensers",
+      "inputs": [
+        {
+          "name": "auctionRef",
+          "type": "bytes7",
+          "internalType": "Veecode"
+        },
+        {
+          "name": "derivativeRef",
+          "type": "bytes7",
+          "internalType": "Veecode"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "condenserRef",
+          "type": "bytes7",
+          "internalType": "Veecode"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "curate",
+      "inputs": [
+        {
+          "name": "lotId_",
+          "type": "uint96",
+          "internalType": "uint96"
+        },
+        {
+          "name": "callbackData_",
+          "type": "bytes",
+          "internalType": "bytes"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "execOnModule",
+      "inputs": [
+        {
+          "name": "veecode_",
+          "type": "bytes7",
+          "internalType": "Veecode"
+        },
+        {
+          "name": "callData_",
+          "type": "bytes",
+          "internalType": "bytes"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bytes",
+          "internalType": "bytes"
+        }
+      ],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "fees",
+      "inputs": [
+        {
+          "name": "",
+          "type": "bytes5",
+          "internalType": "Keycode"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "protocol",
+          "type": "uint48",
+          "internalType": "uint48"
+        },
+        {
+          "name": "referrer",
+          "type": "uint48",
+          "internalType": "uint48"
+        },
+        {
+          "name": "maxCuratorFee",
+          "type": "uint48",
+          "internalType": "uint48"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "getBatchModuleForId",
+      "inputs": [
+        {
+          "name": "lotId_",
+          "type": "uint96",
+          "internalType": "uint96"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "address",
+          "internalType": "contract BatchAuctionModule"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "getCuratorFee",
+      "inputs": [
+        {
+          "name": "auctionType_",
+          "type": "bytes5",
+          "internalType": "Keycode"
+        },
+        {
+          "name": "curator_",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "curatorFee",
+          "type": "uint48",
+          "internalType": "uint48"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "getFees",
+      "inputs": [
+        {
+          "name": "auctionType_",
+          "type": "bytes5",
+          "internalType": "Keycode"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "protocol",
+          "type": "uint48",
+          "internalType": "uint48"
+        },
+        {
+          "name": "referrer",
+          "type": "uint48",
+          "internalType": "uint48"
+        },
+        {
+          "name": "maxCuratorFee",
+          "type": "uint48",
+          "internalType": "uint48"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "getModuleForId",
+      "inputs": [
+        {
+          "name": "lotId_",
+          "type": "uint96",
+          "internalType": "uint96"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "address",
+          "internalType": "contract AuctionModule"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "getModuleForVeecode",
+      "inputs": [
+        {
+          "name": "",
+          "type": "bytes7",
+          "internalType": "Veecode"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "address",
+          "internalType": "contract Module"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "getModuleStatus",
+      "inputs": [
+        {
+          "name": "",
+          "type": "bytes5",
+          "internalType": "Keycode"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "latestVersion",
+          "type": "uint8",
+          "internalType": "uint8"
+        },
+        {
+          "name": "sunset",
+          "type": "bool",
+          "internalType": "bool"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "getProtocol",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "getRewards",
+      "inputs": [
+        {
+          "name": "recipient_",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "token_",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "reward",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "installModule",
+      "inputs": [
+        {
+          "name": "newModule_",
+          "type": "address",
+          "internalType": "contract Module"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "isExecOnModule",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool",
+          "internalType": "bool"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "lotCounter",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint96",
+          "internalType": "uint96"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "lotFees",
+      "inputs": [
+        {
+          "name": "lotId",
+          "type": "uint96",
+          "internalType": "uint96"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "curator",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "curated",
+          "type": "bool",
+          "internalType": "bool"
+        },
+        {
+          "name": "curatorFee",
+          "type": "uint48",
+          "internalType": "uint48"
+        },
+        {
+          "name": "protocolFee",
+          "type": "uint48",
+          "internalType": "uint48"
+        },
+        {
+          "name": "referrerFee",
+          "type": "uint48",
+          "internalType": "uint48"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "lotRouting",
+      "inputs": [
+        {
+          "name": "lotId",
+          "type": "uint96",
+          "internalType": "uint96"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "seller",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "baseToken",
+          "type": "address",
+          "internalType": "contract ERC20"
+        },
+        {
+          "name": "quoteToken",
+          "type": "address",
+          "internalType": "contract ERC20"
+        },
+        {
+          "name": "auctionReference",
+          "type": "bytes7",
+          "internalType": "Veecode"
+        },
+        {
+          "name": "funding",
+          "type": "uint256",
+          "internalType": "uint256"
+        },
+        {
+          "name": "callbacks",
+          "type": "address",
+          "internalType": "contract ICallback"
+        },
+        {
+          "name": "derivativeReference",
+          "type": "bytes7",
+          "internalType": "Veecode"
+        },
+        {
+          "name": "wrapDerivative",
+          "type": "bool",
+          "internalType": "bool"
+        },
+        {
+          "name": "derivativeParams",
+          "type": "bytes",
+          "internalType": "bytes"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "modules",
+      "inputs": [
+        {
+          "name": "",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bytes5",
+          "internalType": "Keycode"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "modulesCount",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "owner",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "refundBid",
+      "inputs": [
+        {
+          "name": "lotId_",
+          "type": "uint96",
+          "internalType": "uint96"
+        },
+        {
+          "name": "bidId_",
+          "type": "uint64",
+          "internalType": "uint64"
+        },
+        {
+          "name": "index_",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "rewards",
+      "inputs": [
+        {
+          "name": "",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "",
+          "type": "address",
+          "internalType": "contract ERC20"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "setCondenser",
+      "inputs": [
+        {
+          "name": "auctionRef_",
+          "type": "bytes7",
+          "internalType": "Veecode"
+        },
+        {
+          "name": "derivativeRef_",
+          "type": "bytes7",
+          "internalType": "Veecode"
+        },
+        {
+          "name": "condenserRef_",
+          "type": "bytes7",
+          "internalType": "Veecode"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "setCuratorFee",
+      "inputs": [
+        {
+          "name": "auctionType_",
+          "type": "bytes5",
+          "internalType": "Keycode"
+        },
+        {
+          "name": "fee_",
+          "type": "uint48",
+          "internalType": "uint48"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "setFee",
+      "inputs": [
+        {
+          "name": "auctionType_",
+          "type": "bytes5",
+          "internalType": "Keycode"
+        },
+        {
+          "name": "type_",
+          "type": "uint8",
+          "internalType": "enum IFeeManager.FeeType"
+        },
+        {
+          "name": "fee_",
+          "type": "uint48",
+          "internalType": "uint48"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "setProtocol",
+      "inputs": [
+        {
+          "name": "protocol_",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "settle",
+      "inputs": [
+        {
+          "name": "lotId_",
+          "type": "uint96",
+          "internalType": "uint96"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "totalIn",
+          "type": "uint256",
+          "internalType": "uint256"
+        },
+        {
+          "name": "totalOut",
+          "type": "uint256",
+          "internalType": "uint256"
+        },
+        {
+          "name": "auctionOutput",
+          "type": "bytes",
+          "internalType": "bytes"
+        }
+      ],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "sunsetModule",
+      "inputs": [
+        {
+          "name": "keycode_",
+          "type": "bytes5",
+          "internalType": "Keycode"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "transferOwnership",
+      "inputs": [
+        {
+          "name": "newOwner",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "event",
+      "name": "AuctionCancelled",
+      "inputs": [
+        {
+          "name": "lotId",
+          "type": "uint96",
+          "indexed": true,
+          "internalType": "uint96"
+        },
+        {
+          "name": "auctionRef",
+          "type": "bytes7",
+          "indexed": true,
+          "internalType": "Veecode"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "AuctionCreated",
+      "inputs": [
+        {
+          "name": "lotId",
+          "type": "uint96",
+          "indexed": true,
+          "internalType": "uint96"
+        },
+        {
+          "name": "auctionRef",
+          "type": "bytes7",
+          "indexed": true,
+          "internalType": "Veecode"
+        },
+        {
+          "name": "infoHash",
+          "type": "string",
+          "indexed": false,
+          "internalType": "string"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "Bid",
+      "inputs": [
+        {
+          "name": "lotId",
+          "type": "uint96",
+          "indexed": true,
+          "internalType": "uint96"
+        },
+        {
+          "name": "bidId",
+          "type": "uint96",
+          "indexed": true,
+          "internalType": "uint96"
+        },
+        {
+          "name": "bidder",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "amount",
+          "type": "uint256",
+          "indexed": false,
+          "internalType": "uint256"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "ClaimBid",
+      "inputs": [
+        {
+          "name": "lotId",
+          "type": "uint96",
+          "indexed": true,
+          "internalType": "uint96"
+        },
+        {
+          "name": "bidId",
+          "type": "uint96",
+          "indexed": true,
+          "internalType": "uint96"
+        },
+        {
+          "name": "bidder",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "ClaimProceeds",
+      "inputs": [
+        {
+          "name": "lotId",
+          "type": "uint96",
+          "indexed": true,
+          "internalType": "uint96"
+        },
+        {
+          "name": "seller",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "Curated",
+      "inputs": [
+        {
+          "name": "lotId",
+          "type": "uint96",
+          "indexed": true,
+          "internalType": "uint96"
+        },
+        {
+          "name": "curator",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "ModuleInstalled",
+      "inputs": [
+        {
+          "name": "keycode",
+          "type": "bytes5",
+          "indexed": true,
+          "internalType": "Keycode"
+        },
+        {
+          "name": "version",
+          "type": "uint8",
+          "indexed": true,
+          "internalType": "uint8"
+        },
+        {
+          "name": "location",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "ModuleSunset",
+      "inputs": [
+        {
+          "name": "keycode",
+          "type": "bytes5",
+          "indexed": true,
+          "internalType": "Keycode"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "OwnershipTransferred",
+      "inputs": [
+        {
+          "name": "user",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "newOwner",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "RefundBid",
+      "inputs": [
+        {
+          "name": "lotId",
+          "type": "uint96",
+          "indexed": true,
+          "internalType": "uint96"
+        },
+        {
+          "name": "bidId",
+          "type": "uint96",
+          "indexed": true,
+          "internalType": "uint96"
+        },
+        {
+          "name": "bidder",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "Settle",
+      "inputs": [
+        {
+          "name": "lotId",
+          "type": "uint96",
+          "indexed": true,
+          "internalType": "uint96"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "error",
+      "name": "AmountLessThanMinimum",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "FailedCallback",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "InsufficientFunding",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "InvalidCallback",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "InvalidCallbackResponse",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "InvalidFee",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "InvalidLotId",
+      "inputs": [
+        {
+          "name": "id_",
+          "type": "uint96",
+          "internalType": "uint96"
+        }
+      ]
+    },
+    {
+      "type": "error",
+      "name": "InvalidModuleInstall",
+      "inputs": [
+        {
+          "name": "keycode_",
+          "type": "bytes5",
+          "internalType": "Keycode"
+        },
+        {
+          "name": "version_",
+          "type": "uint8",
+          "internalType": "uint8"
+        }
+      ]
+    },
+    {
+      "type": "error",
+      "name": "InvalidParams",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "InvalidParams",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "InvalidState",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "InvalidVeecode",
+      "inputs": [
+        {
+          "name": "veecode_",
+          "type": "bytes7",
+          "internalType": "Veecode"
+        }
+      ]
+    },
+    {
+      "type": "error",
+      "name": "ModuleAlreadySunset",
+      "inputs": [
+        {
+          "name": "keycode_",
+          "type": "bytes5",
+          "internalType": "Keycode"
+        }
+      ]
+    },
+    {
+      "type": "error",
+      "name": "ModuleExecutionReverted",
+      "inputs": [
+        {
+          "name": "error_",
+          "type": "bytes",
+          "internalType": "bytes"
+        }
+      ]
+    },
+    {
+      "type": "error",
+      "name": "ModuleIsSunset",
+      "inputs": [
+        {
+          "name": "keycode_",
+          "type": "bytes5",
+          "internalType": "Keycode"
+        }
+      ]
+    },
+    {
+      "type": "error",
+      "name": "ModuleNotInstalled",
+      "inputs": [
+        {
+          "name": "keycode_",
+          "type": "bytes5",
+          "internalType": "Keycode"
+        },
+        {
+          "name": "version_",
+          "type": "uint8",
+          "internalType": "uint8"
+        }
+      ]
+    },
+    {
+      "type": "error",
+      "name": "NotPermitted",
+      "inputs": [
+        {
+          "name": "caller_",
+          "type": "address",
+          "internalType": "address"
+        }
+      ]
+    },
+    {
+      "type": "error",
+      "name": "TargetNotAContract",
+      "inputs": [
+        {
+          "name": "target_",
+          "type": "address",
+          "internalType": "address"
+        }
+      ]
+    },
+    {
+      "type": "error",
+      "name": "UnsupportedToken",
+      "inputs": [
+        {
+          "name": "token_",
+          "type": "address",
+          "internalType": "address"
+        }
+      ]
+    }
+  ]
+}

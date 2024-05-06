@@ -1,0 +1,635 @@
+{
+  "abi": [
+    {
+      "type": "constructor",
+      "inputs": [
+        {
+          "name": "auctionHouse_",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "INIT",
+      "inputs": [],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "PARENT",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "TYPE",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint8",
+          "internalType": "enum Module.Type"
+        }
+      ],
+      "stateMutability": "pure"
+    },
+    {
+      "type": "function",
+      "name": "VEECODE",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bytes7",
+          "internalType": "Veecode"
+        }
+      ],
+      "stateMutability": "pure"
+    },
+    {
+      "type": "function",
+      "name": "auction",
+      "inputs": [
+        {
+          "name": "lotId_",
+          "type": "uint96",
+          "internalType": "uint96"
+        },
+        {
+          "name": "params_",
+          "type": "tuple",
+          "internalType": "struct IAuction.AuctionParams",
+          "components": [
+            {
+              "name": "start",
+              "type": "uint48",
+              "internalType": "uint48"
+            },
+            {
+              "name": "duration",
+              "type": "uint48",
+              "internalType": "uint48"
+            },
+            {
+              "name": "capacityInQuote",
+              "type": "bool",
+              "internalType": "bool"
+            },
+            {
+              "name": "capacity",
+              "type": "uint256",
+              "internalType": "uint256"
+            },
+            {
+              "name": "implParams",
+              "type": "bytes",
+              "internalType": "bytes"
+            }
+          ]
+        },
+        {
+          "name": "quoteTokenDecimals_",
+          "type": "uint8",
+          "internalType": "uint8"
+        },
+        {
+          "name": "baseTokenDecimals_",
+          "type": "uint8",
+          "internalType": "uint8"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "auctionData",
+      "inputs": [
+        {
+          "name": "lotId",
+          "type": "uint96",
+          "internalType": "uint96"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "price",
+          "type": "uint256",
+          "internalType": "uint256"
+        },
+        {
+          "name": "maxPayout",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "auctionType",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint8",
+          "internalType": "enum IAuction.AuctionType"
+        }
+      ],
+      "stateMutability": "pure"
+    },
+    {
+      "type": "function",
+      "name": "cancelAuction",
+      "inputs": [
+        {
+          "name": "lotId_",
+          "type": "uint96",
+          "internalType": "uint96"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "capacityInQuote",
+      "inputs": [
+        {
+          "name": "lotId_",
+          "type": "uint96",
+          "internalType": "uint96"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool",
+          "internalType": "bool"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "getLot",
+      "inputs": [
+        {
+          "name": "lotId_",
+          "type": "uint96",
+          "internalType": "uint96"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "tuple",
+          "internalType": "struct IAuction.Lot",
+          "components": [
+            {
+              "name": "start",
+              "type": "uint48",
+              "internalType": "uint48"
+            },
+            {
+              "name": "conclusion",
+              "type": "uint48",
+              "internalType": "uint48"
+            },
+            {
+              "name": "quoteTokenDecimals",
+              "type": "uint8",
+              "internalType": "uint8"
+            },
+            {
+              "name": "baseTokenDecimals",
+              "type": "uint8",
+              "internalType": "uint8"
+            },
+            {
+              "name": "capacityInQuote",
+              "type": "bool",
+              "internalType": "bool"
+            },
+            {
+              "name": "capacity",
+              "type": "uint256",
+              "internalType": "uint256"
+            },
+            {
+              "name": "sold",
+              "type": "uint256",
+              "internalType": "uint256"
+            },
+            {
+              "name": "purchased",
+              "type": "uint256",
+              "internalType": "uint256"
+            }
+          ]
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "hasEnded",
+      "inputs": [
+        {
+          "name": "lotId_",
+          "type": "uint96",
+          "internalType": "uint96"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool",
+          "internalType": "bool"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "isLive",
+      "inputs": [
+        {
+          "name": "lotId_",
+          "type": "uint96",
+          "internalType": "uint96"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool",
+          "internalType": "bool"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "lotData",
+      "inputs": [
+        {
+          "name": "id",
+          "type": "uint96",
+          "internalType": "uint96"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "start",
+          "type": "uint48",
+          "internalType": "uint48"
+        },
+        {
+          "name": "conclusion",
+          "type": "uint48",
+          "internalType": "uint48"
+        },
+        {
+          "name": "quoteTokenDecimals",
+          "type": "uint8",
+          "internalType": "uint8"
+        },
+        {
+          "name": "baseTokenDecimals",
+          "type": "uint8",
+          "internalType": "uint8"
+        },
+        {
+          "name": "capacityInQuote",
+          "type": "bool",
+          "internalType": "bool"
+        },
+        {
+          "name": "capacity",
+          "type": "uint256",
+          "internalType": "uint256"
+        },
+        {
+          "name": "sold",
+          "type": "uint256",
+          "internalType": "uint256"
+        },
+        {
+          "name": "purchased",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "maxAmountAccepted",
+      "inputs": [
+        {
+          "name": "lotId_",
+          "type": "uint96",
+          "internalType": "uint96"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "maxPayout",
+      "inputs": [
+        {
+          "name": "lotId_",
+          "type": "uint96",
+          "internalType": "uint96"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "minAuctionDuration",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint48",
+          "internalType": "uint48"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "payoutFor",
+      "inputs": [
+        {
+          "name": "lotId_",
+          "type": "uint96",
+          "internalType": "uint96"
+        },
+        {
+          "name": "amount_",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "priceFor",
+      "inputs": [
+        {
+          "name": "lotId_",
+          "type": "uint96",
+          "internalType": "uint96"
+        },
+        {
+          "name": "payout_",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "purchase",
+      "inputs": [
+        {
+          "name": "lotId_",
+          "type": "uint96",
+          "internalType": "uint96"
+        },
+        {
+          "name": "amount_",
+          "type": "uint256",
+          "internalType": "uint256"
+        },
+        {
+          "name": "auctionData_",
+          "type": "bytes",
+          "internalType": "bytes"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "payout",
+          "type": "uint256",
+          "internalType": "uint256"
+        },
+        {
+          "name": "auctionOutput",
+          "type": "bytes",
+          "internalType": "bytes"
+        }
+      ],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "remainingCapacity",
+      "inputs": [
+        {
+          "name": "lotId_",
+          "type": "uint96",
+          "internalType": "uint96"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "setMinAuctionDuration",
+      "inputs": [
+        {
+          "name": "duration_",
+          "type": "uint48",
+          "internalType": "uint48"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "error",
+      "name": "Auction_AmountLessThanMinimum",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "Auction_InsufficientCapacity",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "Auction_InsufficientPayout",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "Auction_InvalidDuration",
+      "inputs": [
+        {
+          "name": "duration_",
+          "type": "uint48",
+          "internalType": "uint48"
+        },
+        {
+          "name": "minimum_",
+          "type": "uint48",
+          "internalType": "uint48"
+        }
+      ]
+    },
+    {
+      "type": "error",
+      "name": "Auction_InvalidLotId",
+      "inputs": [
+        {
+          "name": "lotId",
+          "type": "uint96",
+          "internalType": "uint96"
+        }
+      ]
+    },
+    {
+      "type": "error",
+      "name": "Auction_InvalidParams",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "Auction_InvalidStart",
+      "inputs": [
+        {
+          "name": "start_",
+          "type": "uint48",
+          "internalType": "uint48"
+        },
+        {
+          "name": "minimum_",
+          "type": "uint48",
+          "internalType": "uint48"
+        }
+      ]
+    },
+    {
+      "type": "error",
+      "name": "Auction_MarketActive",
+      "inputs": [
+        {
+          "name": "lotId",
+          "type": "uint96",
+          "internalType": "uint96"
+        }
+      ]
+    },
+    {
+      "type": "error",
+      "name": "Auction_MarketNotActive",
+      "inputs": [
+        {
+          "name": "lotId",
+          "type": "uint96",
+          "internalType": "uint96"
+        }
+      ]
+    },
+    {
+      "type": "error",
+      "name": "Auction_NotAuthorized",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "Auction_NotImplemented",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "Auction_OnlyMarketOwner",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "Auction_PayoutGreaterThanMax",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "Module_InvalidParent",
+      "inputs": [
+        {
+          "name": "parent_",
+          "type": "address",
+          "internalType": "address"
+        }
+      ]
+    },
+    {
+      "type": "error",
+      "name": "Module_OnlyInternal",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "Module_OnlyParent",
+      "inputs": [
+        {
+          "name": "caller_",
+          "type": "address",
+          "internalType": "address"
+        }
+      ]
+    }
+  ]
+}

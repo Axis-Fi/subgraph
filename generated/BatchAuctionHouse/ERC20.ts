@@ -242,10 +242,14 @@ export class ERC20 extends ethereum.SmartContract {
   }
 
   try_transfer(to: Address, amount: BigInt): ethereum.CallResult<boolean> {
-    const result = super.tryCall("transfer", "transfer(address,uint256):(bool)", [
-      ethereum.Value.fromAddress(to),
-      ethereum.Value.fromUnsignedBigInt(amount),
-    ]);
+    const result = super.tryCall(
+      "transfer",
+      "transfer(address,uint256):(bool)",
+      [
+        ethereum.Value.fromAddress(to),
+        ethereum.Value.fromUnsignedBigInt(amount),
+      ],
+    );
     if (result.reverted) {
       return new ethereum.CallResult();
     }

@@ -1,34 +1,35 @@
+import { Address, BigInt, Bytes, ethereum } from "@graphprotocol/graph-ts";
 import { newMockEvent } from "matchstick-as";
-import { ethereum, BigInt, Bytes, Address } from "@graphprotocol/graph-ts";
+
+import { Purchase } from "../generated/AtomicAuctionHouse/AtomicAuctionHouse";
 import {
   AuctionCancelled,
   AuctionCreated,
   Bid,
-  RefundBid,
   Curated,
   ModuleInstalled,
   ModuleSunset,
   OwnershipTransferred,
-  Purchase,
+  RefundBid,
   Settle,
-} from "../generated/AuctionHouse/AuctionHouse";
+} from "../generated/BatchAuctionHouse/BatchAuctionHouse";
 
 export function createAuctionCancelledEvent(
   id: BigInt,
-  auctionRef: Bytes
+  auctionRef: Bytes,
 ): AuctionCancelled {
-  let auctionCancelledEvent = changetype<AuctionCancelled>(newMockEvent());
+  const auctionCancelledEvent = changetype<AuctionCancelled>(newMockEvent());
 
-  auctionCancelledEvent.parameters = new Array();
+  auctionCancelledEvent.parameters = [];
 
   auctionCancelledEvent.parameters.push(
-    new ethereum.EventParam("id", ethereum.Value.fromUnsignedBigInt(id))
+    new ethereum.EventParam("id", ethereum.Value.fromUnsignedBigInt(id)),
   );
   auctionCancelledEvent.parameters.push(
     new ethereum.EventParam(
       "auctionRef",
-      ethereum.Value.fromFixedBytes(auctionRef)
-    )
+      ethereum.Value.fromFixedBytes(auctionRef),
+    ),
   );
 
   return auctionCancelledEvent;
@@ -38,29 +39,29 @@ export function createAuctionCreatedEvent(
   id: BigInt,
   auctionRef: Bytes,
   baseToken: Address,
-  quoteToken: Address
+  quoteToken: Address,
 ): AuctionCreated {
-  let auctionCreatedEvent = changetype<AuctionCreated>(newMockEvent());
+  const auctionCreatedEvent = changetype<AuctionCreated>(newMockEvent());
 
-  auctionCreatedEvent.parameters = new Array();
+  auctionCreatedEvent.parameters = [];
 
   auctionCreatedEvent.parameters.push(
-    new ethereum.EventParam("id", ethereum.Value.fromUnsignedBigInt(id))
+    new ethereum.EventParam("id", ethereum.Value.fromUnsignedBigInt(id)),
   );
   auctionCreatedEvent.parameters.push(
     new ethereum.EventParam(
       "auctionRef",
-      ethereum.Value.fromFixedBytes(auctionRef)
-    )
+      ethereum.Value.fromFixedBytes(auctionRef),
+    ),
   );
   auctionCreatedEvent.parameters.push(
-    new ethereum.EventParam("baseToken", ethereum.Value.fromAddress(baseToken))
+    new ethereum.EventParam("baseToken", ethereum.Value.fromAddress(baseToken)),
   );
   auctionCreatedEvent.parameters.push(
     new ethereum.EventParam(
       "quoteToken",
-      ethereum.Value.fromAddress(quoteToken)
-    )
+      ethereum.Value.fromAddress(quoteToken),
+    ),
   );
 
   return auctionCreatedEvent;
@@ -70,23 +71,32 @@ export function createBidEvent(
   lotId_: BigInt,
   bidId_: BigInt,
   bidder: Address,
-  amount: BigInt
+  amount: BigInt,
 ): Bid {
-  let bidEvent = changetype<Bid>(newMockEvent());
+  const bidEvent = changetype<Bid>(newMockEvent());
 
-  bidEvent.parameters = new Array();
+  bidEvent.parameters = [];
 
   bidEvent.parameters.push(
-    new ethereum.EventParam("lotId_", ethereum.Value.fromUnsignedBigInt(lotId_))
+    new ethereum.EventParam(
+      "lotId_",
+      ethereum.Value.fromUnsignedBigInt(lotId_),
+    ),
   );
   bidEvent.parameters.push(
-    new ethereum.EventParam("bidId_", ethereum.Value.fromUnsignedBigInt(bidId_))
+    new ethereum.EventParam(
+      "bidId_",
+      ethereum.Value.fromUnsignedBigInt(bidId_),
+    ),
   );
   bidEvent.parameters.push(
-    new ethereum.EventParam("bidder", ethereum.Value.fromAddress(bidder))
+    new ethereum.EventParam("bidder", ethereum.Value.fromAddress(bidder)),
   );
   bidEvent.parameters.push(
-    new ethereum.EventParam("amount", ethereum.Value.fromUnsignedBigInt(amount))
+    new ethereum.EventParam(
+      "amount",
+      ethereum.Value.fromUnsignedBigInt(amount),
+    ),
   );
 
   return bidEvent;
@@ -95,35 +105,41 @@ export function createBidEvent(
 export function createCancelBidEvent(
   lotId_: BigInt,
   bidId_: BigInt,
-  bidder: Address
+  bidder: Address,
 ): RefundBid {
-  let cancelBidEvent = changetype<RefundBid>(newMockEvent());
+  const cancelBidEvent = changetype<RefundBid>(newMockEvent());
 
-  cancelBidEvent.parameters = new Array();
+  cancelBidEvent.parameters = [];
 
   cancelBidEvent.parameters.push(
-    new ethereum.EventParam("lotId_", ethereum.Value.fromUnsignedBigInt(lotId_))
+    new ethereum.EventParam(
+      "lotId_",
+      ethereum.Value.fromUnsignedBigInt(lotId_),
+    ),
   );
   cancelBidEvent.parameters.push(
-    new ethereum.EventParam("bidId_", ethereum.Value.fromUnsignedBigInt(bidId_))
+    new ethereum.EventParam(
+      "bidId_",
+      ethereum.Value.fromUnsignedBigInt(bidId_),
+    ),
   );
   cancelBidEvent.parameters.push(
-    new ethereum.EventParam("bidder", ethereum.Value.fromAddress(bidder))
+    new ethereum.EventParam("bidder", ethereum.Value.fromAddress(bidder)),
   );
 
   return cancelBidEvent;
 }
 
 export function createCuratedEvent(id: BigInt, curator: Address): Curated {
-  let curatedEvent = changetype<Curated>(newMockEvent());
+  const curatedEvent = changetype<Curated>(newMockEvent());
 
-  curatedEvent.parameters = new Array();
+  curatedEvent.parameters = [];
 
   curatedEvent.parameters.push(
-    new ethereum.EventParam("id", ethereum.Value.fromUnsignedBigInt(id))
+    new ethereum.EventParam("id", ethereum.Value.fromUnsignedBigInt(id)),
   );
   curatedEvent.parameters.push(
-    new ethereum.EventParam("curator", ethereum.Value.fromAddress(curator))
+    new ethereum.EventParam("curator", ethereum.Value.fromAddress(curator)),
   );
 
   return curatedEvent;
@@ -132,35 +148,41 @@ export function createCuratedEvent(id: BigInt, curator: Address): Curated {
 export function createModuleInstalledEvent(
   keycode_: Bytes,
   version_: i32,
-  address_: Address
+  address_: Address,
 ): ModuleInstalled {
-  let moduleInstalledEvent = changetype<ModuleInstalled>(newMockEvent());
+  const moduleInstalledEvent = changetype<ModuleInstalled>(newMockEvent());
 
-  moduleInstalledEvent.parameters = new Array();
+  moduleInstalledEvent.parameters = [];
 
   moduleInstalledEvent.parameters.push(
-    new ethereum.EventParam("keycode_", ethereum.Value.fromFixedBytes(keycode_))
+    new ethereum.EventParam(
+      "keycode_",
+      ethereum.Value.fromFixedBytes(keycode_),
+    ),
   );
   moduleInstalledEvent.parameters.push(
     new ethereum.EventParam(
       "version_",
-      ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(version_))
-    )
+      ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(version_)),
+    ),
   );
   moduleInstalledEvent.parameters.push(
-    new ethereum.EventParam("address_", ethereum.Value.fromAddress(address_))
+    new ethereum.EventParam("address_", ethereum.Value.fromAddress(address_)),
   );
 
   return moduleInstalledEvent;
 }
 
 export function createModuleSunsetEvent(keycode_: Bytes): ModuleSunset {
-  let moduleSunsetEvent = changetype<ModuleSunset>(newMockEvent());
+  const moduleSunsetEvent = changetype<ModuleSunset>(newMockEvent());
 
-  moduleSunsetEvent.parameters = new Array();
+  moduleSunsetEvent.parameters = [];
 
   moduleSunsetEvent.parameters.push(
-    new ethereum.EventParam("keycode_", ethereum.Value.fromFixedBytes(keycode_))
+    new ethereum.EventParam(
+      "keycode_",
+      ethereum.Value.fromFixedBytes(keycode_),
+    ),
   );
 
   return moduleSunsetEvent;
@@ -168,18 +190,18 @@ export function createModuleSunsetEvent(keycode_: Bytes): ModuleSunset {
 
 export function createOwnershipTransferredEvent(
   user: Address,
-  newOwner: Address
+  newOwner: Address,
 ): OwnershipTransferred {
-  let ownershipTransferredEvent =
+  const ownershipTransferredEvent =
     changetype<OwnershipTransferred>(newMockEvent());
 
-  ownershipTransferredEvent.parameters = new Array();
+  ownershipTransferredEvent.parameters = [];
 
   ownershipTransferredEvent.parameters.push(
-    new ethereum.EventParam("user", ethereum.Value.fromAddress(user))
+    new ethereum.EventParam("user", ethereum.Value.fromAddress(user)),
   );
   ownershipTransferredEvent.parameters.push(
-    new ethereum.EventParam("newOwner", ethereum.Value.fromAddress(newOwner))
+    new ethereum.EventParam("newOwner", ethereum.Value.fromAddress(newOwner)),
   );
 
   return ownershipTransferredEvent;
@@ -190,38 +212,50 @@ export function createPurchaseEvent(
   buyer: Address,
   referrer: Address,
   amount: BigInt,
-  payout: BigInt
+  payout: BigInt,
 ): Purchase {
-  let purchaseEvent = changetype<Purchase>(newMockEvent());
+  const purchaseEvent = changetype<Purchase>(newMockEvent());
 
-  purchaseEvent.parameters = new Array();
+  purchaseEvent.parameters = [];
 
   purchaseEvent.parameters.push(
-    new ethereum.EventParam("lotId_", ethereum.Value.fromUnsignedBigInt(lotId_))
+    new ethereum.EventParam(
+      "lotId_",
+      ethereum.Value.fromUnsignedBigInt(lotId_),
+    ),
   );
   purchaseEvent.parameters.push(
-    new ethereum.EventParam("buyer", ethereum.Value.fromAddress(buyer))
+    new ethereum.EventParam("buyer", ethereum.Value.fromAddress(buyer)),
   );
   purchaseEvent.parameters.push(
-    new ethereum.EventParam("referrer", ethereum.Value.fromAddress(referrer))
+    new ethereum.EventParam("referrer", ethereum.Value.fromAddress(referrer)),
   );
   purchaseEvent.parameters.push(
-    new ethereum.EventParam("amount", ethereum.Value.fromUnsignedBigInt(amount))
+    new ethereum.EventParam(
+      "amount",
+      ethereum.Value.fromUnsignedBigInt(amount),
+    ),
   );
   purchaseEvent.parameters.push(
-    new ethereum.EventParam("payout", ethereum.Value.fromUnsignedBigInt(payout))
+    new ethereum.EventParam(
+      "payout",
+      ethereum.Value.fromUnsignedBigInt(payout),
+    ),
   );
 
   return purchaseEvent;
 }
 
 export function createSettleEvent(lotId_: BigInt): Settle {
-  let settleEvent = changetype<Settle>(newMockEvent());
+  const settleEvent = changetype<Settle>(newMockEvent());
 
-  settleEvent.parameters = new Array();
+  settleEvent.parameters = [];
 
   settleEvent.parameters.push(
-    new ethereum.EventParam("lotId_", ethereum.Value.fromUnsignedBigInt(lotId_))
+    new ethereum.EventParam(
+      "lotId_",
+      ethereum.Value.fromUnsignedBigInt(lotId_),
+    ),
   );
 
   return settleEvent;

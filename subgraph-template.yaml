@@ -1,0 +1,138 @@
+specVersion: 1.0.0
+indexerHints:
+  prune: auto
+schema:
+  file: ./schema.graphql
+dataSources:
+  # AtomicAuctionHouse
+  - kind: ethereum
+    name: AtomicAuctionHouse
+    network: {{network}}
+    source:
+      abi: AtomicAuctionHouse
+      address: "{{AtomicAuctionHouse.address}}"
+      startBlock: {{AtomicAuctionHouse.startBlock}}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - AtomicAuctionCreated
+        - AtomicAuctionCancelled
+        - AtomicAuctionCurated
+        - AtomicPurchase
+        - AtomicFixedPriceSaleLot
+        - AtomicLinearVestingLot
+        - AuctionHouseModuleInstalled
+        - AuctionHouseModuleSunset
+        - AuctionHouseOwnershipTransferred
+      abis:
+        - name: AtomicAuctionHouse
+          file: ./abis/AtomicAuctionHouse.json
+        - name: AtomicAuctionModule
+          file: ./abis/modules/AtomicAuctionModule.json
+        - name: FixedPriceSale
+          file: ./abis/modules/FixedPriceSale.json
+        - name: LinearVesting
+          file: ./abis/modules/LinearVesting.json
+        - name: ERC20
+          file: ./abis/ERC20.json
+      eventHandlers:
+        - event: AuctionCreated(indexed uint96,indexed bytes7,string)
+          handler: handleAuctionCreated
+        - event: AuctionCancelled(indexed uint96,indexed bytes7)
+          handler: handleAuctionCancelled
+        - event: Curated(indexed uint96,indexed address)
+          handler: handleCurated
+        - event: Purchase(indexed uint96,indexed address,address,uint256,uint256)
+          handler: handlePurchase
+        - event: ModuleInstalled(indexed bytes5,indexed uint8,indexed address)
+          handler: handleModuleInstalled
+        - event: ModuleSunset(indexed bytes5)
+          handler: handleModuleSunset
+        - event: OwnershipTransferred(indexed address,indexed address)
+          handler: handleOwnershipTransferred
+      file: ./src/atomicAuctionHouse.ts
+  # BatchAuctionHouse
+  - kind: ethereum
+    name: BatchAuctionHouse
+    network: {{network}}
+    source:
+      abi: BatchAuctionHouse
+      address: "{{BatchAuctionHouse.address}}"
+      startBlock: {{BatchAuctionHouse.startBlock}}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - BatchAuctionCreated
+        - BatchAuctionCancelled
+        - BatchAuctionCurated
+        - BatchAuctionSettled
+        - BatchBid
+        - BatchBidRefunded
+        - BatchBidClaimed
+        - AuctionHouseModuleInstalled
+        - AuctionHouseModuleSunset
+        - AuctionHouseOwnershipTransferred
+      abis:
+        - name: BatchAuctionHouse
+          file: ./abis/BatchAuctionHouse.json
+        - name: BatchAuctionModule
+          file: ./abis/modules/BatchAuctionModule.json
+        - name: EncryptedMarginalPrice
+          file: ./abis/modules/EncryptedMarginalPrice.json
+        - name: LinearVesting
+          file: ./abis/modules/LinearVesting.json
+        - name: ERC20
+          file: ./abis/ERC20.json
+      eventHandlers:
+        - event: AuctionCancelled(indexed uint96,indexed bytes7)
+          handler: handleAuctionCancelled
+        - event: AuctionCreated(indexed uint96,indexed bytes7,string)
+          handler: handleAuctionCreated
+        - event: Bid(indexed uint96,indexed uint96,indexed address,uint256)
+          handler: handleBid
+        - event: ClaimBid(indexed uint96,indexed uint96,indexed address)
+          handler: handleBidClaimed
+        - event: Curated(indexed uint96,indexed address)
+          handler: handleCurated
+        - event: ModuleInstalled(indexed bytes5,indexed uint8,indexed address)
+          handler: handleModuleInstalled
+        - event: ModuleSunset(indexed bytes5)
+          handler: handleModuleSunset
+        - event: OwnershipTransferred(indexed address,indexed address)
+          handler: handleOwnershipTransferred
+        - event: RefundBid(indexed uint96,indexed uint96,indexed address)
+          handler: handleRefundBid
+        - event: Settle(indexed uint96)
+          handler: handleSettle
+        # TODO add abort handler
+      file: ./src/batchAuctionHouse.ts
+  - kind: ethereum
+    name: EncryptedMarginalPrice
+    network: {{network}}
+    source:
+      abi: EncryptedMarginalPrice
+      address: "{{EncryptedMarginalPrice.address}}"
+      startBlock: {{EncryptedMarginalPrice.startBlock}}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - BatchBidDecrypted
+      abis:
+        - name: BatchAuctionHouse
+          file: ./abis/BatchAuctionHouse.json
+        - name: BatchAuctionModule
+          file: ./abis/modules/BatchAuctionModule.json
+        - name: EncryptedMarginalPrice
+          file: ./abis/modules/EncryptedMarginalPrice.json
+        - name: ERC20
+          file: ./abis/ERC20.json
+      eventHandlers:
+        - event: BidDecrypted(indexed uint96,indexed uint64,uint96,uint96)
+          handler: handleBidDecrypted
+      file: ./src/handleEncryptedMarginalPrice.ts
