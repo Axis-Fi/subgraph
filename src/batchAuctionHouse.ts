@@ -147,9 +147,9 @@ export function handleAuctionCreated(event: AuctionCreatedEvent): void {
     ? null
     : auctionFees.getCurator();
   auctionLot.curatorApproved = false;
-  auctionLot.curatorFee = toDecimal(auctionFees.getCuratorFee(), 10 ** 5);
-  auctionLot.protocolFee = toDecimal(auctionFees.getProtocolFee(), 10 ** 5);
-  auctionLot.referrerFee = toDecimal(auctionFees.getReferrerFee(), 10 ** 5);
+  auctionLot.curatorFee = toDecimal(auctionFees.getCuratorFee(), 5);
+  auctionLot.protocolFee = toDecimal(auctionFees.getProtocolFee(), 5);
+  auctionLot.referrerFee = toDecimal(auctionFees.getReferrerFee(), 5);
 
   // Set initial values
   auctionLot.capacity = auctionLot.capacityInitial;
