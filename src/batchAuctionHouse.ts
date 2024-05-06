@@ -8,6 +8,7 @@ import {
 } from "@graphprotocol/graph-ts";
 
 import {
+  Abort as AbortEvent,
   AuctionCancelled as AuctionCancelledEvent,
   AuctionCreated as AuctionCreatedEvent,
   Bid as BidEvent,
@@ -23,6 +24,7 @@ import {
   AuctionHouseModuleInstalled,
   AuctionHouseModuleSunset,
   AuctionHouseOwnershipTransferred,
+  BatchAuctionAborted,
   BatchAuctionCancelled,
   BatchAuctionCreated,
   BatchAuctionCurated,
@@ -258,6 +260,42 @@ export function handleSettle(event: SettleEvent): void {
   const lotRecord = getLotRecord(event.address, lotId);
 
   const entity = new BatchAuctionSettled(
+    event.transaction.hash.concatI32(event.logIndex.toI32()),
+  );
+  entity.lot = lotRecord.id;
+  entity.blockNumber = event.block.number;
+  entity.blockTimestamp = event.block.timestamp;
+  entity.date = toISO8601String(event.block.timestamp);
+  entity.transactionHash = event.transaction.hash;
+  entity.save();
+
+  _updateAuctionLot(
+    event.address,
+    lotId,
+    event.block,
+    event.transaction.hash,
+    null,
+  );
+
+  // Iterate over all bids and update their status
+  updateBidsStatus(
+    event.address,
+    Bytes.fromUTF8(lotRecord.auctionType),
+    lotRecord,
+  );
+  updateBidsAmounts(
+    event.address,
+    Bytes.fromUTF8(lotRecord.auctionType),
+    lotRecord,
+  );
+}
+
+export function handleAbort(event: AbortEvent): void {
+  const lotId = event.params.lotId;
+
+  const lotRecord = getLotRecord(event.address, lotId);
+
+  const entity = new BatchAuctionAborted(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   );
   entity.lot = lotRecord.id;

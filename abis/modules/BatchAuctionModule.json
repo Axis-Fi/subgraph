@@ -48,6 +48,19 @@
     },
     {
       "type": "function",
+      "name": "abort",
+      "inputs": [
+        {
+          "name": "lotId_",
+          "type": "uint96",
+          "internalType": "uint96"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
       "name": "auction",
       "inputs": [
         {
@@ -243,37 +256,16 @@
     },
     {
       "type": "function",
-      "name": "claimProceeds",
-      "inputs": [
-        {
-          "name": "lotId_",
-          "type": "uint96",
-          "internalType": "uint96"
-        }
-      ],
+      "name": "dedicatedSettlePeriod",
+      "inputs": [],
       "outputs": [
         {
-          "name": "purchased",
-          "type": "uint256",
-          "internalType": "uint256"
-        },
-        {
-          "name": "sold",
-          "type": "uint256",
-          "internalType": "uint256"
-        },
-        {
-          "name": "capacity",
-          "type": "uint256",
-          "internalType": "uint256"
-        },
-        {
-          "name": "auctionOutput",
-          "type": "bytes",
-          "internalType": "bytes"
+          "name": "",
+          "type": "uint48",
+          "internalType": "uint48"
         }
       ],
-      "stateMutability": "nonpayable"
+      "stateMutability": "view"
     },
     {
       "type": "function",
@@ -563,6 +555,19 @@
     },
     {
       "type": "function",
+      "name": "setDedicatedSettlePeriod",
+      "inputs": [
+        {
+          "name": "period_",
+          "type": "uint48",
+          "internalType": "uint48"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
       "name": "setMinAuctionDuration",
       "inputs": [
         {
@@ -582,6 +587,11 @@
           "name": "lotId_",
           "type": "uint96",
           "internalType": "uint96"
+        },
+        {
+          "name": "num_",
+          "type": "uint256",
+          "internalType": "uint256"
         }
       ],
       "outputs": [
@@ -596,6 +606,16 @@
           "internalType": "uint256"
         },
         {
+          "name": "capacity",
+          "type": "uint256",
+          "internalType": "uint256"
+        },
+        {
+          "name": "finished",
+          "type": "bool",
+          "internalType": "bool"
+        },
+        {
           "name": "auctionOutput",
           "type": "bytes",
           "internalType": "bytes"
@@ -607,6 +627,17 @@
       "type": "error",
       "name": "Auction_AmountLessThanMinimum",
       "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "Auction_DedicatedSettlePeriod",
+      "inputs": [
+        {
+          "name": "lotId",
+          "type": "uint96",
+          "internalType": "uint96"
+        }
+      ]
     },
     {
       "type": "error",
@@ -679,7 +710,7 @@
     },
     {
       "type": "error",
-      "name": "Auction_MarketActive",
+      "name": "Auction_LotActive",
       "inputs": [
         {
           "name": "lotId",
@@ -690,7 +721,18 @@
     },
     {
       "type": "error",
-      "name": "Auction_MarketNotActive",
+      "name": "Auction_LotNotActive",
+      "inputs": [
+        {
+          "name": "lotId",
+          "type": "uint96",
+          "internalType": "uint96"
+        }
+      ]
+    },
+    {
+      "type": "error",
+      "name": "Auction_LotNotConcluded",
       "inputs": [
         {
           "name": "lotId",
@@ -716,7 +758,7 @@
     },
     {
       "type": "error",
-      "name": "Auction_OnlyMarketOwner",
+      "name": "Auction_OnlyLotOwner",
       "inputs": []
     },
     {

@@ -8,7 +8,7 @@
   "license": "ISC",
   "workspaces": [],
   "scripts": {
-    "codegen": "rm -rf generated/ && graph codegen && pnpm eslint --config ./.eslintrc.json --fix generated/",
+    "codegen": "rm -rf generated/ && graph codegen && pnpm run lint",
     "lint": "prettier --write \"**/*.{ts,md,json}\" && eslint --config ./.eslintrc.json --fix",
     "test": "graph test --version 0.5.3",
     "test:docker": "pnpm run test --docker",

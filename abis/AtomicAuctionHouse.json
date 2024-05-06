@@ -612,6 +612,67 @@
     },
     {
       "type": "function",
+      "name": "multiPurchase",
+      "inputs": [
+        {
+          "name": "params_",
+          "type": "tuple[]",
+          "internalType": "struct IAtomicAuctionHouse.PurchaseParams[]",
+          "components": [
+            {
+              "name": "recipient",
+              "type": "address",
+              "internalType": "address"
+            },
+            {
+              "name": "referrer",
+              "type": "address",
+              "internalType": "address"
+            },
+            {
+              "name": "lotId",
+              "type": "uint96",
+              "internalType": "uint96"
+            },
+            {
+              "name": "amount",
+              "type": "uint256",
+              "internalType": "uint256"
+            },
+            {
+              "name": "minAmountOut",
+              "type": "uint256",
+              "internalType": "uint256"
+            },
+            {
+              "name": "auctionData",
+              "type": "bytes",
+              "internalType": "bytes"
+            },
+            {
+              "name": "permit2Data",
+              "type": "bytes",
+              "internalType": "bytes"
+            }
+          ]
+        },
+        {
+          "name": "callbackData_",
+          "type": "bytes[]",
+          "internalType": "bytes[]"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "payoutAmounts",
+          "type": "uint256[]",
+          "internalType": "uint256[]"
+        }
+      ],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
       "name": "owner",
       "inputs": [],
       "outputs": [

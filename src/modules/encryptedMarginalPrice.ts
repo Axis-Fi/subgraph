@@ -79,10 +79,9 @@ export function createEncryptedMarginalPriceLot(
     lotAuctionData.getMinFilled(),
     baseToken.decimals,
   );
-  // TODO this should be changed to quote tokens upon the next deployment
   empLot.minBidSize = toDecimal(
     lotAuctionData.getMinBidSize(),
-    baseToken.decimals,
+    quoteToken.decimals,
   );
   empLot.save();
 }
