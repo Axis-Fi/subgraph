@@ -161,6 +161,7 @@ type BatchAuctionLot @entity {
   lastUpdatedDate: String!
   lastUpdatedTransactionHash: Bytes!
 
+  # Bids
   maxBidId: BigInt! # uint96
 
   # Reverse lookups
@@ -313,10 +314,14 @@ type BatchEncryptedMarginalPriceLot @entity {
   lot: BatchAuctionLot!
 
   status: String! # enum: "Created" | "Decrypted" | "Settled"
-  marginalPrice: BigDecimal # uint256
   minPrice: BigDecimal! # uint256
   minFilled: BigDecimal! # uint256
   minBidSize: BigDecimal! # uint256
+
+  # Only set on settlement
+  marginalPrice: BigDecimal # uint256
+  hasPartialFill: Boolean # Only set after settlement
+  partialBidId: BigInt # uint96 # Only set after settlement
 }
 
 type BatchLinearVestingLot @entity(immutable: true) {

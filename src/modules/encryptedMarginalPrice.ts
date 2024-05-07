@@ -1,15 +1,6 @@
-import {
-  Address,
-  BigDecimal,
-  BigInt,
-  Bytes,
-  log,
-} from "@graphprotocol/graph-ts";
+import { Address, BigInt, Bytes, log } from "@graphprotocol/graph-ts";
 
-import {
-  AuctionCreated,
-  BatchAuctionHouse,
-} from "../../generated/BatchAuctionHouse/BatchAuctionHouse";
+import { BatchAuctionHouse } from "../../generated/BatchAuctionHouse/BatchAuctionHouse";
 import { EncryptedMarginalPrice } from "../../generated/BatchAuctionHouse/EncryptedMarginalPrice";
 import {
   BatchAuctionLot,
@@ -46,13 +37,18 @@ function _getLotStatus(status: i32): string {
   }
 }
 
+function _getEncryptedMarginalPriceLotId(
+  batchAuctionLot: BatchAuctionLot,
+): Bytes {
+  return Bytes.fromUTF8(batchAuctionLot.id);
+}
+
 export function createEncryptedMarginalPriceLot(
   batchAuctionLot: BatchAuctionLot,
-  createdEvent: AuctionCreated,
 ): void {
   const empLot: BatchEncryptedMarginalPriceLot =
     new BatchEncryptedMarginalPriceLot(
-      createdEvent.transaction.hash.concatI32(createdEvent.logIndex.toI32()),
+      _getEncryptedMarginalPriceLotId(batchAuctionLot),
     );
   empLot.lot = batchAuctionLot.id;
   log.info("Adding BatchEncryptedMarginalPriceLot for lot: {}", [empLot.lot]);
@@ -83,6 +79,54 @@ export function createEncryptedMarginalPriceLot(
     lotAuctionData.getMinBidSize(),
     quoteToken.decimals,
   );
+  empLot.save();
+}
+
+export function updateEncryptedMarginalPriceLot(
+  batchAuctionLot: BatchAuctionLot,
+  lotId: BigInt,
+): void {
+  const empLot = BatchEncryptedMarginalPriceLot.load(
+    _getEncryptedMarginalPriceLotId(batchAuctionLot),
+  );
+
+  // Check if null
+  if (empLot == null) {
+    throw new Error(
+      "Expected EncryptedMarginalPriceLot to exist for record id " +
+        batchAuctionLot.id,
+    );
+  }
+
+  // Get the EncryptedMarginalPrice module
+  const encryptedMarginalPrice = getEncryptedMarginalPriceModule(
+    Address.fromBytes(batchAuctionLot.auctionHouse),
+    Bytes.fromUTF8(batchAuctionLot.auctionType),
+  );
+
+  const quoteToken = getOrCreateToken(batchAuctionLot.quoteToken);
+  const lotAuctionData = encryptedMarginalPrice.auctionData(lotId);
+
+  empLot.status = _getLotStatus(lotAuctionData.getStatus());
+
+  // No need to set the minPrice, minFilled and minBidSize again
+
+  // If settled
+  if (empLot.status == "Settled") {
+    // Set the marginal price
+    empLot.marginalPrice = toDecimal(
+      lotAuctionData.getMarginalPrice(),
+      quoteToken.decimals,
+    );
+
+    // Detect partial fill
+    const partialFillData = encryptedMarginalPrice.getPartialFill(lotId);
+    empLot.hasPartialFill = partialFillData.getHasPartialFill();
+    if (empLot.hasPartialFill == true) {
+      empLot.partialBidId = partialFillData.getPartialFill().bidId;
+    }
+  }
+
   empLot.save();
 }
 

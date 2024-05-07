@@ -59,6 +59,7 @@ import {
 import {
   createEncryptedMarginalPriceLot,
   EMP_KEYCODE,
+  updateEncryptedMarginalPriceLot,
 } from "./modules/encryptedMarginalPrice";
 
 function _updateAuctionLot(
@@ -98,6 +99,11 @@ function _updateAuctionLot(
 
   const auctionCuration = getAuctionCuration(auctionHouseAddress, lotId);
   entity.curatorApproved = auctionCuration.getCurated();
+
+  // If using EncryptedMarginalPrice, update details
+  if (entity.auctionType.includes(EMP_KEYCODE)) {
+    updateEncryptedMarginalPriceLot(entity, lotId);
+  }
 
   entity.save();
 }
@@ -161,6 +167,8 @@ export function handleAuctionCreated(event: AuctionCreatedEvent): void {
     auctionLotContractRecord.getPurchased(),
     auctionLotContractRecord.getQuoteTokenDecimals(),
   );
+
+  // Set initial values for bids
   auctionLot.maxBidId = BigInt.fromI32(0);
 
   auctionLot.lastUpdatedBlockNumber = event.block.number;
@@ -172,7 +180,7 @@ export function handleAuctionCreated(event: AuctionCreatedEvent): void {
 
   // If using EncryptedMarginalPrice, save details
   if (auctionLot.auctionType.includes(EMP_KEYCODE)) {
-    createEncryptedMarginalPriceLot(auctionLot, event);
+    createEncryptedMarginalPriceLot(auctionLot);
   }
 
   // If using LinearVesting, save details

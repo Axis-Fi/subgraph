@@ -3162,23 +3162,6 @@ export class BatchEncryptedMarginalPriceLot extends Entity {
     this.set("status", Value.fromString(value));
   }
 
-  get marginalPrice(): BigDecimal | null {
-    let value = this.get("marginalPrice");
-    if (!value || value.kind == ValueKind.NULL) {
-      return null;
-    } else {
-      return value.toBigDecimal();
-    }
-  }
-
-  set marginalPrice(value: BigDecimal | null) {
-    if (!value) {
-      this.unset("marginalPrice");
-    } else {
-      this.set("marginalPrice", Value.fromBigDecimal(<BigDecimal>value));
-    }
-  }
-
   get minPrice(): BigDecimal {
     let value = this.get("minPrice");
     if (!value || value.kind == ValueKind.NULL) {
@@ -3216,6 +3199,53 @@ export class BatchEncryptedMarginalPriceLot extends Entity {
 
   set minBidSize(value: BigDecimal) {
     this.set("minBidSize", Value.fromBigDecimal(value));
+  }
+
+  get marginalPrice(): BigDecimal | null {
+    let value = this.get("marginalPrice");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigDecimal();
+    }
+  }
+
+  set marginalPrice(value: BigDecimal | null) {
+    if (!value) {
+      this.unset("marginalPrice");
+    } else {
+      this.set("marginalPrice", Value.fromBigDecimal(<BigDecimal>value));
+    }
+  }
+
+  get hasPartialFill(): boolean {
+    let value = this.get("hasPartialFill");
+    if (!value || value.kind == ValueKind.NULL) {
+      return false;
+    } else {
+      return value.toBoolean();
+    }
+  }
+
+  set hasPartialFill(value: boolean) {
+    this.set("hasPartialFill", Value.fromBoolean(value));
+  }
+
+  get partialBidId(): BigInt | null {
+    let value = this.get("partialBidId");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set partialBidId(value: BigInt | null) {
+    if (!value) {
+      this.unset("partialBidId");
+    } else {
+      this.set("partialBidId", Value.fromBigInt(<BigInt>value));
+    }
   }
 }
 
