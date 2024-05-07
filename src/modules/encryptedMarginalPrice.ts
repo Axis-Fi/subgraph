@@ -91,8 +91,7 @@ export function updateBidAmount(
   auctionRef: Bytes,
   lotRecord: BatchAuctionLot,
   bidId: BigInt,
-  // remainingCapacity: BigDecimal
-): BigDecimal {
+): void {
   const empModule = getEncryptedMarginalPriceModule(
     auctionHouseAddress,
     auctionRef,
@@ -101,46 +100,35 @@ export function updateBidAmount(
   // Get the bid record
   const entity = getBidRecord(lotRecord, bidId);
 
-  // Get marginal price from contract
-  const rawMarginalPrice = empModule
-    .auctionData(lotRecord.lotId)
-    .getMarginalPrice();
+  // Fetch decimals
+  const quoteToken = getOrCreateToken(lotRecord.quoteToken);
+  const baseToken = getOrCreateToken(lotRecord.baseToken);
 
-  // Get the raw amount out
-  const rawAmountOut = entity.rawAmountOut || BigInt.fromI32(0);
-  const rawSubmittedPrice = entity.rawSubmittedPrice || BigInt.fromI32(0);
+  // Get the bid claim from the contract
+  const bidClaim = empModule.getBidClaim(lotRecord.lotId, bidId);
 
-  const settledAmountOut = BigDecimal.fromString("0");
-  const ZERO = BigInt.fromI32(0);
+  entity.settledAmountInRefunded = toDecimal(
+    bidClaim.refund,
+    quoteToken.decimals,
+  );
+  entity.settledAmountIn = toDecimal(bidClaim.paid, quoteToken.decimals).minus(
+    entity.settledAmountInRefunded,
+  );
+  entity.settledAmountOut = toDecimal(bidClaim.payout, baseToken.decimals);
 
-  // Ensure the bid has been decrypted and has a valid value
-  if (rawAmountOut && rawAmountOut.gt(BigInt.fromI32(0))) {
-    // A bid is won if its submitted price is >= than marginalPrice
-    if (
-      rawSubmittedPrice &&
-      rawSubmittedPrice.ge(rawMarginalPrice) &&
-      rawSubmittedPrice.gt(ZERO) &&
-      rawMarginalPrice.gt(ZERO)
-    ) {
-      // Calculate the actual amount out
-      const rawSettledAmountOut = entity.rawAmountIn.div(rawMarginalPrice);
-      // entity.remainingCapacity = remainingCapacity;
-      // The lowest winning bid may not be fully filled out
-      // So it gets the remaining capacity
-      // settledAmountOut = rawSettledAmountOut
-      //   .toBigDecimal()
-      //   .gt(remainingCapacity)
-      //   ? remainingCapacity
-      //   : rawSettledAmountOut.toBigDecimal();
-
-      entity.settledAmountOut = rawSettledAmountOut.toBigDecimal();
-      entity.status = "won";
-    } else {
-      entity.status = "lost";
-    }
+  // Set the status
+  // If there is a payout and a refund, it is a partial fill
+  if (bidClaim.refund.gt(BigInt.zero()) && bidClaim.payout.gt(BigInt.zero())) {
+    entity.status = "won - partial fill";
+  }
+  // If there is a payout, it is won
+  else if (bidClaim.payout.gt(BigInt.zero())) {
+    entity.status = "won";
+  }
+  // If there is a refund, it is lost
+  else {
+    entity.status = "lost";
   }
 
   entity.save();
-  // Returns the amount settled to decrease remaining capacity
-  return settledAmountOut;
 }

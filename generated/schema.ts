@@ -2456,6 +2456,43 @@ export class BatchBid extends Entity {
     }
   }
 
+  get settledAmountIn(): BigDecimal | null {
+    let value = this.get("settledAmountIn");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigDecimal();
+    }
+  }
+
+  set settledAmountIn(value: BigDecimal | null) {
+    if (!value) {
+      this.unset("settledAmountIn");
+    } else {
+      this.set("settledAmountIn", Value.fromBigDecimal(<BigDecimal>value));
+    }
+  }
+
+  get settledAmountInRefunded(): BigDecimal | null {
+    let value = this.get("settledAmountInRefunded");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigDecimal();
+    }
+  }
+
+  set settledAmountInRefunded(value: BigDecimal | null) {
+    if (!value) {
+      this.unset("settledAmountInRefunded");
+    } else {
+      this.set(
+        "settledAmountInRefunded",
+        Value.fromBigDecimal(<BigDecimal>value),
+      );
+    }
+  }
+
   get settledAmountOut(): BigDecimal | null {
     let value = this.get("settledAmountOut");
     if (!value || value.kind == ValueKind.NULL) {

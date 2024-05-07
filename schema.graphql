@@ -242,6 +242,10 @@ type BatchBid @entity {
   rawAmountIn: BigInt!
   rawAmountOut: BigInt
 
+  # Equal to the amount of quote tokens that were settled. Equal to `amountIn - settledAmountInRefunded`
+  settledAmountIn: BigDecimal # uint256
+  # Equal to the amount of quote tokens that were refunded, in the case of a partial fill
+  settledAmountInRefunded: BigDecimal # uint256
   settledAmountOut: BigDecimal # uint256
   submittedPrice: BigDecimal
 
@@ -249,7 +253,7 @@ type BatchBid @entity {
   rawSubmittedPrice: BigInt
   remainingCapacity: BigDecimal
 
-  status: String! # enum: "submitted" | "decrypted" | "won" | "refunded" | "claimed"
+  status: String! # enum: "submitted" | "decrypted" | "won" | "won - partial fill" | "refunded" | "claimed"
 
   blockNumber: BigInt!
   blockTimestamp: BigInt!

@@ -105,7 +105,6 @@ export function updateBidsAmounts(
   lotRecord: BatchAuctionLot,
 ): void {
   const maxBidId = lotRecord.maxBidId;
-  // let capacity = lotRecord.capacityInitial;
 
   for (
     let i = BigInt.fromI32(1);
@@ -113,6 +112,5 @@ export function updateBidsAmounts(
     i = i.plus(BigInt.fromI32(1))
   ) {
     updateBidAmount(auctionHouseAddress, auctionRef, lotRecord, i);
-    // capacity = capacity.minus(remaining);
   }
 }
