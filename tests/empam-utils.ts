@@ -1,15 +1,18 @@
-import { BigInt, ethereum } from "@graphprotocol/graph-ts";
-import { newMockEvent } from "matchstick-as";
+import { Address, BigInt, ethereum } from "@graphprotocol/graph-ts";
 
 import { BidDecrypted } from "../generated/BatchAuctionHouse/EncryptedMarginalPrice";
+import { newMockEvent } from "./mocks/event";
 
 export function createBidDecryptedEvent(
   lotId: BigInt,
   bidId: BigInt,
   amountIn: BigInt,
   amountOut: BigInt,
+  auctionModule: Address,
 ): BidDecrypted {
-  const bidDecryptedEvent = changetype<BidDecrypted>(newMockEvent());
+  const bidDecryptedEvent = changetype<BidDecrypted>(
+    newMockEvent(auctionModule),
+  );
 
   bidDecryptedEvent.parameters = [];
 

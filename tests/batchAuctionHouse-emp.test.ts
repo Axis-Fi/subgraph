@@ -74,9 +74,8 @@ const BASE_TOKEN = Address.fromString(
 const lotId = BigInt.fromI32(234);
 const infoHash = "infoHashValueGoesHere";
 
-// 0xa16081f360e3847006db660bae1c6d1b2e17ec2a is the default address used in newMockEvent() function
-const eventAddress: Address = Address.fromString(
-  "0xa16081f360e3847006db660bae1c6d1b2e17ec2a",
+const auctionHouse: Address = Address.fromString(
+  "0xBA00003Cc5713c5339f4fD5cA0339D54A88BC87b",
 );
 
 const auctionModuleAddress: Address = Address.fromString(
@@ -129,6 +128,7 @@ function _createAuctionLot(): void {
     lotId,
     auctionRef,
     infoHash,
+    auctionHouse,
   );
   setChain("mainnet");
 
@@ -146,9 +146,9 @@ function _createAuctionLot(): void {
     lotQuoteTokenDecimals,
     BigInt.fromU64(1_000_000_000_000_000_000),
   );
-  mockGetModuleForId(eventAddress, lotId, auctionModuleAddress);
+  mockGetModuleForId(auctionHouse, lotId, auctionModuleAddress);
   mockGetModuleForVeecode(
-    eventAddress,
+    auctionHouse,
     auctionModuleVeecode,
     auctionModuleAddress,
   );
@@ -165,7 +165,7 @@ function _createAuctionLot(): void {
     lotPurchased,
   );
   mockLotRouting(
-    eventAddress,
+    auctionHouse,
     lotId,
     SELLER,
     BASE_TOKEN,
@@ -178,7 +178,7 @@ function _createAuctionLot(): void {
     Bytes.fromUTF8(""),
   );
   mockLotFees(
-    eventAddress,
+    auctionHouse,
     lotId,
     lotFeesCurator,
     lotFeesCuratorApproved,
@@ -206,7 +206,13 @@ function _createAuctionLot(): void {
 }
 
 function _createBid(): void {
-  const bidEvent = createBidEvent(lotId, bidId, BIDDER, bidAmountIn);
+  const bidEvent = createBidEvent(
+    lotId,
+    bidId,
+    BIDDER,
+    bidAmountIn,
+    auctionHouse,
+  );
 
   mockEmpBid(
     auctionModuleAddress,
@@ -233,7 +239,7 @@ describe("auction creation", () => {
 
   test("BatchAuctionCreated created and stored", () => {
     const recordId =
-      "mainnet-" + eventAddress.toHexString() + "-" + lotId.toString();
+      "mainnet-" + auctionHouse.toHexString() + "-" + lotId.toString();
 
     // BatchAuctionCreated record is created
     assert.entityCount("BatchAuctionCreated", 1);
@@ -280,7 +286,7 @@ describe("auction creation", () => {
     );
     assertBytesEquals(
       batchAuctionLotRecord.auctionHouse,
-      eventAddress,
+      auctionHouse,
       "BatchAuctionLot: auctionHouse",
     );
     assertBigIntEquals(
@@ -478,7 +484,11 @@ describe("auction cancellation", () => {
       BigInt.zero(),
     );
 
-    auctionCancelledEvent = createAuctionCancelledEvent(lotId, auctionRef);
+    auctionCancelledEvent = createAuctionCancelledEvent(
+      lotId,
+      auctionRef,
+      auctionHouse,
+    );
   });
 
   afterEach(() => {
@@ -489,7 +499,7 @@ describe("auction cancellation", () => {
     handleAuctionCancelled(auctionCancelledEvent);
 
     const recordId =
-      "mainnet-" + eventAddress.toHexString() + "-" + lotId.toString();
+      "mainnet-" + auctionHouse.toHexString() + "-" + lotId.toString();
 
     // BatchAuctionCancelled record is created
     assert.entityCount("BatchAuctionCancelled", 1);
@@ -574,7 +584,7 @@ describe("auction curation", () => {
 
     // Update mocks
     mockLotFees(
-      eventAddress,
+      auctionHouse,
       lotId,
       lotFeesCurator,
       true, // Curator approved
@@ -583,7 +593,11 @@ describe("auction curation", () => {
       lotFeesReferrerFee,
     );
 
-    auctionCuratedEvent = createCuratedEvent(lotId, lotFeesCurator);
+    auctionCuratedEvent = createCuratedEvent(
+      lotId,
+      lotFeesCurator,
+      auctionHouse,
+    );
   });
 
   afterEach(() => {
@@ -594,7 +608,7 @@ describe("auction curation", () => {
     handleCurated(auctionCuratedEvent);
 
     const recordId =
-      "mainnet-" + eventAddress.toHexString() + "-" + lotId.toString();
+      "mainnet-" + auctionHouse.toHexString() + "-" + lotId.toString();
 
     // BatchAuctionCurated record is stored
     assert.entityCount("BatchAuctionCurated", 1);
@@ -651,7 +665,7 @@ describe("bid", () => {
 
   test("BatchBid created and stored", () => {
     const lotRecordId =
-      "mainnet-" + eventAddress.toHexString() + "-" + lotId.toString();
+      "mainnet-" + auctionHouse.toHexString() + "-" + lotId.toString();
     const recordId = lotRecordId + "-" + bidId.toString();
 
     // BatchBid record is created
@@ -724,7 +738,12 @@ describe("bid refund", () => {
       2, // Claimed
     );
 
-    const bidRefundEvent = createRefundBidEvent(lotId, bidId, BIDDER);
+    const bidRefundEvent = createRefundBidEvent(
+      lotId,
+      bidId,
+      BIDDER,
+      auctionHouse,
+    );
     handleRefundBid(bidRefundEvent);
   });
 
@@ -734,7 +753,7 @@ describe("bid refund", () => {
 
   test("BatchBidRefunded created and stored", () => {
     const lotRecordId =
-      "mainnet-" + eventAddress.toHexString() + "-" + lotId.toString();
+      "mainnet-" + auctionHouse.toHexString() + "-" + lotId.toString();
     const recordId = lotRecordId + "-" + bidId.toString();
 
     // BatchBidRefunded record is created
@@ -776,23 +795,21 @@ describe("bid decryption", () => {
       bidReferrer,
       1, // Decrypted
     );
-    mockEmpParent(
-      auctionModuleAddress, // TODO need to change the event address
-      eventAddress
-    );
+    mockEmpParent(auctionModuleAddress, auctionHouse);
 
     const bidDecryptedEvent = createBidDecryptedEvent(
       lotId,
       bidId,
       bidAmountIn,
       bidAmountOut,
+      auctionModuleAddress,
     );
     handleBidDecrypted(bidDecryptedEvent);
   });
 
   test("BatchBidDecrypted created and stored", () => {
     const lotRecordId =
-      "mainnet-" + eventAddress.toHexString() + "-" + lotId.toString();
+      "mainnet-" + auctionHouse.toHexString() + "-" + lotId.toString();
     const bidRecordId = lotRecordId + "-" + bidId.toString();
 
     // BatchBidDecrypted record is created

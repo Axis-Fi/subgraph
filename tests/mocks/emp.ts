@@ -98,10 +98,7 @@ export function mockEmpBid(
   );
 }
 
-export function mockEmpParent(
-  module: Address,
-  parent: Address,
-): void {
+export function mockEmpParent(module: Address, parent: Address): void {
   mockFunction(
     module,
     "PARENT",

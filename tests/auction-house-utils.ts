@@ -1,5 +1,4 @@
 import { Address, BigInt, Bytes, ethereum } from "@graphprotocol/graph-ts";
-import { newMockEvent } from "matchstick-as";
 
 import { Purchase } from "../generated/AtomicAuctionHouse/AtomicAuctionHouse";
 import {
@@ -13,12 +12,16 @@ import {
   RefundBid,
   Settle,
 } from "../generated/BatchAuctionHouse/BatchAuctionHouse";
+import { newMockEvent } from "./mocks/event";
 
 export function createAuctionCancelledEvent(
   id: BigInt,
   auctionRef: Bytes,
+  auctionHouse: Address,
 ): AuctionCancelled {
-  const auctionCancelledEvent = changetype<AuctionCancelled>(newMockEvent());
+  const auctionCancelledEvent = changetype<AuctionCancelled>(
+    newMockEvent(auctionHouse),
+  );
 
   auctionCancelledEvent.parameters = [];
 
@@ -39,8 +42,11 @@ export function createAuctionCreatedEvent(
   id: BigInt,
   auctionRef: Bytes,
   infoHash: string,
+  auctionHouse: Address,
 ): AuctionCreated {
-  const auctionCreatedEvent = changetype<AuctionCreated>(newMockEvent());
+  const auctionCreatedEvent = changetype<AuctionCreated>(
+    newMockEvent(auctionHouse),
+  );
 
   auctionCreatedEvent.parameters = [];
 
@@ -65,8 +71,9 @@ export function createBidEvent(
   bidId_: BigInt,
   bidder: Address,
   amount: BigInt,
+  auctionHouse: Address,
 ): Bid {
-  const bidEvent = changetype<Bid>(newMockEvent());
+  const bidEvent = changetype<Bid>(newMockEvent(auctionHouse));
 
   bidEvent.parameters = [];
 
@@ -99,8 +106,9 @@ export function createRefundBidEvent(
   lotId_: BigInt,
   bidId_: BigInt,
   bidder: Address,
+  auctionHouse: Address,
 ): RefundBid {
-  const cancelBidEvent = changetype<RefundBid>(newMockEvent());
+  const cancelBidEvent = changetype<RefundBid>(newMockEvent(auctionHouse));
 
   cancelBidEvent.parameters = [];
 
@@ -123,8 +131,12 @@ export function createRefundBidEvent(
   return cancelBidEvent;
 }
 
-export function createCuratedEvent(id: BigInt, curator: Address): Curated {
-  const curatedEvent = changetype<Curated>(newMockEvent());
+export function createCuratedEvent(
+  id: BigInt,
+  curator: Address,
+  auctionHouse: Address,
+): Curated {
+  const curatedEvent = changetype<Curated>(newMockEvent(auctionHouse));
 
   curatedEvent.parameters = [];
 
@@ -142,8 +154,11 @@ export function createModuleInstalledEvent(
   keycode_: Bytes,
   version_: i32,
   address_: Address,
+  auctionHouse: Address,
 ): ModuleInstalled {
-  const moduleInstalledEvent = changetype<ModuleInstalled>(newMockEvent());
+  const moduleInstalledEvent = changetype<ModuleInstalled>(
+    newMockEvent(auctionHouse),
+  );
 
   moduleInstalledEvent.parameters = [];
 
@@ -166,8 +181,13 @@ export function createModuleInstalledEvent(
   return moduleInstalledEvent;
 }
 
-export function createModuleSunsetEvent(keycode_: Bytes): ModuleSunset {
-  const moduleSunsetEvent = changetype<ModuleSunset>(newMockEvent());
+export function createModuleSunsetEvent(
+  keycode_: Bytes,
+  auctionHouse: Address,
+): ModuleSunset {
+  const moduleSunsetEvent = changetype<ModuleSunset>(
+    newMockEvent(auctionHouse),
+  );
 
   moduleSunsetEvent.parameters = [];
 
@@ -184,9 +204,11 @@ export function createModuleSunsetEvent(keycode_: Bytes): ModuleSunset {
 export function createOwnershipTransferredEvent(
   user: Address,
   newOwner: Address,
+  auctionHouse: Address,
 ): OwnershipTransferred {
-  const ownershipTransferredEvent =
-    changetype<OwnershipTransferred>(newMockEvent());
+  const ownershipTransferredEvent = changetype<OwnershipTransferred>(
+    newMockEvent(auctionHouse),
+  );
 
   ownershipTransferredEvent.parameters = [];
 
@@ -206,8 +228,9 @@ export function createPurchaseEvent(
   referrer: Address,
   amount: BigInt,
   payout: BigInt,
+  auctionHouse: Address,
 ): Purchase {
-  const purchaseEvent = changetype<Purchase>(newMockEvent());
+  const purchaseEvent = changetype<Purchase>(newMockEvent(auctionHouse));
 
   purchaseEvent.parameters = [];
 
@@ -239,8 +262,11 @@ export function createPurchaseEvent(
   return purchaseEvent;
 }
 
-export function createSettleEvent(lotId_: BigInt): Settle {
-  const settleEvent = changetype<Settle>(newMockEvent());
+export function createSettleEvent(
+  lotId_: BigInt,
+  auctionHouse: Address,
+): Settle {
+  const settleEvent = changetype<Settle>(newMockEvent(auctionHouse));
 
   settleEvent.parameters = [];
 
