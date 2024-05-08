@@ -190,7 +190,7 @@ type BatchAuctionCreated @entity(immutable: true) {
 }
 
 type BatchAuctionCancelled @entity(immutable: true) {
-  id: Bytes!
+  id: String! # chain-auctionHouse-lotId
   lot: BatchAuctionLot!
   auctionRef: Bytes! # bytes7
 

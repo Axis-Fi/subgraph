@@ -217,9 +217,7 @@ export function handleAuctionCancelled(event: AuctionCancelledEvent): void {
 
   const lotRecord = getLotRecord(event.address, lotId);
 
-  const entity = new BatchAuctionCancelled(
-    event.transaction.hash.concatI32(event.logIndex.toI32()),
-  );
+  const entity = new BatchAuctionCancelled(lotRecord.id);
   entity.lot = lotRecord.id;
   entity.auctionRef = event.params.auctionRef;
 

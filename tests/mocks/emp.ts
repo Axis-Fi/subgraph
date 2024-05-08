@@ -41,3 +41,30 @@ export function mockEmpAuctionData(
     false,
   );
 }
+
+export function mockEmpPartialFill(
+  module: Address,
+  lotId: BigInt,
+  hasPartialFill: boolean,
+  bidId: i32,
+  refund: BigInt,
+  payout: BigInt,
+): void {
+  const partialFill: ethereum.Tuple = changetype<ethereum.Tuple>([
+    ethereum.Value.fromI32(bidId),
+    ethereum.Value.fromUnsignedBigInt(refund),
+    ethereum.Value.fromUnsignedBigInt(payout),
+  ]);
+
+  mockFunction(
+    module,
+    "getPartialFill",
+    "getPartialFill(uint96):(bool,(uint64,uint96,uint256))",
+    [ethereum.Value.fromUnsignedBigInt(lotId)],
+    [
+      ethereum.Value.fromBoolean(hasPartialFill),
+      ethereum.Value.fromTuple(partialFill),
+    ],
+    false,
+  );
+}

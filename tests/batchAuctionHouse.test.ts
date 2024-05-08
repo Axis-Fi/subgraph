@@ -9,13 +9,20 @@ import {
   test,
 } from "matchstick-as/assembly/index";
 
-import { AuctionCreated } from "../generated/BatchAuctionHouse/BatchAuctionHouse";
 import {
+  AuctionCancelled,
+  AuctionCreated,
+} from "../generated/BatchAuctionHouse/BatchAuctionHouse";
+import {
+  BatchAuctionCancelled,
   BatchAuctionCreated,
   BatchAuctionLot,
   BatchEncryptedMarginalPriceLot,
 } from "../generated/schema";
-import { handleAuctionCreated } from "../src/batchAuctionHouse";
+import {
+  handleAuctionCancelled,
+  handleAuctionCreated,
+} from "../src/batchAuctionHouse";
 import { toDecimal } from "../src/helpers/number";
 import {
   assertBigDecimalEquals,
@@ -25,51 +32,17 @@ import {
   assertNull,
   assertStringEquals,
 } from "./assert";
-import { createAuctionCreatedEvent } from "./auction-house-utils";
+import {
+  createAuctionCancelledEvent,
+  createAuctionCreatedEvent,
+} from "./auction-house-utils";
 import { mockGetModuleForVeecode } from "./mocks/baseAuctionHouse";
 import { mockGetModuleForId } from "./mocks/baseAuctionHouse";
 import { mockLotRouting } from "./mocks/baseAuctionHouse";
 import { mockLotFees } from "./mocks/baseAuctionHouse";
 import { mockLotData } from "./mocks/batchAuctionHouse";
-import { mockEmpAuctionData } from "./mocks/emp";
+import { mockEmpAuctionData, mockEmpPartialFill } from "./mocks/emp";
 import { mockToken } from "./mocks/token";
-
-// Tests structure (matchstick-as >=0.5.0)
-// https://thegraph.com/docs/en/developer/matchstick/#tests-structure-0-5-0
-
-// describe("Describe entity assertions", () => {
-//   beforeAll(() => {
-//     const id = BigInt.fromI32(234);
-//     const auctionRef = Bytes.fromI32(1234567890);
-//     const newAuctionCancelledEvent = createAuctionCancelledEvent(
-//       id,
-//       auctionRef,
-//     );
-//     handleAuctionCancelled(newAuctionCancelledEvent);
-//   });
-
-//   afterAll(() => {
-//     clearStore();
-//   });
-
-//   // For more test scenarios, see:
-//   // https://thegraph.com/docs/en/developer/matchstick/#write-a-unit-test
-
-//   test("AuctionCancelled created and stored", () => {
-//     assert.entityCount("AuctionCancelled", 1);
-
-//     // 0xa16081f360e3847006db660bae1c6d1b2e17ec2a is the default address used in newMockEvent() function
-//     assert.fieldEquals(
-//       "AuctionCancelled",
-//       "0xa16081f360e3847006db660bae1c6d1b2e17ec2a-1",
-//       "auctionRef",
-//       "1234567890",
-//     );
-
-//     // More assert options:
-//     // https://thegraph.com/docs/en/developer/matchstick/#asserts
-//   });
-// });
 
 const auctionModuleVeecode = "01EMPA";
 const QUOTE_TOKEN = Address.fromString(
@@ -78,7 +51,7 @@ const QUOTE_TOKEN = Address.fromString(
 const BASE_TOKEN = Address.fromString(
   "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
 );
-const id = BigInt.fromI32(234);
+const lotId = BigInt.fromI32(234);
 const infoHash = "infoHashValueGoesHere";
 
 // 0xa16081f360e3847006db660bae1c6d1b2e17ec2a is the default address used in newMockEvent() function
@@ -126,7 +99,11 @@ let auctionCreatedEvent: AuctionCreated;
 describe("auction creation", () => {
   beforeEach(() => {
     const auctionRef = Bytes.fromUTF8(auctionModuleVeecode);
-    auctionCreatedEvent = createAuctionCreatedEvent(id, auctionRef, infoHash);
+    auctionCreatedEvent = createAuctionCreatedEvent(
+      lotId,
+      auctionRef,
+      infoHash,
+    );
     setChain("mainnet");
 
     mockToken(
@@ -143,7 +120,7 @@ describe("auction creation", () => {
       lotQuoteTokenDecimals,
       BigInt.fromU64(1_000_000_000_000_000_000),
     );
-    mockGetModuleForId(eventAddress, id, auctionModuleAddress);
+    mockGetModuleForId(eventAddress, lotId, auctionModuleAddress);
     mockGetModuleForVeecode(
       eventAddress,
       auctionModuleVeecode,
@@ -151,7 +128,7 @@ describe("auction creation", () => {
     );
     mockLotData(
       auctionModuleAddress,
-      id,
+      lotId,
       lotStart,
       lotConclusion,
       lotQuoteTokenDecimals,
@@ -163,7 +140,7 @@ describe("auction creation", () => {
     );
     mockLotRouting(
       eventAddress,
-      id,
+      lotId,
       SELLER,
       BASE_TOKEN,
       QUOTE_TOKEN,
@@ -176,7 +153,7 @@ describe("auction creation", () => {
     );
     mockLotFees(
       eventAddress,
-      id,
+      lotId,
       lotFeesCurator,
       lotFeesCuratorApproved,
       lotFeesCuratorFee,
@@ -185,7 +162,7 @@ describe("auction creation", () => {
     );
     mockEmpAuctionData(
       auctionModuleAddress,
-      id,
+      lotId,
       0,
       0,
       0,
@@ -208,7 +185,7 @@ describe("auction creation", () => {
     handleAuctionCreated(auctionCreatedEvent);
 
     const recordId =
-      "mainnet-" + eventAddress.toHexString() + "-" + id.toString();
+      "mainnet-" + eventAddress.toHexString() + "-" + lotId.toString();
 
     // BatchAuctionCreated record is created
     assert.entityCount("BatchAuctionCreated", 1);
@@ -260,7 +237,7 @@ describe("auction creation", () => {
     );
     assertBigIntEquals(
       batchAuctionLotRecord.lotId,
-      id,
+      lotId,
       "BatchAuctionLot: lotId",
     );
     // Lot details
@@ -397,6 +374,210 @@ describe("auction creation", () => {
       empLotRecord.minBidSize,
       toDecimal(empMinBidSize, lotQuoteTokenDecimals),
       "BatchEncryptedMarginalPriceLot: minBidSize",
+    );
+  });
+});
+
+let auctionCancelledEvent: AuctionCancelled;
+
+describe("auction cancellation", () => {
+  beforeEach(() => {
+    const auctionRef = Bytes.fromUTF8(auctionModuleVeecode);
+    auctionCreatedEvent = createAuctionCreatedEvent(
+      lotId,
+      auctionRef,
+      infoHash,
+    );
+    setChain("mainnet");
+
+    mockToken(
+      BASE_TOKEN,
+      "Wrapped Ether",
+      "WETH",
+      lotBaseTokenDecimals,
+      BigInt.fromU64(1_000_000_000_000_000_000),
+    );
+    mockToken(
+      QUOTE_TOKEN,
+      "Dai",
+      "DAI",
+      lotQuoteTokenDecimals,
+      BigInt.fromU64(1_000_000_000_000_000_000),
+    );
+    mockGetModuleForId(eventAddress, lotId, auctionModuleAddress);
+    mockGetModuleForVeecode(
+      eventAddress,
+      auctionModuleVeecode,
+      auctionModuleAddress,
+    );
+    mockLotData(
+      auctionModuleAddress,
+      lotId,
+      lotStart,
+      lotConclusion,
+      lotQuoteTokenDecimals,
+      lotBaseTokenDecimals,
+      lotCapacityInQuote,
+      lotCapacity,
+      lotSold,
+      lotPurchased,
+    );
+    mockLotRouting(
+      eventAddress,
+      lotId,
+      SELLER,
+      BASE_TOKEN,
+      QUOTE_TOKEN,
+      auctionRef,
+      lotCapacity,
+      Address.zero(),
+      Bytes.fromUTF8(""),
+      false,
+      Bytes.fromUTF8(""),
+    );
+    mockLotFees(
+      eventAddress,
+      lotId,
+      lotFeesCurator,
+      lotFeesCuratorApproved,
+      lotFeesCuratorFee,
+      lotFeesProtocolFee,
+      lotFeesReferrerFee,
+    );
+    mockEmpAuctionData(
+      auctionModuleAddress,
+      lotId,
+      0,
+      0,
+      0,
+      0,
+      BigInt.zero(),
+      empMinPrice,
+      empMinFilled,
+      empMinBidSize,
+      empPublicKeyX,
+      empPublicKeyY,
+      BigInt.zero(),
+    );
+
+    handleAuctionCreated(auctionCreatedEvent);
+
+    // Update mocks
+    mockLotData(
+      auctionModuleAddress,
+      lotId,
+      lotStart,
+      lotConclusion,
+      lotQuoteTokenDecimals,
+      lotBaseTokenDecimals,
+      lotCapacityInQuote,
+      BigInt.zero(),
+      lotSold,
+      lotPurchased,
+    );
+    mockEmpAuctionData(
+      auctionModuleAddress,
+      lotId,
+      0,
+      0,
+      2, // Settled
+      0,
+      BigInt.zero(),
+      empMinPrice,
+      empMinFilled,
+      empMinBidSize,
+      empPublicKeyX,
+      empPublicKeyY,
+      BigInt.zero(),
+    );
+    mockEmpPartialFill(
+      auctionModuleAddress,
+      lotId,
+      false,
+      0,
+      BigInt.zero(),
+      BigInt.zero(),
+    );
+
+    auctionCancelledEvent = createAuctionCancelledEvent(lotId, auctionRef);
+  });
+
+  afterEach(() => {
+    clearStore();
+  });
+
+  test("AuctionCancelled created and stored", () => {
+    handleAuctionCancelled(auctionCancelledEvent);
+
+    const recordId =
+      "mainnet-" + eventAddress.toHexString() + "-" + lotId.toString();
+
+    // BatchAuctionCancelled record is created
+    assert.entityCount("BatchAuctionCancelled", 1);
+    const batchAuctionCancelledRecord = BatchAuctionCancelled.load(recordId);
+    if (batchAuctionCancelledRecord === null) {
+      throw new Error(
+        "Expected BatchAuctionCancelled to exist for record id " + recordId,
+      );
+    }
+    assertStringEquals(
+      batchAuctionCancelledRecord.id,
+      recordId,
+      "BatchAuctionCancelled: id",
+    );
+    assertStringEquals(
+      batchAuctionCancelledRecord.lot,
+      recordId,
+      "BatchAuctionCancelled: lot",
+    );
+    assertBytesEquals(
+      batchAuctionCancelledRecord.auctionRef,
+      Bytes.fromUTF8(auctionModuleVeecode),
+      "BatchAuctionCancelled: auctionRef",
+    );
+
+    // BatchAuctionLot record is updated
+    assert.entityCount("BatchAuctionLot", 1);
+    const batchAuctionLotRecord = BatchAuctionLot.load(recordId);
+    if (batchAuctionLotRecord === null) {
+      throw new Error(
+        "Expected BatchAuctionLot to exist for record id " + recordId,
+      );
+    }
+    assertBigDecimalEquals(
+      batchAuctionLotRecord.capacity,
+      BigDecimal.zero(),
+      "BatchAuctionLot: capacity",
+    );
+
+    // BatchEncryptedMarginalPriceLot record is updated
+    assert.entityCount("BatchEncryptedMarginalPriceLot", 1);
+    const empLotRecord = BatchEncryptedMarginalPriceLot.load(recordId);
+    if (empLotRecord === null) {
+      throw new Error(
+        "Expected BatchEncryptedMarginalPriceLot to exist for record id " +
+          recordId,
+      );
+    }
+    assertStringEquals(
+      empLotRecord.status,
+      "Settled",
+      "BatchEncryptedMarginalPriceLot: status",
+    );
+    assertBigDecimalEquals(
+      empLotRecord.marginalPrice,
+      BigDecimal.zero(),
+      "BatchEncryptedMarginalPriceLot: marginalPrice",
+    );
+    assertBooleanEquals(
+      empLotRecord.hasPartialFill,
+      false,
+      "BatchEncryptedMarginalPriceLot: hasPartialFill",
+    );
+    assertBigIntEquals(
+      empLotRecord.partialBidId,
+      null,
+      "BatchEncryptedMarginalPriceLot: partialBidId",
     );
   });
 });
