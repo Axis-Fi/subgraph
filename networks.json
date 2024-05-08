@@ -1,44 +1,44 @@
 {
   "arbitrum-sepolia": {
     "AtomicAuctionHouse": {
-      "address": "0xAA0000003E38C00379513d73FFbcEAFafcF1bB4C",
-      "startBlock": 40352077
+      "address": "0xAA0000A0F9FF55d5F00aB9cc8d05eF78DE4f9E8f",
+      "startBlock": 41602192
     },
     "BatchAuctionHouse": {
-      "address": "0xBA000000878cD72315d797b6de67b151Ae547038",
-      "startBlock": 40352083
+      "address": "0xBA00003Cc5713c5339f4fD5cA0339D54A88BC87b",
+      "startBlock": 41602197
     },
     "EncryptedMarginalPrice": {
-      "address": "0x2B63Aa737a1AD617A6d6894698Abd043F95cCecb",
-      "startBlock": 40352095
+      "address": "0x87F2a19FBbf9e557a68bD35D85FAd20dEec40494",
+      "startBlock": 41602206
     }
   },
   "blast-sepolia": {
     "AtomicAuctionHouse": {
-      "address": "0xAA000000721026c5B83e3b3d969DC5A7Dac20B7F",
-      "startBlock": 5050647
+      "address": "0xAA0000E35F2042621ff29B2f3d0F89665f896502",
+      "startBlock": 5207451
     },
     "BatchAuctionHouse": {
-      "address": "0xBA00000073E5050EE216afbcE08ca4666DB37232",
-      "startBlock": 5050650
+      "address": "0xBA00001Bd857EFd2dF10Da01DFe3a97CFa836Cc9",
+      "startBlock": 5207455
     },
     "EncryptedMarginalPrice": {
-      "address": "0x8dA4D2f56d6f353E36220f567221aD4e1E84cB04",
-      "startBlock": 5050662
+      "address": "0x96B52Ab3e5CAc0BbF49Be5039F2f9ef5d53bD322",
+      "startBlock": 5207466
     }
   },
   "mode-testnet": {
     "AtomicAuctionHouse": {
-      "address": "0xAA0000003E38C00379513d73FFbcEAFafcF1bB4C",
-      "startBlock": 13461504
+      "address": "0xAA0000A0F9FF55d5F00aB9cc8d05eF78DE4f9E8f",
+      "startBlock": 13619130
     },
     "BatchAuctionHouse": {
-      "address": "0xBA000000878cD72315d797b6de67b151Ae547038",
-      "startBlock": 13461507
+      "address": "0xBA00003Cc5713c5339f4fD5cA0339D54A88BC87b",
+      "startBlock": 13619134
     },
     "EncryptedMarginalPrice": {
-      "address": "0x0e4996960731Fec8E7C9DBbD51383fC71174DD88",
-      "startBlock": 13461518
+      "address": "0x4e519eEf63b9e127cFCeCA31C8E5485CdA65D355",
+      "startBlock": 13619145
     }
   }
 }
