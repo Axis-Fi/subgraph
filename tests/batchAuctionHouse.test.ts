@@ -379,6 +379,7 @@ describe("auction creation", () => {
 });
 
 let auctionCancelledEvent: AuctionCancelled;
+const lotCancellation: BigInt = lotStart.plus(BigInt.fromI32(1));
 
 describe("auction cancellation", () => {
   beforeEach(() => {
@@ -467,11 +468,11 @@ describe("auction cancellation", () => {
       auctionModuleAddress,
       lotId,
       lotStart,
-      lotConclusion,
+      lotCancellation, // Conclusion time gets updated
       lotQuoteTokenDecimals,
       lotBaseTokenDecimals,
       lotCapacityInQuote,
-      BigInt.zero(),
+      BigInt.zero(), // Capacity gets set to zero
       lotSold,
       lotPurchased,
     );
@@ -548,6 +549,11 @@ describe("auction cancellation", () => {
       batchAuctionLotRecord.capacity,
       BigDecimal.zero(),
       "BatchAuctionLot: capacity",
+    );
+    assertBigIntEquals(
+      batchAuctionLotRecord.conclusion,
+      lotCancellation,
+      "BatchAuctionLot: conclusion",
     );
 
     // BatchEncryptedMarginalPriceLot record is updated

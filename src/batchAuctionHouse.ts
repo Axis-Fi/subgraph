@@ -87,6 +87,10 @@ function _updateAuctionLot(
     auctionLot.getPurchased(),
     auctionLot.getQuoteTokenDecimals(),
   );
+
+  // Update the conclusion time (as it is amended when cancelling)
+  entity.conclusion = auctionLot.getConclusion();
+
   entity.lastUpdatedBlockNumber = block.number;
   entity.lastUpdatedBlockTimestamp = block.timestamp;
   entity.lastUpdatedDate = toISO8601String(block.timestamp);
