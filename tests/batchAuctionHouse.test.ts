@@ -21,6 +21,7 @@ import {
   BatchAuctionCurated,
   BatchAuctionLot,
   BatchBid,
+  BatchBidRefunded,
   BatchEncryptedMarginalPriceLot,
 } from "../generated/schema";
 import {
@@ -28,6 +29,7 @@ import {
   handleAuctionCreated,
   handleBid,
   handleCurated,
+  handleRefundBid,
 } from "../src/batchAuctionHouse";
 import { toDecimal } from "../src/helpers/number";
 import {
@@ -43,6 +45,7 @@ import {
   createAuctionCreatedEvent,
   createBidEvent,
   createCuratedEvent,
+  createRefundBidEvent,
 } from "./auction-house-utils";
 import { mockGetModuleForVeecode } from "./mocks/baseAuctionHouse";
 import { mockGetModuleForId } from "./mocks/baseAuctionHouse";
@@ -698,7 +701,58 @@ describe("bid", () => {
   // TODO referrer not set
 });
 
-// TODO refund bid
+describe("bid refund", () => {
+  beforeEach(() => {
+    _createAuctionLot();
+
+    _createBid();
+
+    // Update mocks
+    mockEmpBid(
+      auctionModuleAddress,
+      lotId,
+      bidId,
+      BIDDER,
+      bidAmount,
+      BigInt.zero(), // Encrypted
+      bidReferrer,
+      2, // Claimed
+    );
+
+    const bidRefundEvent = createRefundBidEvent(lotId, bidId, BIDDER);
+    handleRefundBid(bidRefundEvent);
+  });
+
+  afterEach(() => {
+    clearStore();
+  });
+
+  test("BatchBidRefunded created and stored", () => {
+    const lotRecordId =
+      "mainnet-" + eventAddress.toHexString() + "-" + lotId.toString();
+    const recordId = lotRecordId + "-" + bidId.toString();
+
+    // BatchBidRefunded record is created
+    assert.entityCount("BatchBidRefunded", 1);
+    const batchBidRefundedRecord = BatchBidRefunded.load(recordId);
+    if (batchBidRefundedRecord === null) {
+      throw new Error("Expected BatchBid to exist for record id " + recordId);
+    }
+
+    assertStringEquals(batchBidRefundedRecord.id, recordId, "Bid: id");
+    assertStringEquals(batchBidRefundedRecord.lot, lotRecordId, "Bid: lot");
+    assertStringEquals(batchBidRefundedRecord.bid, recordId, "Bid: bid");
+    assertBytesEquals(batchBidRefundedRecord.bidder, BIDDER, "Bid: bidder");
+
+    // BatchBid record is updated
+    const batchBidRecord = BatchBid.load(recordId);
+    if (batchBidRecord === null) {
+      throw new Error("Expected BatchBid to exist for record id " + recordId);
+    }
+
+    assertStringEquals(batchBidRecord.status, "claimed", "Bid: status");
+  });
+});
 
 // TODO abort
 

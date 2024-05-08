@@ -349,15 +349,14 @@ export function handleBid(event: BidEvent): void {
     bidId,
   );
 
-  const entity = new BatchBid(getBidId(lotRecord, bidId));
+  const bidRecordId = getBidId(lotRecord, bidId);
+
+  const entity = new BatchBid(bidRecordId);
   entity.lot = lotRecord.id;
   entity.bidId = bidId;
   entity.bidder = event.params.bidder;
   entity.referrer = bid.getReferrer();
-  log.info("Adding BatchBid for lot ({}) with bid id: {}", [
-    entity.lot,
-    entity.bidId.toString(),
-  ]);
+  log.info("Adding BatchBid record with id: ", [bidRecordId]);
 
   entity.amountIn = toDecimal(
     event.params.amount,
@@ -387,13 +386,13 @@ export function handleRefundBid(event: RefundBidEvent): void {
   const lotId = event.params.lotId;
 
   const lotRecord: BatchAuctionLot = getLotRecord(event.address, lotId);
+  const bidRecordId = getBidId(lotRecord, event.params.bidId);
 
-  const entity = new BatchBidRefunded(
-    event.transaction.hash.concatI32(event.logIndex.toI32()),
-  );
+  const entity = new BatchBidRefunded(bidRecordId);
   entity.lot = lotRecord.id;
-  entity.bid = getBidId(lotRecord, event.params.bidId);
+  entity.bid = bidRecordId;
   entity.bidder = event.params.bidder;
+  log.info("Adding BatchBidRefunded record with id: ", [bidRecordId]);
 
   entity.blockNumber = event.block.number;
   entity.blockTimestamp = event.block.timestamp;

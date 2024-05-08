@@ -95,7 +95,7 @@ export function createBidEvent(
   return bidEvent;
 }
 
-export function createCancelBidEvent(
+export function createRefundBidEvent(
   lotId_: BigInt,
   bidId_: BigInt,
   bidder: Address,
