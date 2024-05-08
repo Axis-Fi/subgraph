@@ -245,9 +245,7 @@ export function handleCurated(event: CuratedEvent): void {
 
   const lotRecord = getLotRecord(event.address, lotId);
 
-  const entity = new BatchAuctionCurated(
-    event.transaction.hash.concatI32(event.logIndex.toI32()),
-  );
+  const entity = new BatchAuctionCurated(lotRecord.id);
   entity.lot = lotRecord.id;
   entity.curator = event.params.curator;
 

@@ -12,16 +12,19 @@ import {
 import {
   AuctionCancelled,
   AuctionCreated,
+  Curated,
 } from "../generated/BatchAuctionHouse/BatchAuctionHouse";
 import {
   BatchAuctionCancelled,
   BatchAuctionCreated,
+  BatchAuctionCurated,
   BatchAuctionLot,
   BatchEncryptedMarginalPriceLot,
 } from "../generated/schema";
 import {
   handleAuctionCancelled,
   handleAuctionCreated,
+  handleCurated,
 } from "../src/batchAuctionHouse";
 import { toDecimal } from "../src/helpers/number";
 import {
@@ -35,6 +38,7 @@ import {
 import {
   createAuctionCancelledEvent,
   createAuctionCreatedEvent,
+  createCuratedEvent,
 } from "./auction-house-utils";
 import { mockGetModuleForVeecode } from "./mocks/baseAuctionHouse";
 import { mockGetModuleForId } from "./mocks/baseAuctionHouse";
@@ -584,6 +588,156 @@ describe("auction cancellation", () => {
       empLotRecord.partialBidId,
       null,
       "BatchEncryptedMarginalPriceLot: partialBidId",
+    );
+  });
+});
+
+let auctionCuratedEvent: Curated;
+
+describe("auction curation", () => {
+  beforeEach(() => {
+    const auctionRef = Bytes.fromUTF8(auctionModuleVeecode);
+    auctionCreatedEvent = createAuctionCreatedEvent(
+      lotId,
+      auctionRef,
+      infoHash,
+    );
+    setChain("mainnet");
+
+    mockToken(
+      BASE_TOKEN,
+      "Wrapped Ether",
+      "WETH",
+      lotBaseTokenDecimals,
+      BigInt.fromU64(1_000_000_000_000_000_000),
+    );
+    mockToken(
+      QUOTE_TOKEN,
+      "Dai",
+      "DAI",
+      lotQuoteTokenDecimals,
+      BigInt.fromU64(1_000_000_000_000_000_000),
+    );
+    mockGetModuleForId(eventAddress, lotId, auctionModuleAddress);
+    mockGetModuleForVeecode(
+      eventAddress,
+      auctionModuleVeecode,
+      auctionModuleAddress,
+    );
+    mockLotData(
+      auctionModuleAddress,
+      lotId,
+      lotStart,
+      lotConclusion,
+      lotQuoteTokenDecimals,
+      lotBaseTokenDecimals,
+      lotCapacityInQuote,
+      lotCapacity,
+      lotSold,
+      lotPurchased,
+    );
+    mockLotRouting(
+      eventAddress,
+      lotId,
+      SELLER,
+      BASE_TOKEN,
+      QUOTE_TOKEN,
+      auctionRef,
+      lotCapacity,
+      Address.zero(),
+      Bytes.fromUTF8(""),
+      false,
+      Bytes.fromUTF8(""),
+    );
+    mockLotFees(
+      eventAddress,
+      lotId,
+      lotFeesCurator,
+      lotFeesCuratorApproved,
+      lotFeesCuratorFee,
+      lotFeesProtocolFee,
+      lotFeesReferrerFee,
+    );
+    mockEmpAuctionData(
+      auctionModuleAddress,
+      lotId,
+      0,
+      0,
+      0,
+      0,
+      BigInt.zero(),
+      empMinPrice,
+      empMinFilled,
+      empMinBidSize,
+      empPublicKeyX,
+      empPublicKeyY,
+      BigInt.zero(),
+    );
+
+    handleAuctionCreated(auctionCreatedEvent);
+
+    // Update mocks
+    mockLotFees(
+      eventAddress,
+      lotId,
+      lotFeesCurator,
+      true, // Curator approved
+      lotFeesCuratorFee,
+      lotFeesProtocolFee,
+      lotFeesReferrerFee,
+    );
+
+    auctionCuratedEvent = createCuratedEvent(lotId, lotFeesCurator);
+  });
+
+  afterEach(() => {
+    clearStore();
+  });
+
+  test("Curated created and stored", () => {
+    handleCurated(auctionCuratedEvent);
+
+    const recordId =
+      "mainnet-" + eventAddress.toHexString() + "-" + lotId.toString();
+
+    // BatchAuctionCurated record is stored
+    assert.entityCount("BatchAuctionCurated", 1);
+    const batchAuctionCuratedRecord = BatchAuctionCurated.load(recordId);
+    if (batchAuctionCuratedRecord === null) {
+      throw new Error(
+        "Expected BatchAuctionCurated to exist for record id " + recordId,
+      );
+    }
+
+    assertStringEquals(
+      batchAuctionCuratedRecord.id,
+      recordId,
+      "BatchAuctionCurated: id",
+    );
+    assertStringEquals(
+      batchAuctionCuratedRecord.lot,
+      recordId,
+      "BatchAuctionCurated: lot",
+    );
+    assertBytesEquals(
+      batchAuctionCuratedRecord.curator,
+      lotFeesCurator,
+      "BatchAuctionCurated: curator",
+    );
+
+    // BatchAuctionLot record is updated
+    assert.entityCount("BatchAuctionLot", 1);
+    const batchAuctionLotRecord = BatchAuctionLot.load(recordId);
+    if (batchAuctionLotRecord === null) {
+      throw new Error(
+        "Expected BatchAuctionLot to exist for record id " + recordId,
+      );
+    }
+
+    assertBooleanEquals(
+      batchAuctionLotRecord.curatorApproved,
+      true,
+      "BatchAuctionLot: curatorApproved",
     );
   });
 });

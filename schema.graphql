@@ -201,7 +201,7 @@ type BatchAuctionCancelled @entity(immutable: true) {
 }
 
 type BatchAuctionCurated @entity(immutable: true) {
-  id: Bytes!
+  id: String! # chain-auctionHouse-lotId
   lot: BatchAuctionLot!
   curator: Bytes! # address
 
