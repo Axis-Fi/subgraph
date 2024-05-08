@@ -24,7 +24,14 @@ import {
 } from "../generated/schema";
 import { handleAuctionCreated } from "../src/batchAuctionHouse";
 import { toDecimal } from "../src/helpers/number";
-import { assertBooleanEquals,assertNull, assertStringEquals } from "./assert";
+import {
+  assertBigDecimalEquals,
+  assertBigIntEquals,
+  assertBooleanEquals,
+  assertBytesEquals,
+  assertNull,
+  assertStringEquals,
+} from "./assert";
 import { createAuctionCreatedEvent } from "./auction-house-utils";
 
 // Tests structure (matchstick-as >=0.5.0)
@@ -74,7 +81,9 @@ const id = BigInt.fromI32(234);
 const infoHash = "infoHashValueGoesHere";
 
 // 0xa16081f360e3847006db660bae1c6d1b2e17ec2a is the default address used in newMockEvent() function
-const eventAddress: string = "0xa16081f360e3847006db660bae1c6d1b2e17ec2a";
+const eventAddress: Address = Address.fromString(
+  "0xa16081f360e3847006db660bae1c6d1b2e17ec2a",
+);
 
 const auctionModuleAddress: string =
   "0x87F2a19FBbf9e557a68bD35D85FAd20dEec40494";
@@ -114,7 +123,7 @@ let auctionCreatedEvent: AuctionCreated;
 
 function _mockGetModuleForId(lotId: BigInt): void {
   mockFunction(
-    Address.fromString(eventAddress),
+    eventAddress,
     "getModuleForId",
     "getModuleForId(uint96):(address)",
     [ethereum.Value.fromUnsignedBigInt(lotId)],
@@ -125,7 +134,7 @@ function _mockGetModuleForId(lotId: BigInt): void {
 
 function _mockGetModuleForVeecode(veecode: string): void {
   mockFunction(
-    Address.fromString(eventAddress),
+    eventAddress,
     "getModuleForVeecode",
     "getModuleForVeecode(bytes7):(address)",
     [ethereum.Value.fromFixedBytes(Bytes.fromUTF8(veecode))],
@@ -177,7 +186,7 @@ function _mockLotRouting(
   derivativeParams: Bytes,
 ): void {
   mockFunction(
-    Address.fromString(eventAddress),
+    eventAddress,
     "lotRouting",
     "lotRouting(uint96):(address,address,address,bytes7,uint256,address,bytes7,bool,bytes)",
     [ethereum.Value.fromUnsignedBigInt(lotId)],
@@ -205,7 +214,7 @@ function _mockLotFees(
   referrerFee: i32,
 ): void {
   mockFunction(
-    Address.fromString(eventAddress),
+    eventAddress,
     "lotFees",
     "lotFees(uint96):(address,bool,uint48,uint48,uint48)",
     [ethereum.Value.fromUnsignedBigInt(lotId)],
@@ -377,7 +386,8 @@ describe("auction creation", () => {
   test("AuctionCreated created and stored", () => {
     handleAuctionCreated(auctionCreatedEvent);
 
-    const recordId = "mainnet-" + eventAddress + "-" + id.toString();
+    const recordId =
+      "mainnet-" + eventAddress.toHexString() + "-" + id.toString();
 
     // BatchAuctionCreated record is created
     assert.entityCount("BatchAuctionCreated", 1);
@@ -422,30 +432,30 @@ describe("auction creation", () => {
       "mainnet",
       "BatchAuctionLot: chain",
     );
-    assertStringEquals(
-      batchAuctionLotRecord.auctionHouse.toHexString(),
+    assertBytesEquals(
+      batchAuctionLotRecord.auctionHouse,
       eventAddress,
       "BatchAuctionLot: auctionHouse",
     );
-    assertStringEquals(
-      batchAuctionLotRecord.lotId.toString(),
-      id.toString(),
+    assertBigIntEquals(
+      batchAuctionLotRecord.lotId,
+      id,
       "BatchAuctionLot: lotId",
     );
     // Lot details
-    assertStringEquals(
-      batchAuctionLotRecord.capacityInitial.toString(),
-      toDecimal(lotCapacity, lotBaseTokenDecimals).toString(),
+    assertBigDecimalEquals(
+      batchAuctionLotRecord.capacityInitial,
+      toDecimal(lotCapacity, lotBaseTokenDecimals),
       "BatchAuctionLot: capacityInitial",
     );
-    assertStringEquals(
-      batchAuctionLotRecord.start.toString(),
-      lotStart.toString(),
+    assertBigIntEquals(
+      batchAuctionLotRecord.start,
+      lotStart,
       "BatchAuctionLot: start",
     );
-    assertStringEquals(
-      batchAuctionLotRecord.conclusion.toString(),
-      lotConclusion.toString(),
+    assertBigIntEquals(
+      batchAuctionLotRecord.conclusion,
+      lotConclusion,
       "BatchAuctionLot: conclusion",
     );
     // Routing details
@@ -454,19 +464,19 @@ describe("auction creation", () => {
       "01EMPA",
       "BatchAuctionLot: auctionType",
     );
-    assertStringEquals(
-      batchAuctionLotRecord.baseToken.toHexString(),
-      BASE_TOKEN.toHexString(),
+    assertBytesEquals(
+      batchAuctionLotRecord.baseToken,
+      BASE_TOKEN,
       "BatchAuctionLot: baseToken",
     );
-    assertStringEquals(
-      batchAuctionLotRecord.quoteToken.toHexString(),
-      QUOTE_TOKEN.toHexString(),
+    assertBytesEquals(
+      batchAuctionLotRecord.quoteToken,
+      QUOTE_TOKEN,
       "BatchAuctionLot: quoteToken",
     );
-    assertStringEquals(
-      batchAuctionLotRecord.seller.toHexString(),
-      SELLER.toHexString(),
+    assertBytesEquals(
+      batchAuctionLotRecord.seller,
+      SELLER,
       "BatchAuctionLot: seller",
     );
     assertNull(
@@ -479,13 +489,9 @@ describe("auction creation", () => {
       "BatchAuctionLot: wrapDerivative",
     );
     // Fee details
-    const curatorNotNull: string =
-      batchAuctionLotRecord.curator !== null
-        ? batchAuctionLotRecord.curator!.toHexString()
-        : "";
-    assertStringEquals(
-      curatorNotNull,
-      lotFeesCurator.toHexString(),
+    assertBytesEquals(
+      batchAuctionLotRecord.curator,
+      lotFeesCurator,
       "BatchAuctionLot: curator",
     );
     assertBooleanEquals(
@@ -493,41 +499,41 @@ describe("auction creation", () => {
       lotFeesCuratorApproved,
       "BatchAuctionLot: curatorApproved",
     );
-    assertStringEquals(
-      batchAuctionLotRecord.curatorFee.toString(),
-      "0.001",
+    assertBigDecimalEquals(
+      batchAuctionLotRecord.curatorFee,
+      BigDecimal.fromString("0.001"),
       "BatchAuctionLot: curatorFee",
     );
-    assertStringEquals(
-      batchAuctionLotRecord.protocolFee.toString(),
-      "0.0009",
+    assertBigDecimalEquals(
+      batchAuctionLotRecord.protocolFee,
+      BigDecimal.fromString("0.0009"),
       "BatchAuctionLot: protocolFee",
     );
-    assertStringEquals(
-      batchAuctionLotRecord.referrerFee.toString(),
-      "0.0008",
+    assertBigDecimalEquals(
+      batchAuctionLotRecord.referrerFee,
+      BigDecimal.fromString("0.0008"),
       "BatchAuctionLot: referrerFee",
     );
     // Initial values
-    assertStringEquals(
-      batchAuctionLotRecord.capacity.toString(),
-      toDecimal(lotCapacity, lotBaseTokenDecimals).toString(),
+    assertBigDecimalEquals(
+      batchAuctionLotRecord.capacity,
+      toDecimal(lotCapacity, lotBaseTokenDecimals),
       "BatchAuctionLot: capacity",
     );
-    assertStringEquals(
-      batchAuctionLotRecord.sold.toString(),
-      BigDecimal.zero().toString(),
+    assertBigDecimalEquals(
+      batchAuctionLotRecord.sold,
+      BigDecimal.zero(),
       "BatchAuctionLot: sold",
     );
-    assertStringEquals(
-      batchAuctionLotRecord.purchased.toString(),
-      BigDecimal.zero().toString(),
+    assertBigDecimalEquals(
+      batchAuctionLotRecord.purchased,
+      BigDecimal.zero(),
       "BatchAuctionLot: purchased",
     );
     // Bid
-    assertStringEquals(
-      batchAuctionLotRecord.maxBidId.toString(),
-      BigDecimal.zero().toString(),
+    assertBigIntEquals(
+      batchAuctionLotRecord.maxBidId,
+      BigInt.zero(),
       "BatchAuctionLot: maxBidId",
     );
 
@@ -556,20 +562,19 @@ describe("auction creation", () => {
       "Started",
       "BatchEncryptedMarginalPriceLot: status",
     );
-    assertStringEquals(
-      empLotRecord.minPrice.toString(),
-      toDecimal(empMinPrice, lotQuoteTokenDecimals).toString(),
-      "BatchEncryptedMarginalPriceLot: minPrice actual " +
-        empLotRecord.minPrice.toString(),
+    assertBigDecimalEquals(
+      empLotRecord.minPrice,
+      toDecimal(empMinPrice, lotQuoteTokenDecimals),
+      "BatchEncryptedMarginalPriceLot: minPrice",
     );
-    assertStringEquals(
-      empLotRecord.minFilled.toString(),
-      toDecimal(empMinFilled, lotBaseTokenDecimals).toString(),
+    assertBigDecimalEquals(
+      empLotRecord.minFilled,
+      toDecimal(empMinFilled, lotBaseTokenDecimals),
       "BatchEncryptedMarginalPriceLot: minFilled",
     );
-    assertStringEquals(
-      empLotRecord.minBidSize.toString(),
-      toDecimal(empMinBidSize, lotQuoteTokenDecimals).toString(),
+    assertBigDecimalEquals(
+      empLotRecord.minBidSize,
+      toDecimal(empMinBidSize, lotQuoteTokenDecimals),
       "BatchEncryptedMarginalPriceLot: minBidSize",
     );
   });
