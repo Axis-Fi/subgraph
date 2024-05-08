@@ -21,6 +21,7 @@ import {
   BatchAuctionCurated,
   BatchAuctionLot,
   BatchBid,
+  BatchBidDecrypted,
   BatchBidRefunded,
   BatchEncryptedMarginalPriceLot,
 } from "../generated/schema";
@@ -31,6 +32,7 @@ import {
   handleCurated,
   handleRefundBid,
 } from "../src/batchAuctionHouse";
+import { handleBidDecrypted } from "../src/handleEncryptedMarginalPrice";
 import { toDecimal } from "../src/helpers/number";
 import {
   assertBigDecimalEquals,
@@ -47,6 +49,7 @@ import {
   createCuratedEvent,
   createRefundBidEvent,
 } from "./auction-house-utils";
+import { createBidDecryptedEvent } from "./empam-utils";
 import { mockGetModuleForVeecode } from "./mocks/baseAuctionHouse";
 import { mockGetModuleForId } from "./mocks/baseAuctionHouse";
 import { mockLotRouting } from "./mocks/baseAuctionHouse";
@@ -55,6 +58,7 @@ import { mockLotData } from "./mocks/batchAuctionHouse";
 import {
   mockEmpAuctionData,
   mockEmpBid,
+  mockEmpParent,
   mockEmpPartialFill,
 } from "./mocks/emp";
 import { mockToken } from "./mocks/token";
@@ -110,7 +114,8 @@ const bidId: BigInt = BigInt.fromI32(111);
 const BIDDER: Address = Address.fromString(
   "0x0000000000000000000000000000000000000002",
 );
-const bidAmount: BigInt = BigInt.fromString("1000000000000000001");
+const bidAmountIn: BigInt = BigInt.fromString("1000000000000000001");
+const bidAmountOut: BigInt = BigInt.fromString("2000000000000000000");
 const bidReferrer: Address = Address.fromString(
   "0x0000000000000000000000000000000000000003",
 );
@@ -201,14 +206,14 @@ function _createAuctionLot(): void {
 }
 
 function _createBid(): void {
-  const bidEvent = createBidEvent(lotId, bidId, BIDDER, bidAmount);
+  const bidEvent = createBidEvent(lotId, bidId, BIDDER, bidAmountIn);
 
   mockEmpBid(
     auctionModuleAddress,
     lotId,
     bidId,
     BIDDER,
-    bidAmount,
+    bidAmountIn,
     BigInt.zero(), // Encrypted
     bidReferrer,
     0, // Submitted
@@ -661,12 +666,12 @@ describe("bid", () => {
     assertBytesEquals(batchBidRecord.bidder, BIDDER, "Bid: bidder");
     assertBigDecimalEquals(
       batchBidRecord.amountIn,
-      toDecimal(bidAmount, lotQuoteTokenDecimals),
+      toDecimal(bidAmountIn, lotQuoteTokenDecimals),
       "Bid: amountIn",
     );
     assertBigIntEquals(
       batchBidRecord.rawAmountIn,
-      bidAmount,
+      bidAmountIn,
       "Bid: rawAmountIn",
     );
     assertBigDecimalEquals(
@@ -713,7 +718,7 @@ describe("bid refund", () => {
       lotId,
       bidId,
       BIDDER,
-      bidAmount,
+      bidAmountIn,
       BigInt.zero(), // Encrypted
       bidReferrer,
       2, // Claimed
@@ -754,6 +759,94 @@ describe("bid refund", () => {
   });
 });
 
+describe("bid decryption", () => {
+  beforeEach(() => {
+    _createAuctionLot();
+
+    _createBid();
+
+    // Update mocks
+    mockEmpBid(
+      auctionModuleAddress,
+      lotId,
+      bidId,
+      BIDDER,
+      bidAmountIn,
+      bidAmountOut, // Decrypted
+      bidReferrer,
+      1, // Decrypted
+    );
+    mockEmpParent(
+      auctionModuleAddress, // TODO need to change the event address
+      eventAddress
+    );
+
+    const bidDecryptedEvent = createBidDecryptedEvent(
+      lotId,
+      bidId,
+      bidAmountIn,
+      bidAmountOut,
+    );
+    handleBidDecrypted(bidDecryptedEvent);
+  });
+
+  test("BatchBidDecrypted created and stored", () => {
+    const lotRecordId =
+      "mainnet-" + eventAddress.toHexString() + "-" + lotId.toString();
+    const bidRecordId = lotRecordId + "-" + bidId.toString();
+
+    // BatchBidDecrypted record is created
+    assert.entityCount("BatchBidDecrypted", 1);
+    const batchBidDecryptedRecord = BatchBidDecrypted.load(bidRecordId);
+    if (batchBidDecryptedRecord === null) {
+      throw new Error(
+        "Expected BatchBidDecrypted to exist for record id " + bidRecordId,
+      );
+    }
+
+    assertStringEquals(batchBidDecryptedRecord.id, bidRecordId, "Bid: id");
+    assertStringEquals(batchBidDecryptedRecord.lot, lotRecordId, "Bid: lot");
+    assertStringEquals(batchBidDecryptedRecord.bid, bidRecordId, "Bid: bid");
+    assertBigDecimalEquals(
+      batchBidDecryptedRecord.amountIn,
+      toDecimal(bidAmountIn, lotQuoteTokenDecimals),
+      "Bid: amountIn",
+    );
+    assertBigDecimalEquals(
+      batchBidDecryptedRecord.amountOut,
+      toDecimal(bidAmountOut, lotBaseTokenDecimals),
+      "Bid: amountOut",
+    );
+
+    // BatchBid is updated
+    const batchBidRecord = BatchBid.load(bidRecordId);
+    if (batchBidRecord === null) {
+      throw new Error(
+        "Expected BatchBid to exist for record id " + bidRecordId,
+      );
+    }
+
+    const bidAmountInDecimal = toDecimal(bidAmountIn, lotQuoteTokenDecimals);
+    const bidAmountOutDecimal = toDecimal(bidAmountOut, lotBaseTokenDecimals);
+    assertBigDecimalEquals(
+      batchBidRecord.amountOut,
+      bidAmountOutDecimal,
+      "Bid: amountOut",
+    );
+    assertBigIntEquals(
+      batchBidRecord.rawAmountOut,
+      bidAmountOut,
+      "Bid: rawAmountOut",
+    );
+    assertBigDecimalEquals(
+      batchBidRecord.submittedPrice,
+      bidAmountInDecimal.div(bidAmountOutDecimal),
+      "Bid: submittedPrice",
+    );
+    // TODO rawSubmittedPrice
+  });
+});
+
 // TODO abort
 
 // TODO settle
@@ -761,3 +854,5 @@ describe("bid refund", () => {
 // TODO claim bid after settle
 
 // TODO claim bid after abort
+
+// TODO linear vesting

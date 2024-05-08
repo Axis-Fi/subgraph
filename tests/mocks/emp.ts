@@ -97,3 +97,17 @@ export function mockEmpBid(
     false,
   );
 }
+
+export function mockEmpParent(
+  module: Address,
+  parent: Address,
+): void {
+  mockFunction(
+    module,
+    "PARENT",
+    "PARENT():(address)",
+    [],
+    [ethereum.Value.fromAddress(parent)],
+    false,
+  );
+}
