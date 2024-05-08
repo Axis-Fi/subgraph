@@ -24,6 +24,7 @@ import {
 } from "../generated/schema";
 import { handleAuctionCreated } from "../src/batchAuctionHouse";
 import { toDecimal } from "../src/helpers/number";
+import { assertBooleanEquals,assertNull, assertStringEquals } from "./assert";
 import { createAuctionCreatedEvent } from "./auction-house-utils";
 
 // Tests structure (matchstick-as >=0.5.0)
@@ -297,38 +298,6 @@ function _mockEmpAuctionData(
       ethereum.Value.fromUnsignedBigInt(privateKey),
     ],
     false,
-  );
-}
-
-function assertStringEquals(
-  actual: string,
-  expected: string,
-  message: string,
-): void {
-  assert.stringEquals(
-    actual,
-    expected,
-    message + ": actual: " + actual + " expected: " + expected,
-  );
-}
-
-function assertNull(actual: string | null, message: string): void {
-  const actualNotNull: string = actual !== null ? actual : "";
-  assert.assertNull(
-    actual,
-    message + ": was expected to be null, but was: " + actualNotNull,
-  );
-}
-
-function assertBooleanEquals(
-  actual: boolean,
-  expected: boolean,
-  message: string,
-): void {
-  assert.booleanEquals(
-    actual,
-    expected,
-    message + ": actual: " + actual.toString() + " expected: " + expected.toString(),
   );
 }
 
