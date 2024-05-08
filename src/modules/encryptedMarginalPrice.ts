@@ -112,7 +112,7 @@ export function updateEncryptedMarginalPriceLot(
   // No need to set the minPrice, minFilled and minBidSize again
 
   // If settled
-  if (empLot.status == "Settled") {
+  if (empLot.status == "Settled") { // TODO add enum
     // Set the marginal price
     empLot.marginalPrice = toDecimal(
       lotAuctionData.getMarginalPrice(),
@@ -147,6 +147,8 @@ export function updateBidAmount(
   // Fetch decimals
   const quoteToken = getOrCreateToken(lotRecord.quoteToken);
   const baseToken = getOrCreateToken(lotRecord.baseToken);
+
+  // TODO check for lot status == settled
 
   // Get the bid claim from the contract
   const bidClaim = empModule.getBidClaim(lotRecord.lotId, bidId);
