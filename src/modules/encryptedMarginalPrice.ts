@@ -151,12 +151,13 @@ export function updateBidAmount(
   // Get the bid claim from the contract
   const bidClaim = empModule.getBidClaim(lotRecord.lotId, bidId);
 
-  entity.settledAmountInRefunded = toDecimal(
+  const settledAmountInRefunded = toDecimal(
     bidClaim.refund,
     quoteToken.decimals,
   );
+  entity.settledAmountInRefunded = settledAmountInRefunded;
   entity.settledAmountIn = toDecimal(bidClaim.paid, quoteToken.decimals).minus(
-    entity.settledAmountInRefunded,
+    settledAmountInRefunded,
   );
   entity.settledAmountOut = toDecimal(bidClaim.payout, baseToken.decimals);
 
