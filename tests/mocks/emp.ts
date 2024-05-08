@@ -68,3 +68,32 @@ export function mockEmpPartialFill(
     false,
   );
 }
+
+export function mockEmpBid(
+  module: Address,
+  lotId: BigInt,
+  bidId: BigInt,
+  bidder: Address,
+  amount: BigInt,
+  minAmountOut: BigInt,
+  referrer: Address,
+  status: i32,
+): void {
+  mockFunction(
+    module,
+    "bids",
+    "bids(uint96,uint64):(address,uint96,uint96,address,uint8)",
+    [
+      ethereum.Value.fromUnsignedBigInt(lotId),
+      ethereum.Value.fromUnsignedBigInt(bidId),
+    ],
+    [
+      ethereum.Value.fromAddress(bidder),
+      ethereum.Value.fromUnsignedBigInt(amount),
+      ethereum.Value.fromUnsignedBigInt(minAmountOut),
+      ethereum.Value.fromAddress(referrer),
+      ethereum.Value.fromI32(status),
+    ],
+    false,
+  );
+}

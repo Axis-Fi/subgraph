@@ -353,6 +353,7 @@ export function handleBid(event: BidEvent): void {
   entity.lot = lotRecord.id;
   entity.bidId = bidId;
   entity.bidder = event.params.bidder;
+  entity.referrer = bid.getReferrer();
   log.info("Adding BatchBid for lot ({}) with bid id: {}", [
     entity.lot,
     entity.bidId.toString(),

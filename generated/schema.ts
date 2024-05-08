@@ -2396,6 +2396,23 @@ export class BatchBid extends Entity {
     this.set("bidder", Value.fromBytes(value));
   }
 
+  get referrer(): Bytes | null {
+    let value = this.get("referrer");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set referrer(value: Bytes | null) {
+    if (!value) {
+      this.unset("referrer");
+    } else {
+      this.set("referrer", Value.fromBytes(<Bytes>value));
+    }
+  }
+
   get amountIn(): BigDecimal {
     let value = this.get("amountIn");
     if (!value || value.kind == ValueKind.NULL) {

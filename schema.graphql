@@ -237,6 +237,7 @@ type BatchBid @entity {
 
   bidId: BigInt! # uint96
   bidder: Bytes! # address
+  referrer: Bytes # address
 
   amountIn: BigDecimal! # uint256
   amountOut: BigDecimal # uint256

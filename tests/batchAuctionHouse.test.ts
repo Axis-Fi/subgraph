@@ -12,6 +12,7 @@ import {
 import {
   AuctionCancelled,
   AuctionCreated,
+  Bid,
   Curated,
 } from "../generated/BatchAuctionHouse/BatchAuctionHouse";
 import {
@@ -19,11 +20,13 @@ import {
   BatchAuctionCreated,
   BatchAuctionCurated,
   BatchAuctionLot,
+  BatchBid,
   BatchEncryptedMarginalPriceLot,
 } from "../generated/schema";
 import {
   handleAuctionCancelled,
   handleAuctionCreated,
+  handleBid,
   handleCurated,
 } from "../src/batchAuctionHouse";
 import { toDecimal } from "../src/helpers/number";
@@ -38,6 +41,7 @@ import {
 import {
   createAuctionCancelledEvent,
   createAuctionCreatedEvent,
+  createBidEvent,
   createCuratedEvent,
 } from "./auction-house-utils";
 import { mockGetModuleForVeecode } from "./mocks/baseAuctionHouse";
@@ -45,10 +49,15 @@ import { mockGetModuleForId } from "./mocks/baseAuctionHouse";
 import { mockLotRouting } from "./mocks/baseAuctionHouse";
 import { mockLotFees } from "./mocks/baseAuctionHouse";
 import { mockLotData } from "./mocks/batchAuctionHouse";
-import { mockEmpAuctionData, mockEmpPartialFill } from "./mocks/emp";
+import {
+  mockEmpAuctionData,
+  mockEmpBid,
+  mockEmpPartialFill,
+} from "./mocks/emp";
 import { mockToken } from "./mocks/token";
 
 const auctionModuleVeecode = "01EMPA";
+const auctionRef = Bytes.fromUTF8(auctionModuleVeecode);
 const QUOTE_TOKEN = Address.fromString(
   "0x6B175474E89094C44Da98b954EedeAC495271d0F",
 );
@@ -94,100 +103,127 @@ const empMinBidSize: BigInt = BigInt.fromU64(3_000_000_000_000_000_000);
 const empPublicKeyX: BigInt = BigInt.fromU64(222);
 const empPublicKeyY: BigInt = BigInt.fromU64(333);
 
+const bidId: BigInt = BigInt.fromI32(111);
+const BIDDER: Address = Address.fromString(
+  "0x0000000000000000000000000000000000000002",
+);
+const bidAmount: BigInt = BigInt.fromString("1000000000000000001");
+const bidReferrer: Address = Address.fromString(
+  "0x0000000000000000000000000000000000000003",
+);
+
 function setChain(chain: string): void {
   dataSourceMock.setNetwork(chain);
 }
 
-let auctionCreatedEvent: AuctionCreated;
+function _createAuctionLot(): void {
+  const auctionCreatedEvent = createAuctionCreatedEvent(
+    lotId,
+    auctionRef,
+    infoHash,
+  );
+  setChain("mainnet");
+
+  mockToken(
+    BASE_TOKEN,
+    "Wrapped Ether",
+    "WETH",
+    lotBaseTokenDecimals,
+    BigInt.fromU64(1_000_000_000_000_000_000),
+  );
+  mockToken(
+    QUOTE_TOKEN,
+    "Dai",
+    "DAI",
+    lotQuoteTokenDecimals,
+    BigInt.fromU64(1_000_000_000_000_000_000),
+  );
+  mockGetModuleForId(eventAddress, lotId, auctionModuleAddress);
+  mockGetModuleForVeecode(
+    eventAddress,
+    auctionModuleVeecode,
+    auctionModuleAddress,
+  );
+  mockLotData(
+    auctionModuleAddress,
+    lotId,
+    lotStart,
+    lotConclusion,
+    lotQuoteTokenDecimals,
+    lotBaseTokenDecimals,
+    lotCapacityInQuote,
+    lotCapacity,
+    lotSold,
+    lotPurchased,
+  );
+  mockLotRouting(
+    eventAddress,
+    lotId,
+    SELLER,
+    BASE_TOKEN,
+    QUOTE_TOKEN,
+    auctionRef,
+    lotCapacity,
+    Address.zero(),
+    Bytes.fromUTF8(""),
+    false,
+    Bytes.fromUTF8(""),
+  );
+  mockLotFees(
+    eventAddress,
+    lotId,
+    lotFeesCurator,
+    lotFeesCuratorApproved,
+    lotFeesCuratorFee,
+    lotFeesProtocolFee,
+    lotFeesReferrerFee,
+  );
+  mockEmpAuctionData(
+    auctionModuleAddress,
+    lotId,
+    0,
+    0,
+    0,
+    0,
+    BigInt.zero(),
+    empMinPrice,
+    empMinFilled,
+    empMinBidSize,
+    empPublicKeyX,
+    empPublicKeyY,
+    BigInt.zero(),
+  );
+
+  handleAuctionCreated(auctionCreatedEvent);
+}
+
+function _createBid(): void {
+  const bidEvent = createBidEvent(lotId, bidId, BIDDER, bidAmount);
+
+  mockEmpBid(
+    auctionModuleAddress,
+    lotId,
+    bidId,
+    BIDDER,
+    bidAmount,
+    BigInt.zero(), // Encrypted
+    bidReferrer,
+    0, // Submitted
+  );
+
+  handleBid(bidEvent);
+}
 
 describe("auction creation", () => {
   beforeEach(() => {
-    const auctionRef = Bytes.fromUTF8(auctionModuleVeecode);
-    auctionCreatedEvent = createAuctionCreatedEvent(
-      lotId,
-      auctionRef,
-      infoHash,
-    );
-    setChain("mainnet");
-
-    mockToken(
-      BASE_TOKEN,
-      "Wrapped Ether",
-      "WETH",
-      lotBaseTokenDecimals,
-      BigInt.fromU64(1_000_000_000_000_000_000),
-    );
-    mockToken(
-      QUOTE_TOKEN,
-      "Dai",
-      "DAI",
-      lotQuoteTokenDecimals,
-      BigInt.fromU64(1_000_000_000_000_000_000),
-    );
-    mockGetModuleForId(eventAddress, lotId, auctionModuleAddress);
-    mockGetModuleForVeecode(
-      eventAddress,
-      auctionModuleVeecode,
-      auctionModuleAddress,
-    );
-    mockLotData(
-      auctionModuleAddress,
-      lotId,
-      lotStart,
-      lotConclusion,
-      lotQuoteTokenDecimals,
-      lotBaseTokenDecimals,
-      lotCapacityInQuote,
-      lotCapacity,
-      lotSold,
-      lotPurchased,
-    );
-    mockLotRouting(
-      eventAddress,
-      lotId,
-      SELLER,
-      BASE_TOKEN,
-      QUOTE_TOKEN,
-      auctionRef,
-      lotCapacity,
-      Address.zero(),
-      Bytes.fromUTF8(""),
-      false,
-      Bytes.fromUTF8(""),
-    );
-    mockLotFees(
-      eventAddress,
-      lotId,
-      lotFeesCurator,
-      lotFeesCuratorApproved,
-      lotFeesCuratorFee,
-      lotFeesProtocolFee,
-      lotFeesReferrerFee,
-    );
-    mockEmpAuctionData(
-      auctionModuleAddress,
-      lotId,
-      0,
-      0,
-      0,
-      0,
-      BigInt.zero(),
-      empMinPrice,
-      empMinFilled,
-      empMinBidSize,
-      empPublicKeyX,
-      empPublicKeyY,
-      BigInt.zero(),
-    );
+    _createAuctionLot();
   });
 
   afterEach(() => {
     clearStore();
   });
 
-  test("AuctionCreated created and stored", () => {
-    handleAuctionCreated(auctionCreatedEvent);
-
+  test("BatchAuctionCreated created and stored", () => {
     const recordId =
       "mainnet-" + eventAddress.toHexString() + "-" + lotId.toString();
 
@@ -380,6 +416,14 @@ describe("auction creation", () => {
       "BatchEncryptedMarginalPriceLot: minBidSize",
     );
   });
+
+  // TODO curator not set
+
+  // TODO protocol fee not set
+
+  // TODO curator fee not set
+
+  // TODO referrer fee not set
 });
 
 let auctionCancelledEvent: AuctionCancelled;
@@ -387,85 +431,7 @@ const lotCancellation: BigInt = lotStart.plus(BigInt.fromI32(1));
 
 describe("auction cancellation", () => {
   beforeEach(() => {
-    const auctionRef = Bytes.fromUTF8(auctionModuleVeecode);
-    auctionCreatedEvent = createAuctionCreatedEvent(
-      lotId,
-      auctionRef,
-      infoHash,
-    );
-    setChain("mainnet");
-
-    mockToken(
-      BASE_TOKEN,
-      "Wrapped Ether",
-      "WETH",
-      lotBaseTokenDecimals,
-      BigInt.fromU64(1_000_000_000_000_000_000),
-    );
-    mockToken(
-      QUOTE_TOKEN,
-      "Dai",
-      "DAI",
-      lotQuoteTokenDecimals,
-      BigInt.fromU64(1_000_000_000_000_000_000),
-    );
-    mockGetModuleForId(eventAddress, lotId, auctionModuleAddress);
-    mockGetModuleForVeecode(
-      eventAddress,
-      auctionModuleVeecode,
-      auctionModuleAddress,
-    );
-    mockLotData(
-      auctionModuleAddress,
-      lotId,
-      lotStart,
-      lotConclusion,
-      lotQuoteTokenDecimals,
-      lotBaseTokenDecimals,
-      lotCapacityInQuote,
-      lotCapacity,
-      lotSold,
-      lotPurchased,
-    );
-    mockLotRouting(
-      eventAddress,
-      lotId,
-      SELLER,
-      BASE_TOKEN,
-      QUOTE_TOKEN,
-      auctionRef,
-      lotCapacity,
-      Address.zero(),
-      Bytes.fromUTF8(""),
-      false,
-      Bytes.fromUTF8(""),
-    );
-    mockLotFees(
-      eventAddress,
-      lotId,
-      lotFeesCurator,
-      lotFeesCuratorApproved,
-      lotFeesCuratorFee,
-      lotFeesProtocolFee,
-      lotFeesReferrerFee,
-    );
-    mockEmpAuctionData(
-      auctionModuleAddress,
-      lotId,
-      0,
-      0,
-      0,
-      0,
-      BigInt.zero(),
-      empMinPrice,
-      empMinFilled,
-      empMinBidSize,
-      empPublicKeyX,
-      empPublicKeyY,
-      BigInt.zero(),
-    );
-
-    handleAuctionCreated(auctionCreatedEvent);
+    _createAuctionLot();
 
     // Update mocks
     mockLotData(
@@ -511,7 +477,7 @@ describe("auction cancellation", () => {
     clearStore();
   });
 
-  test("AuctionCancelled created and stored", () => {
+  test("BatchAuctionCancelled created and stored", () => {
     handleAuctionCancelled(auctionCancelledEvent);
 
     const recordId =
@@ -596,85 +562,7 @@ let auctionCuratedEvent: Curated;
 
 describe("auction curation", () => {
   beforeEach(() => {
-    const auctionRef = Bytes.fromUTF8(auctionModuleVeecode);
-    auctionCreatedEvent = createAuctionCreatedEvent(
-      lotId,
-      auctionRef,
-      infoHash,
-    );
-    setChain("mainnet");
-
-    mockToken(
-      BASE_TOKEN,
-      "Wrapped Ether",
-      "WETH",
-      lotBaseTokenDecimals,
-      BigInt.fromU64(1_000_000_000_000_000_000),
-    );
-    mockToken(
-      QUOTE_TOKEN,
-      "Dai",
-      "DAI",
-      lotQuoteTokenDecimals,
-      BigInt.fromU64(1_000_000_000_000_000_000),
-    );
-    mockGetModuleForId(eventAddress, lotId, auctionModuleAddress);
-    mockGetModuleForVeecode(
-      eventAddress,
-      auctionModuleVeecode,
-      auctionModuleAddress,
-    );
-    mockLotData(
-      auctionModuleAddress,
-      lotId,
-      lotStart,
-      lotConclusion,
-      lotQuoteTokenDecimals,
-      lotBaseTokenDecimals,
-      lotCapacityInQuote,
-      lotCapacity,
-      lotSold,
-      lotPurchased,
-    );
-    mockLotRouting(
-      eventAddress,
-      lotId,
-      SELLER,
-      BASE_TOKEN,
-      QUOTE_TOKEN,
-      auctionRef,
-      lotCapacity,
-      Address.zero(),
-      Bytes.fromUTF8(""),
-      false,
-      Bytes.fromUTF8(""),
-    );
-    mockLotFees(
-      eventAddress,
-      lotId,
-      lotFeesCurator,
-      lotFeesCuratorApproved,
-      lotFeesCuratorFee,
-      lotFeesProtocolFee,
-      lotFeesReferrerFee,
-    );
-    mockEmpAuctionData(
-      auctionModuleAddress,
-      lotId,
-      0,
-      0,
-      0,
-      0,
-      BigInt.zero(),
-      empMinPrice,
-      empMinFilled,
-      empMinBidSize,
-      empPublicKeyX,
-      empPublicKeyY,
-      BigInt.zero(),
-    );
-
-    handleAuctionCreated(auctionCreatedEvent);
+    _createAuctionLot();
 
     // Update mocks
     mockLotFees(
@@ -694,7 +582,7 @@ describe("auction curation", () => {
     clearStore();
   });
 
-  test("Curated created and stored", () => {
+  test("BatchAuctionCurated created and stored", () => {
     handleCurated(auctionCuratedEvent);
 
     const recordId =
@@ -741,3 +629,79 @@ describe("auction curation", () => {
     );
   });
 });
+
+describe("bid", () => {
+  beforeEach(() => {
+    _createAuctionLot();
+
+    _createBid();
+  });
+
+  afterEach(() => {
+    clearStore();
+  });
+
+  test("BatchBid created and stored", () => {
+    const lotRecordId =
+      "mainnet-" + eventAddress.toHexString() + "-" + lotId.toString();
+    const recordId = lotRecordId + "-" + bidId.toString();
+
+    // BatchBid record is created
+    assert.entityCount("BatchBid", 1);
+    const batchBidRecord = BatchBid.load(recordId);
+    if (batchBidRecord === null) {
+      throw new Error("Expected BatchBid to exist for record id " + recordId);
+    }
+
+    assertStringEquals(batchBidRecord.id, recordId, "Bid: id");
+    assertStringEquals(batchBidRecord.lot, lotRecordId, "Bid: lot");
+    assertBytesEquals(batchBidRecord.bidder, BIDDER, "Bid: bidder");
+    assertBigDecimalEquals(
+      batchBidRecord.amountIn,
+      toDecimal(bidAmount, lotQuoteTokenDecimals),
+      "Bid: amountIn",
+    );
+    assertBigIntEquals(
+      batchBidRecord.rawAmountIn,
+      bidAmount,
+      "Bid: rawAmountIn",
+    );
+    assertBigDecimalEquals(
+      batchBidRecord.amountOut,
+      null, // Not set until decryption
+      "Bid: amountOut",
+    );
+    assertBigIntEquals(
+      batchBidRecord.rawAmountOut,
+      null, // Not set until decryption
+      "Bid: rawAmountOut",
+    );
+    assertBytesEquals(batchBidRecord.referrer, bidReferrer, "Bid: referrer");
+    assertStringEquals(batchBidRecord.status, "submitted", "Bid: status");
+
+    // BatchAuctionLot record is updated
+    assert.entityCount("BatchAuctionLot", 1);
+    const batchAuctionLotRecord = BatchAuctionLot.load(lotRecordId);
+    if (batchAuctionLotRecord === null) {
+      throw new Error(
+        "Expected BatchAuctionLot to exist for record id " + lotRecordId,
+      );
+    }
+
+    assertBigIntEquals(
+      batchAuctionLotRecord.maxBidId,
+      bidId,
+      "BatchAuctionLot: maxBidId",
+    );
+  });
+
+  // TODO referrer not set
+});
+
+// TODO refund bid
+
+// TODO abort
+
+// TODO settle
+
+// TODO claim bid
