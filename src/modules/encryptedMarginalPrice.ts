@@ -120,10 +120,13 @@ export function updateEncryptedMarginalPriceLot(
     );
 
     // Detect partial fill
-    const partialFillData = encryptedMarginalPrice.getPartialFill(lotId);
-    empLot.hasPartialFill = partialFillData.getHasPartialFill();
-    if (empLot.hasPartialFill == true) {
-      empLot.partialBidId = partialFillData.getPartialFill().bidId;
+    const partialFillDataResult = encryptedMarginalPrice.try_getPartialFill(lotId);
+    if (!partialFillDataResult.reverted) {
+      const partialFillData = partialFillDataResult.value;
+      empLot.hasPartialFill = partialFillData.getHasPartialFill();
+      if (empLot.hasPartialFill == true) {
+        empLot.partialBidId = partialFillData.getPartialFill().bidId;
+      }
     }
   }
 
