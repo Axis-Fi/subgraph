@@ -758,4 +758,6 @@ describe("bid refund", () => {
 
 // TODO settle
 
-// TODO claim bid
+// TODO claim bid after settle
+
+// TODO claim bid after abort
