@@ -39,6 +39,7 @@ import {
   assertBigIntEquals,
   assertBooleanEquals,
   assertBytesEquals,
+  assertI32Equals,
   assertNull,
   assertStringEquals,
 } from "./assert";
@@ -429,6 +430,20 @@ describe("auction creation", () => {
       toDecimal(empMinBidSize, lotQuoteTokenDecimals),
       "BatchEncryptedMarginalPriceLot: minBidSize",
     );
+
+    // Check reverse lookups
+    const batchAuctionLotRecordCreatedLookup =
+      batchAuctionLotRecord.created.load();
+    assertI32Equals(
+      batchAuctionLotRecordCreatedLookup.length,
+      1,
+      "BatchAuctionLot: created lookup length",
+    );
+    assertStringEquals(
+      batchAuctionLotRecordCreatedLookup[0].id,
+      recordId,
+      "BatchAuctionLot: created lookup",
+    );
   });
 
   // TODO curator not set
@@ -573,6 +588,18 @@ describe("auction cancellation", () => {
       null,
       "BatchEncryptedMarginalPriceLot: partialBidId",
     );
+
+    // Check reverse lookups
+    assertI32Equals(
+      batchAuctionLotRecord.cancelled.load().length,
+      1,
+      "BatchAuctionLot: cancelled lookup length",
+    );
+    assertStringEquals(
+      batchAuctionLotRecord.cancelled.load()[0].id,
+      recordId,
+      "BatchAuctionLot: cancelled lookup",
+    );
   });
 });
 
@@ -649,6 +676,18 @@ describe("auction curation", () => {
       true,
       "BatchAuctionLot: curatorApproved",
     );
+
+    // Check reverse lookups
+    assertI32Equals(
+      batchAuctionLotRecord.curated.load().length,
+      1,
+      "BatchAuctionLot: curated lookup length",
+    );
+    assertStringEquals(
+      batchAuctionLotRecord.curated.load()[0].id,
+      recordId,
+      "BatchAuctionLot: curated lookup",
+    );
   });
 });
 
@@ -715,6 +754,19 @@ describe("bid", () => {
       bidId,
       "BatchAuctionLot: maxBidId",
     );
+
+    // Check reverse lookups
+    const batchAuctionLotRecordBidsLookup = batchAuctionLotRecord.bids.load();
+    assertI32Equals(
+      batchAuctionLotRecordBidsLookup.length,
+      1,
+      "BatchAuctionLot: bids lookup length",
+    );
+    assertStringEquals(
+      batchAuctionLotRecordBidsLookup[0].id,
+      recordId,
+      "BatchAuctionLot: bids lookup",
+    );
   });
 
   // TODO referrer not set
@@ -775,6 +827,37 @@ describe("bid refund", () => {
     }
 
     assertStringEquals(batchBidRecord.status, "claimed", "Bid: status");
+
+    // Check reverse lookups
+    const batchBidRecordRefundedLookup = batchBidRecord.refunded.load();
+    assertI32Equals(
+      batchBidRecordRefundedLookup.length,
+      1,
+      "Bid: refunded lookup length",
+    );
+    assertStringEquals(
+      batchBidRecordRefundedLookup[0].id,
+      recordId,
+      "Bid: refunded lookup",
+    );
+    const batchAuctionLotRecord = BatchAuctionLot.load(lotRecordId);
+    if (batchAuctionLotRecord === null) {
+      throw new Error(
+        "Expected BatchAuctionLot to exist for record id " + lotRecordId,
+      );
+    }
+    const batchAuctionLotRecordBidsRefundedLookup =
+      batchAuctionLotRecord.bidsRefunded.load();
+    assertI32Equals(
+      batchAuctionLotRecordBidsRefundedLookup.length,
+      1,
+      "BatchAuctionLot: bidsRefunded lookup length",
+    );
+    assertStringEquals(
+      batchAuctionLotRecordBidsRefundedLookup[0].id,
+      recordId,
+      "BatchAuctionLot: bidsRefunded lookup",
+    );
   });
 });
 
@@ -861,6 +944,37 @@ describe("bid decryption", () => {
       "Bid: submittedPrice",
     );
     // TODO rawSubmittedPrice
+
+    // Check reverse lookups
+    const batchBidRecordDecryptedLookup = batchBidRecord.decrypted.load();
+    assertI32Equals(
+      batchBidRecordDecryptedLookup.length,
+      1,
+      "Bid: decrypted lookup length",
+    );
+    assertStringEquals(
+      batchBidRecordDecryptedLookup[0].id,
+      bidRecordId,
+      "Bid: decrypted lookup",
+    );
+    const batchAuctionLotRecord = BatchAuctionLot.load(lotRecordId);
+    if (batchAuctionLotRecord === null) {
+      throw new Error(
+        "Expected BatchAuctionLot to exist for record id " + lotRecordId,
+      );
+    }
+    const batchAuctionLotRecordBidsDecryptedLookup =
+      batchAuctionLotRecord.bidsDecrypted.load();
+    assertI32Equals(
+      batchAuctionLotRecordBidsDecryptedLookup.length,
+      1,
+      "BatchAuctionLot: bidsDecrypted lookup length",
+    );
+    assertStringEquals(
+      batchAuctionLotRecordBidsDecryptedLookup[0].id,
+      bidRecordId,
+      "BatchAuctionLot: bidsDecrypted lookup",
+    );
   });
 });
 

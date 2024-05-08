@@ -356,7 +356,7 @@ export function handleBid(event: BidEvent): void {
   entity.bidId = bidId;
   entity.bidder = event.params.bidder;
   entity.referrer = bid.getReferrer();
-  log.info("Adding BatchBid record with id: ", [bidRecordId]);
+  log.info("Adding BatchBid record with id: {}", [bidRecordId]);
 
   entity.amountIn = toDecimal(
     event.params.amount,
@@ -392,7 +392,7 @@ export function handleRefundBid(event: RefundBidEvent): void {
   entity.lot = lotRecord.id;
   entity.bid = bidRecordId;
   entity.bidder = event.params.bidder;
-  log.info("Adding BatchBidRefunded record with id: ", [bidRecordId]);
+  log.info("Adding BatchBidRefunded record with id: {}", [bidRecordId]);
 
   entity.blockNumber = event.block.number;
   entity.blockTimestamp = event.block.timestamp;

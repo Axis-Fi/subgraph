@@ -82,3 +82,19 @@ export function assertBytesEquals(
     message + ": actual: " + actualNotNull + " expected: " + expectedNotNull,
   );
 }
+
+export function assertI32Equals(
+  actual: i32,
+  expected: i32,
+  message: string,
+): void {
+  assert.i32Equals(
+    actual,
+    expected,
+    message +
+      ": actual: " +
+      actual.toString() +
+      " expected: " +
+      expected.toString(),
+  );
+}
