@@ -1732,9 +1732,9 @@ export class BatchAuctionLot extends Entity {
 }
 
 export class BatchAuctionCreated extends Entity {
-  constructor(id: Bytes) {
+  constructor(id: string) {
     super();
-    this.set("id", Value.fromBytes(id));
+    this.set("id", Value.fromString(id));
   }
 
   save(): void {
@@ -1742,36 +1742,36 @@ export class BatchAuctionCreated extends Entity {
     assert(id != null, "Cannot save BatchAuctionCreated entity without an ID");
     if (id) {
       assert(
-        id.kind == ValueKind.BYTES,
-        `Entities of type BatchAuctionCreated must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+        id.kind == ValueKind.STRING,
+        `Entities of type BatchAuctionCreated must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`,
       );
-      store.set("BatchAuctionCreated", id.toBytes().toHexString(), this);
+      store.set("BatchAuctionCreated", id.toString(), this);
     }
   }
 
-  static loadInBlock(id: Bytes): BatchAuctionCreated | null {
+  static loadInBlock(id: string): BatchAuctionCreated | null {
     return changetype<BatchAuctionCreated | null>(
-      store.get_in_block("BatchAuctionCreated", id.toHexString()),
+      store.get_in_block("BatchAuctionCreated", id),
     );
   }
 
-  static load(id: Bytes): BatchAuctionCreated | null {
+  static load(id: string): BatchAuctionCreated | null {
     return changetype<BatchAuctionCreated | null>(
-      store.get("BatchAuctionCreated", id.toHexString()),
+      store.get("BatchAuctionCreated", id),
     );
   }
 
-  get id(): Bytes {
+  get id(): string {
     let value = this.get("id");
     if (!value || value.kind == ValueKind.NULL) {
       throw new Error("Cannot return null for a required field.");
     } else {
-      return value.toBytes();
+      return value.toString();
     }
   }
 
-  set id(value: Bytes) {
-    this.set("id", Value.fromBytes(value));
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
   }
 
   get lot(): string {
@@ -3087,9 +3087,9 @@ export class BatchBidClaimed extends Entity {
 }
 
 export class BatchEncryptedMarginalPriceLot extends Entity {
-  constructor(id: Bytes) {
+  constructor(id: string) {
     super();
-    this.set("id", Value.fromBytes(id));
+    this.set("id", Value.fromString(id));
   }
 
   save(): void {
@@ -3100,40 +3100,36 @@ export class BatchEncryptedMarginalPriceLot extends Entity {
     );
     if (id) {
       assert(
-        id.kind == ValueKind.BYTES,
-        `Entities of type BatchEncryptedMarginalPriceLot must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+        id.kind == ValueKind.STRING,
+        `Entities of type BatchEncryptedMarginalPriceLot must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`,
       );
-      store.set(
-        "BatchEncryptedMarginalPriceLot",
-        id.toBytes().toHexString(),
-        this,
-      );
+      store.set("BatchEncryptedMarginalPriceLot", id.toString(), this);
     }
   }
 
-  static loadInBlock(id: Bytes): BatchEncryptedMarginalPriceLot | null {
+  static loadInBlock(id: string): BatchEncryptedMarginalPriceLot | null {
     return changetype<BatchEncryptedMarginalPriceLot | null>(
-      store.get_in_block("BatchEncryptedMarginalPriceLot", id.toHexString()),
+      store.get_in_block("BatchEncryptedMarginalPriceLot", id),
     );
   }
 
-  static load(id: Bytes): BatchEncryptedMarginalPriceLot | null {
+  static load(id: string): BatchEncryptedMarginalPriceLot | null {
     return changetype<BatchEncryptedMarginalPriceLot | null>(
-      store.get("BatchEncryptedMarginalPriceLot", id.toHexString()),
+      store.get("BatchEncryptedMarginalPriceLot", id),
     );
   }
 
-  get id(): Bytes {
+  get id(): string {
     let value = this.get("id");
     if (!value || value.kind == ValueKind.NULL) {
       throw new Error("Cannot return null for a required field.");
     } else {
-      return value.toBytes();
+      return value.toString();
     }
   }
 
-  set id(value: Bytes) {
-    this.set("id", Value.fromBytes(value));
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
   }
 
   get lot(): string {

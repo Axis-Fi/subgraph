@@ -38,8 +38,7 @@ export function createAuctionCancelledEvent(
 export function createAuctionCreatedEvent(
   id: BigInt,
   auctionRef: Bytes,
-  baseToken: Address,
-  quoteToken: Address,
+  infoHash: string,
 ): AuctionCreated {
   const auctionCreatedEvent = changetype<AuctionCreated>(newMockEvent());
 
@@ -55,13 +54,7 @@ export function createAuctionCreatedEvent(
     ),
   );
   auctionCreatedEvent.parameters.push(
-    new ethereum.EventParam("baseToken", ethereum.Value.fromAddress(baseToken)),
-  );
-  auctionCreatedEvent.parameters.push(
-    new ethereum.EventParam(
-      "quoteToken",
-      ethereum.Value.fromAddress(quoteToken),
-    ),
+    new ethereum.EventParam("infoHash", ethereum.Value.fromString(infoHash)),
   );
 
   return auctionCreatedEvent;

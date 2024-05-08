@@ -179,7 +179,7 @@ type BatchAuctionLot @entity {
 }
 
 type BatchAuctionCreated @entity(immutable: true) {
-  id: Bytes!
+  id: String! # chain-auctionHouse-lotId
   lot: BatchAuctionLot!
   infoHash: String! # IPFS info hash
 
@@ -310,7 +310,7 @@ type BatchBidClaimed @entity(immutable: true) {
 ### Batch Modules
 
 type BatchEncryptedMarginalPriceLot @entity {
-  id: Bytes!
+  id: String! # chain-auctionHouse-lotId
   lot: BatchAuctionLot!
 
   status: String! # enum: "Created" | "Decrypted" | "Settled"

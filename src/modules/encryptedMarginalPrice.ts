@@ -39,8 +39,8 @@ function _getLotStatus(status: i32): string {
 
 function _getEncryptedMarginalPriceLotId(
   batchAuctionLot: BatchAuctionLot,
-): Bytes {
-  return Bytes.fromUTF8(batchAuctionLot.id);
+): string {
+  return batchAuctionLot.id;
 }
 
 export function createEncryptedMarginalPriceLot(

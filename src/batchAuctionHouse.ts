@@ -152,7 +152,7 @@ export function handleAuctionCreated(event: AuctionCreatedEvent): void {
   auctionLot.curator = auctionFees.getCurator().equals(Address.zero())
     ? null
     : auctionFees.getCurator();
-  auctionLot.curatorApproved = false;
+  auctionLot.curatorApproved = false; // Cannot be approved at this time
   auctionLot.curatorFee = toDecimal(auctionFees.getCuratorFee(), 5);
   auctionLot.protocolFee = toDecimal(auctionFees.getProtocolFee(), 5);
   auctionLot.referrerFee = toDecimal(auctionFees.getReferrerFee(), 5);
@@ -197,9 +197,7 @@ export function handleAuctionCreated(event: AuctionCreatedEvent): void {
   }
 
   // Create the event
-  const entity = new BatchAuctionCreated(
-    event.transaction.hash.concatI32(event.logIndex.toI32()),
-  );
+  const entity = new BatchAuctionCreated(auctionLot.id);
   entity.lot = auctionLot.id;
   entity.infoHash = event.params.infoHash;
 
@@ -208,6 +206,10 @@ export function handleAuctionCreated(event: AuctionCreatedEvent): void {
   entity.date = toISO8601String(event.block.timestamp);
   entity.transactionHash = event.transaction.hash;
   entity.save();
+
+  log.info("BatchAuctionCreated event saved with id: {}", [
+    entity.id.toString(),
+  ]);
 }
 
 export function handleAuctionCancelled(event: AuctionCancelledEvent): void {
