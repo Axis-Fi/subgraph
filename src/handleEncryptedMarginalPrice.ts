@@ -22,7 +22,7 @@ export function handleBidDecrypted(event: BidDecryptedEvent): void {
 
   const bidRecordId = getBidId(lotRecord, event.params.bidId);
   const entity = new BatchBidDecrypted(bidRecordId);
-  entity.lot = event.params.lotId.toString();
+  entity.lot = lotRecord.id;
   entity.bid = bidRecordId;
   log.info("Adding BatchBidDecrypted record with id: ", [bidRecordId]);
 
