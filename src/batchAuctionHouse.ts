@@ -280,9 +280,7 @@ export function handleSettle(event: SettleEvent): void {
 
   const lotRecord = getLotRecord(event.address, lotId);
 
-  const entity = new BatchAuctionSettled(
-    event.transaction.hash.concatI32(event.logIndex.toI32()),
-  );
+  const entity = new BatchAuctionSettled(lotRecord.id);
   entity.lot = lotRecord.id;
   entity.blockNumber = event.block.number;
   entity.blockTimestamp = event.block.timestamp;

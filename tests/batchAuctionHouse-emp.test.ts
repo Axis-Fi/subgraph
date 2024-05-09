@@ -139,8 +139,8 @@ const bidAmountOut: BigInt = BigInt.fromString("2000000000000000000"); // == 0.0
 const bidReferrer: Address = Address.fromString(
   "0x0000000000000000000000000000000000000003",
 );
-const bidPartialFillPayout = bidAmountOut.minus(BigInt.fromU64(1e18));
-const bidPartialFillRefund = BigInt.fromU64(1e16);
+const bidPartialFillPayout = bidAmountOut.minus(BigInt.fromString("100000"));
+const bidPartialFillRefund = BigInt.fromString("100000");
 
 function setChain(chain: string): void {
   dataSourceMock.setNetwork(chain);
