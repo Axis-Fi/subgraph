@@ -288,7 +288,7 @@ type BatchBidDecrypted @entity(immutable: true) {
   bid: BatchBid!
 
   amountIn: BigDecimal!
-  amountOut: BigDecimal!
+  amountOut: BigDecimal
 
   blockNumber: BigInt!
   blockTimestamp: BigInt!

@@ -255,6 +255,31 @@ function _createBid(): void {
   _createBidWithId(BID_ID_ONE);
 }
 
+function _decryptBid(bidId: BigInt, amountOut: BigInt | null): void {
+  const amountOutNotNull = amountOut === null ? BigInt.zero() : amountOut;
+
+  mockEmpBid(
+    auctionModuleAddress,
+    lotId,
+    bidId,
+    BIDDER,
+    bidAmountIn,
+    amountOutNotNull, // Decrypted
+    bidReferrer,
+    1, // Decrypted
+  );
+  mockEmpParent(auctionModuleAddress, auctionHouse);
+
+  const bidDecryptedEvent = createBidDecryptedEvent(
+    auctionModuleAddress,
+    lotId,
+    bidId,
+    bidAmountIn,
+    amountOut,
+  );
+  handleBidDecrypted(bidDecryptedEvent);
+}
+
 describe("auction creation", () => {
   beforeEach(() => {
     _createAuctionLot();
@@ -896,27 +921,7 @@ describe("bid decryption", () => {
 
     _createBid();
 
-    // Update mocks
-    mockEmpBid(
-      auctionModuleAddress,
-      lotId,
-      BID_ID_ONE,
-      BIDDER,
-      bidAmountIn,
-      bidAmountOut, // Decrypted
-      bidReferrer,
-      1, // Decrypted
-    );
-    mockEmpParent(auctionModuleAddress, auctionHouse);
-
-    const bidDecryptedEvent = createBidDecryptedEvent(
-      lotId,
-      BID_ID_ONE,
-      bidAmountIn,
-      bidAmountOut,
-      auctionModuleAddress,
-    );
-    handleBidDecrypted(bidDecryptedEvent);
+    _decryptBid(BID_ID_ONE, bidAmountOut);
   });
 
   test("BatchBidDecrypted created and stored", () => {

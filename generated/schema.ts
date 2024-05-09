@@ -2919,17 +2919,21 @@ export class BatchBidDecrypted extends Entity {
     this.set("amountIn", Value.fromBigDecimal(value));
   }
 
-  get amountOut(): BigDecimal {
+  get amountOut(): BigDecimal | null {
     let value = this.get("amountOut");
     if (!value || value.kind == ValueKind.NULL) {
-      throw new Error("Cannot return null for a required field.");
+      return null;
     } else {
       return value.toBigDecimal();
     }
   }
 
-  set amountOut(value: BigDecimal) {
-    this.set("amountOut", Value.fromBigDecimal(value));
+  set amountOut(value: BigDecimal | null) {
+    if (!value) {
+      this.unset("amountOut");
+    } else {
+      this.set("amountOut", Value.fromBigDecimal(<BigDecimal>value));
+    }
   }
 
   get blockNumber(): BigInt {

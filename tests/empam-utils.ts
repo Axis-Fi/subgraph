@@ -4,11 +4,11 @@ import { BidDecrypted } from "../generated/BatchAuctionHouse/EncryptedMarginalPr
 import { newMockEvent } from "./mocks/event";
 
 export function createBidDecryptedEvent(
+  auctionModule: Address,
   lotId: BigInt,
   bidId: BigInt,
   amountIn: BigInt,
-  amountOut: BigInt,
-  auctionModule: Address,
+  amountOut: BigInt | null,
 ): BidDecrypted {
   const bidDecryptedEvent = changetype<BidDecrypted>(
     newMockEvent(auctionModule),
@@ -28,12 +28,14 @@ export function createBidDecryptedEvent(
       ethereum.Value.fromUnsignedBigInt(amountIn),
     ),
   );
-  bidDecryptedEvent.parameters.push(
-    new ethereum.EventParam(
-      "amountOut",
-      ethereum.Value.fromUnsignedBigInt(amountOut),
-    ),
-  );
+  if (amountOut !== null) {
+    bidDecryptedEvent.parameters.push(
+      new ethereum.EventParam(
+        "amountOut",
+        ethereum.Value.fromUnsignedBigInt(amountOut),
+      ),
+    );
+  }
 
   return bidDecryptedEvent;
 }
