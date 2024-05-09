@@ -154,6 +154,10 @@ function setChain(chain: string): void {
 }
 
 function _createAuctionLot(
+  curator: Address = lotFeesCurator,
+  curatorFee: i32 = lotFeesCuratorFee,
+  protocolFee: i32 = lotFeesProtocolFee,
+  referrerFee: i32 = lotFeesReferrerFee,
   derivativeVeecode: string = "",
   derivativeParams: Bytes = Bytes.fromUTF8(""),
 ): void {
@@ -213,11 +217,11 @@ function _createAuctionLot(
   mockLotFees(
     auctionHouse,
     LOT_ID,
-    lotFeesCurator,
-    lotFeesCuratorApproved,
-    lotFeesCuratorFee,
-    lotFeesProtocolFee,
-    lotFeesReferrerFee,
+    curator,
+    false,
+    curatorFee,
+    protocolFee,
+    referrerFee,
   );
   mockEmpAuctionData(
     auctionModuleAddress,
@@ -329,12 +333,7 @@ describe("auction creation", () => {
 
     // BatchAuctionLot record is created
     assert.entityCount("BatchAuctionLot", 1);
-    const batchAuctionLotRecord = BatchAuctionLot.load(recordId);
-    if (batchAuctionLotRecord === null) {
-      throw new Error(
-        "Expected BatchAuctionLot to exist for record id " + recordId,
-      );
-    }
+    const batchAuctionLotRecord = getBatchAuctionLot(recordId);
 
     assertStringEquals(
       batchAuctionLotRecord.id,
@@ -507,16 +506,85 @@ describe("auction creation", () => {
     );
   });
 
-  // TODO curator not set
+  test("curator not set", () => {
+    _createAuctionLot(Address.zero());
 
-  // TODO protocol fee not set
+    const recordId =
+      "mainnet-" + auctionHouse.toHexString() + "-" + LOT_ID.toString();
 
-  // TODO curator fee not set
+    const batchAuctionLotRecord = getBatchAuctionLot(recordId);
 
-  // TODO referrer fee not set
+    assertBytesEquals(
+      batchAuctionLotRecord.curator,
+      null,
+      "BatchAuctionLot: curator",
+    );
+    assertBooleanEquals(
+      batchAuctionLotRecord.curatorApproved,
+      false,
+      "BatchAuctionLot: curatorApproved",
+    );
+    assertBigDecimalEquals(
+      batchAuctionLotRecord.curatorFee,
+      BigDecimal.zero(),
+      "BatchAuctionLot: curatorFee",
+    );
+  });
+
+  test("curator fee not set", () => {
+    _createAuctionLot(lotFeesCurator, 0);
+
+    const recordId =
+      "mainnet-" + auctionHouse.toHexString() + "-" + LOT_ID.toString();
+
+    const batchAuctionLotRecord = getBatchAuctionLot(recordId);
+
+    assertBigDecimalEquals(
+      batchAuctionLotRecord.curatorFee,
+      BigDecimal.zero(),
+      "BatchAuctionLot: curatorFee",
+    );
+  });
+
+  test("protocol fee not set", () => {
+    _createAuctionLot(lotFeesCurator, lotFeesCuratorFee, 0);
+
+    const recordId =
+      "mainnet-" + auctionHouse.toHexString() + "-" + LOT_ID.toString();
+
+    const batchAuctionLotRecord = getBatchAuctionLot(recordId);
+
+    assertBigDecimalEquals(
+      batchAuctionLotRecord.protocolFee,
+      BigDecimal.zero(),
+      "BatchAuctionLot: protocolFee",
+    );
+  });
+
+  test("referrer fee not set", () => {
+    _createAuctionLot(lotFeesCurator, lotFeesCuratorFee, lotFeesProtocolFee, 0);
+
+    const recordId =
+      "mainnet-" + auctionHouse.toHexString() + "-" + LOT_ID.toString();
+
+    const batchAuctionLotRecord = getBatchAuctionLot(recordId);
+
+    assertBigDecimalEquals(
+      batchAuctionLotRecord.referrerFee,
+      BigDecimal.zero(),
+      "BatchAuctionLot: referrerFee",
+    );
+  });
 
   test("BatchLinearVestingLot created and stored", () => {
-    _createAuctionLot(linearVestingVeecode, linearVestingParams);
+    _createAuctionLot(
+      lotFeesCurator,
+      lotFeesCuratorFee,
+      lotFeesProtocolFee,
+      lotFeesProtocolFee,
+      linearVestingVeecode,
+      linearVestingParams,
+    );
 
     const recordId =
       "mainnet-" + auctionHouse.toHexString() + "-" + LOT_ID.toString();

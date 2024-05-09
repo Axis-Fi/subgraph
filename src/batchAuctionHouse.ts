@@ -1,5 +1,6 @@
 import {
   Address,
+  BigDecimal,
   BigInt,
   Bytes,
   dataSource,
@@ -156,7 +157,10 @@ export function handleAuctionCreated(event: AuctionCreatedEvent): void {
     ? null
     : auctionFees.getCurator();
   auctionLot.curatorApproved = false; // Cannot be approved at this time
-  auctionLot.curatorFee = toDecimal(auctionFees.getCuratorFee(), 5);
+  auctionLot.curatorFee =
+    auctionFees.getCurator() == Address.zero()
+      ? BigDecimal.zero()
+      : toDecimal(auctionFees.getCuratorFee(), 5);
   auctionLot.protocolFee = toDecimal(auctionFees.getProtocolFee(), 5);
   auctionLot.referrerFee = toDecimal(auctionFees.getReferrerFee(), 5);
 
