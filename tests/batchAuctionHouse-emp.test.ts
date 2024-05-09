@@ -1,10 +1,4 @@
-import {
-  Address,
-  BigDecimal,
-  BigInt,
-  Bytes,
-  log,
-} from "@graphprotocol/graph-ts";
+import { Address, BigDecimal, BigInt, Bytes } from "@graphprotocol/graph-ts";
 import {
   afterEach,
   assert,
@@ -25,7 +19,6 @@ import {
   BatchAuctionCreated,
   BatchAuctionCurated,
   BatchAuctionLot,
-  BatchAuctionSettled,
   BatchBid,
   BatchBidDecrypted,
   BatchBidRefunded,
@@ -255,16 +248,14 @@ function _createBid(): void {
   _createBidWithId(BID_ID_ONE);
 }
 
-function _decryptBid(bidId: BigInt, amountOut: BigInt | null): void {
-  const amountOutNotNull = amountOut === null ? BigInt.zero() : amountOut;
-
+function _decryptBid(bidId: BigInt, amountOut: BigInt): void {
   mockEmpBid(
     auctionModuleAddress,
     LOT_ID,
     bidId,
     BIDDER,
     bidAmountIn,
-    amountOutNotNull, // Decrypted
+    amountOut, // Decrypted
     bidReferrer,
     1, // Decrypted
   );
@@ -919,57 +910,106 @@ describe("bid decryption", () => {
   beforeEach(() => {
     _createAuctionLot();
 
-    _createBid();
+    _createBidWithId(BID_ID_ONE);
+    _createBidWithId(BID_ID_TWO);
 
     _decryptBid(BID_ID_ONE, bidAmountOut);
+    _decryptBid(BID_ID_TWO, BigInt.zero()); // Invalid or out of bounds amountOut
   });
 
   test("BatchBidDecrypted created and stored", () => {
     const lotRecordId =
       "mainnet-" + auctionHouse.toHexString() + "-" + LOT_ID.toString();
-    const bidRecordId = lotRecordId + "-" + BID_ID_ONE.toString();
+    const bidOneRecordId = lotRecordId + "-" + BID_ID_ONE.toString();
 
     // BatchBidDecrypted record is created
-    assert.entityCount("BatchBidDecrypted", 1);
-    const batchBidDecryptedRecord = BatchBidDecrypted.load(bidRecordId);
+    assert.entityCount("BatchBidDecrypted", 2);
+    const batchBidDecryptedRecord = BatchBidDecrypted.load(bidOneRecordId);
     if (batchBidDecryptedRecord === null) {
       throw new Error(
-        "Expected BatchBidDecrypted to exist for record id " + bidRecordId,
+        "Expected BatchBidDecrypted to exist for record id " + bidOneRecordId,
       );
     }
 
-    assertStringEquals(batchBidDecryptedRecord.id, bidRecordId, "Bid: id");
-    assertStringEquals(batchBidDecryptedRecord.lot, lotRecordId, "Bid: lot");
-    assertStringEquals(batchBidDecryptedRecord.bid, bidRecordId, "Bid: bid");
+    assertStringEquals(
+      batchBidDecryptedRecord.id,
+      bidOneRecordId,
+      "Bid one: id",
+    );
+    assertStringEquals(
+      batchBidDecryptedRecord.lot,
+      lotRecordId,
+      "Bid one: lot",
+    );
+    assertStringEquals(
+      batchBidDecryptedRecord.bid,
+      bidOneRecordId,
+      "Bid one: bid",
+    );
     assertBigDecimalEquals(
       batchBidDecryptedRecord.amountIn,
       toDecimal(bidAmountIn, lotQuoteTokenDecimals),
-      "Bid: amountIn",
+      "Bid one: amountIn",
     );
     assertBigDecimalEquals(
       batchBidDecryptedRecord.amountOut,
       toDecimal(bidAmountOut, lotBaseTokenDecimals),
-      "Bid: amountOut",
+      "Bid one: amountOut",
+    );
+
+    // BatchBidDecrypted record is created for the bid that did not decrypt successfully
+    const bidTwoRecordId = lotRecordId + "-" + BID_ID_TWO.toString();
+    const batchBidDecryptedRecordTwo = BatchBidDecrypted.load(bidTwoRecordId);
+    if (batchBidDecryptedRecordTwo === null) {
+      throw new Error(
+        "Expected BatchBidDecrypted to exist for record id " + bidTwoRecordId,
+      );
+    }
+
+    assertStringEquals(
+      batchBidDecryptedRecordTwo.id,
+      bidTwoRecordId,
+      "Bid two: id",
+    );
+    assertStringEquals(
+      batchBidDecryptedRecordTwo.lot,
+      lotRecordId,
+      "Bid two: lot",
+    );
+    assertStringEquals(
+      batchBidDecryptedRecordTwo.bid,
+      bidTwoRecordId,
+      "Bid two: bid",
+    );
+    assertBigDecimalEquals(
+      batchBidDecryptedRecordTwo.amountIn,
+      toDecimal(bidAmountIn, lotQuoteTokenDecimals),
+      "Bid two: amountIn",
+    );
+    assertBigDecimalEquals(
+      batchBidDecryptedRecordTwo.amountOut,
+      BigDecimal.zero(),
+      "Bid two: amountOut",
     );
 
     // BatchBid is updated
-    const batchBidRecord = BatchBid.load(bidRecordId);
-    if (batchBidRecord === null) {
+    const batchBidRecordOne = BatchBid.load(bidOneRecordId);
+    if (batchBidRecordOne === null) {
       throw new Error(
-        "Expected BatchBid to exist for record id " + bidRecordId,
+        "Expected BatchBid to exist for record id " + bidOneRecordId,
       );
     }
 
     const bidAmountOutDecimal = toDecimal(bidAmountOut, lotBaseTokenDecimals);
     assertBigDecimalEquals(
-      batchBidRecord.amountOut,
+      batchBidRecordOne.amountOut,
       bidAmountOutDecimal,
-      "Bid: amountOut",
+      "Bid one: amountOut",
     );
     assertBigIntEquals(
-      batchBidRecord.rawAmountOut,
+      batchBidRecordOne.rawAmountOut,
       bidAmountOut,
-      "Bid: rawAmountOut",
+      "Bid one: rawAmountOut",
     );
     const submittedPriceDecimal = calculatePrice(
       bidAmountIn,
@@ -977,14 +1017,37 @@ describe("bid decryption", () => {
       bidAmountOut,
     );
     assertBigDecimalEquals(
-      batchBidRecord.submittedPrice,
+      batchBidRecordOne.submittedPrice,
       submittedPriceDecimal,
-      "Bid: submittedPrice",
+      "Bid one: submittedPrice",
     );
     // TODO rawSubmittedPrice
 
+    const batchBidRecordTwo = BatchBid.load(bidTwoRecordId);
+    if (batchBidRecordTwo === null) {
+      throw new Error(
+        "Expected BatchBid to exist for record id " + bidTwoRecordId,
+      );
+    }
+
+    assertBigDecimalEquals(
+      batchBidRecordTwo.amountOut,
+      null,
+      "Bid two: amountOut",
+    );
+    assertBigIntEquals(
+      batchBidRecordTwo.rawAmountOut,
+      null,
+      "Bid two: rawAmountOut",
+    );
+    assertBigDecimalEquals(
+      batchBidRecordTwo.submittedPrice,
+      null,
+      "Bid two: submittedPrice",
+    );
+
     // Check reverse lookups
-    const batchBidRecordDecryptedLookup = batchBidRecord.decrypted.load();
+    const batchBidRecordDecryptedLookup = batchBidRecordOne.decrypted.load();
     assertI32Equals(
       batchBidRecordDecryptedLookup.length,
       1,
@@ -992,7 +1055,7 @@ describe("bid decryption", () => {
     );
     assertStringEquals(
       batchBidRecordDecryptedLookup[0].id,
-      bidRecordId,
+      bidOneRecordId,
       "Bid: decrypted lookup",
     );
     const batchAuctionLotRecord = BatchAuctionLot.load(lotRecordId);
@@ -1005,12 +1068,17 @@ describe("bid decryption", () => {
       batchAuctionLotRecord.bidsDecrypted.load();
     assertI32Equals(
       batchAuctionLotRecordBidsDecryptedLookup.length,
-      1,
+      2,
       "BatchAuctionLot: bidsDecrypted lookup length",
     );
     assertStringEquals(
       batchAuctionLotRecordBidsDecryptedLookup[0].id,
-      bidRecordId,
+      bidOneRecordId,
+      "BatchAuctionLot: bidsDecrypted lookup",
+    );
+    assertStringEquals(
+      batchAuctionLotRecordBidsDecryptedLookup[1].id,
+      bidTwoRecordId,
       "BatchAuctionLot: bidsDecrypted lookup",
     );
   });
@@ -1365,8 +1433,6 @@ describe("settle", () => {
     );
   });
 });
-
-// TODO settle - partial fill, won, lost
 
 // TODO claim bid after settle
 
