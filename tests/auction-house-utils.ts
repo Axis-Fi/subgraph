@@ -6,6 +6,7 @@ import {
   AuctionCancelled,
   AuctionCreated,
   Bid,
+  ClaimBid,
   Curated,
   ModuleInstalled,
   ModuleSunset,
@@ -124,6 +125,29 @@ export function createRefundBidEvent(
   );
 
   return cancelBidEvent;
+}
+
+export function createClaimBidEvent(
+  lotId_: BigInt,
+  bidId_: BigInt,
+  bidder: Address,
+  auctionHouse: Address,
+): ClaimBid {
+  const claimBidEvent = changetype<ClaimBid>(newMockEvent(auctionHouse));
+
+  claimBidEvent.parameters = [];
+
+  claimBidEvent.parameters.push(
+    new ethereum.EventParam("lotId", ethereum.Value.fromUnsignedBigInt(lotId_)),
+  );
+  claimBidEvent.parameters.push(
+    new ethereum.EventParam("bidId", ethereum.Value.fromUnsignedBigInt(bidId_)),
+  );
+  claimBidEvent.parameters.push(
+    new ethereum.EventParam("bidder", ethereum.Value.fromAddress(bidder)),
+  );
+
+  return claimBidEvent;
 }
 
 export function createCuratedEvent(

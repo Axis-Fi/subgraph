@@ -4,6 +4,7 @@ import {
   BatchAuctionLot,
   BatchAuctionSettled,
   BatchBid,
+  BatchBidClaimed,
   BatchEncryptedMarginalPriceLot,
 } from "../../generated/schema";
 
@@ -48,4 +49,18 @@ export function getBatchBid(lotId: string, bidId: BigInt): BatchBid {
   }
 
   return record as BatchBid;
+}
+
+export function getBatchBidClaimed(
+  lotId: string,
+  bidId: BigInt,
+): BatchBidClaimed {
+  const recordId = lotId.concat("-").concat(bidId.toString());
+  const record = BatchBidClaimed.load(recordId);
+
+  if (record == null) {
+    throw new Error("BatchBidClaimed not found: " + recordId);
+  }
+
+  return record as BatchBidClaimed;
 }

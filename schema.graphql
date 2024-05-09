@@ -297,7 +297,7 @@ type BatchBidDecrypted @entity(immutable: true) {
 }
 
 type BatchBidClaimed @entity(immutable: true) {
-  id: Bytes!
+  id: String! # lot id + bidId
   lot: BatchAuctionLot!
   bid: BatchBid!
 

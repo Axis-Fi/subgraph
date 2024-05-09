@@ -29,6 +29,7 @@ import {
   handleAuctionCancelled,
   handleAuctionCreated,
   handleBid,
+  handleBidClaimed,
   handleCurated,
   handleRefundBid,
   handleSettle,
@@ -49,6 +50,7 @@ import {
   createAuctionCancelledEvent,
   createAuctionCreatedEvent,
   createBidEvent,
+  createClaimBidEvent,
   createCuratedEvent,
   createRefundBidEvent,
   createSettleEvent,
@@ -59,6 +61,7 @@ import {
   getBatchAuctionLot,
   getBatchAuctionSettled,
   getBatchBid,
+  getBatchBidClaimed,
   getBatchEncryptedMarginalPriceLot,
 } from "./helpers/records";
 import { mockGetModuleForVeecode } from "./mocks/baseAuctionHouse";
@@ -120,6 +123,7 @@ const empMinFilled: BigInt = BigInt.fromU64(2_000_000_000_000_000_000);
 const empMinBidSize: BigInt = BigInt.fromU64(3_000_000_000_000_000_000);
 const empPublicKeyX: BigInt = BigInt.fromU64(222);
 const empPublicKeyY: BigInt = BigInt.fromU64(333);
+const empPrivateKey: BigInt = BigInt.fromI32(111111111);
 
 const BID_ID_ONE: BigInt = BigInt.fromI32(111);
 const BID_ID_TWO: BigInt = BigInt.fromI32(112);
@@ -915,6 +919,23 @@ describe("bid decryption", () => {
 
     _decryptBid(BID_ID_ONE, bidAmountOut);
     _decryptBid(BID_ID_TWO, BigInt.zero()); // Invalid or out of bounds amountOut
+
+    // Update mocks
+    mockEmpAuctionData(
+      auctionModuleAddress,
+      LOT_ID,
+      0,
+      0,
+      1, // Decrypted
+      0,
+      BigInt.zero(),
+      empMinPrice,
+      empMinFilled,
+      empMinBidSize,
+      empPublicKeyX,
+      empPublicKeyY,
+      empPrivateKey,
+    );
   });
 
   test("BatchBidDecrypted created and stored", () => {
@@ -1082,8 +1103,6 @@ describe("bid decryption", () => {
       "BatchAuctionLot: bidsDecrypted lookup",
     );
   });
-
-  // TODO bid decryption with no amount out
 });
 
 describe("abort", () => {
@@ -1092,7 +1111,7 @@ describe("abort", () => {
 
     _createBid();
 
-    // Update mocks
+    // Update lot status
     mockEmpAuctionData(
       auctionModuleAddress,
       LOT_ID,
@@ -1109,6 +1128,8 @@ describe("abort", () => {
       BigInt.zero(),
     );
     mockEmpParent(auctionModuleAddress, auctionHouse);
+
+    // Set bid outcome
     mockEmpBidClaim(
       auctionModuleAddress,
       LOT_ID,
@@ -1120,6 +1141,7 @@ describe("abort", () => {
       bidAmountIn,
     );
 
+    // Create event
     const auctionAbortedEvent = createAuctionAbortedEvent(LOT_ID, auctionHouse);
     handleAbort(auctionAbortedEvent);
   });
@@ -1202,6 +1224,71 @@ describe("abort", () => {
     assertStringEquals(batchBidRecord.status, "submitted", "Bid: status"); // Bid was not decrypted
     assertStringEquals(batchBidRecord.outcome, "lost", "Bid: outcome");
   });
+
+  test("BatchBidClaimed created and stored", () => {
+    // Mock the bid status
+    mockEmpBid(
+      auctionModuleAddress,
+      LOT_ID,
+      BID_ID_ONE,
+      BIDDER,
+      bidAmountIn,
+      BigInt.zero(),
+      bidReferrer,
+      2, // Claimed
+    );
+
+    // Create the event to claim the bid
+    const bidClaimEvent = createClaimBidEvent(
+      LOT_ID,
+      BID_ID_ONE,
+      BIDDER,
+      auctionHouse,
+    );
+    handleBidClaimed(bidClaimEvent);
+
+    // BatchBidClaimed record is stored
+    const recordId =
+      "mainnet-" + auctionHouse.toHexString() + "-" + LOT_ID.toString();
+    const bidRecordId = recordId + "-" + BID_ID_ONE.toString();
+
+    assert.entityCount("BatchBidClaimed", 1);
+    const batchBidClaimedRecord = getBatchBidClaimed(recordId, BID_ID_ONE);
+
+    assertStringEquals(
+      batchBidClaimedRecord.id,
+      bidRecordId,
+      "BatchBidClaimed: id",
+    );
+    assertStringEquals(
+      batchBidClaimedRecord.lot,
+      recordId,
+      "BatchBidClaimed: lot",
+    );
+    assertStringEquals(
+      batchBidClaimedRecord.bid,
+      bidRecordId,
+      "BatchBidClaimed: bid",
+    );
+
+    // BatchBid is updated
+    const batchBidRecord = getBatchBid(recordId, BID_ID_ONE);
+    assertStringEquals(batchBidRecord.status, "claimed", "Bid: status");
+    assertStringEquals(batchBidRecord.outcome, "lost", "Bid: outcome");
+
+    // Check reverse lookups
+    const batchBidRecordClaimedLookup = batchBidRecord.claimed.load();
+    assertI32Equals(
+      batchBidRecordClaimedLookup.length,
+      1,
+      "Bid: claimed lookup length",
+    );
+    assertStringEquals(
+      batchBidRecordClaimedLookup[0].id,
+      bidRecordId,
+      "Bid: claimed lookup",
+    );
+  });
 });
 
 describe("settle", () => {
@@ -1211,6 +1298,10 @@ describe("settle", () => {
     _createBidWithId(BID_ID_ONE); // Won
     _createBidWithId(BID_ID_TWO); // Lost
     _createBidWithId(BID_ID_THREE); // Partial fill
+
+    _decryptBid(BID_ID_ONE, bidAmountOut);
+    _decryptBid(BID_ID_TWO, bidAmountOut);
+    _decryptBid(BID_ID_THREE, bidAmountOut);
 
     // Update mocks
     mockEmpAuctionData(
@@ -1228,12 +1319,6 @@ describe("settle", () => {
       empPublicKeyY,
       BigInt.zero(),
     );
-
-    _decryptBid(BID_ID_ONE, bidAmountOut);
-    _decryptBid(BID_ID_TWO, bidAmountOut);
-    _decryptBid(BID_ID_THREE, bidAmountOut);
-
-    mockEmpParent(auctionModuleAddress, auctionHouse);
 
     // Update mocks for 3 bids
     mockEmpBidClaim(
@@ -1432,10 +1517,81 @@ describe("settle", () => {
       "Bid three: settledAmountOut",
     );
   });
+
+  test("BatchBidClaimed created and stored", () => {
+    // Mock the bid status
+    mockEmpBidClaim(
+      auctionModuleAddress,
+      LOT_ID,
+      BID_ID_TWO,
+      BIDDER,
+      bidReferrer,
+      bidAmountIn,
+      bidAmountOut,
+      BigInt.zero(),
+    );
+    mockEmpBid(
+      auctionModuleAddress,
+      LOT_ID,
+      BID_ID_ONE,
+      BIDDER,
+      bidAmountIn,
+      bidAmountOut,
+      bidReferrer,
+      2, // Claimed
+    );
+
+    // Create the event to claim the bid
+    const bidClaimEvent = createClaimBidEvent(
+      LOT_ID,
+      BID_ID_ONE,
+      BIDDER,
+      auctionHouse,
+    );
+    handleBidClaimed(bidClaimEvent);
+
+    // BatchBidClaimed record is stored
+    const recordId =
+      "mainnet-" + auctionHouse.toHexString() + "-" + LOT_ID.toString();
+    const bidRecordId = recordId + "-" + BID_ID_ONE.toString();
+
+    assert.entityCount("BatchBidClaimed", 1);
+    const batchBidClaimedRecord = getBatchBidClaimed(recordId, BID_ID_ONE);
+
+    assertStringEquals(
+      batchBidClaimedRecord.id,
+      bidRecordId,
+      "BatchBidClaimed: id",
+    );
+    assertStringEquals(
+      batchBidClaimedRecord.lot,
+      recordId,
+      "BatchBidClaimed: lot",
+    );
+    assertStringEquals(
+      batchBidClaimedRecord.bid,
+      bidRecordId,
+      "BatchBidClaimed: bid",
+    );
+
+    // BatchBid is updated
+    const batchBidRecord = getBatchBid(recordId, BID_ID_ONE);
+    assertStringEquals(batchBidRecord.status, "claimed", "Bid: status");
+    assertStringEquals(batchBidRecord.outcome, "won", "Bid: outcome");
+
+    // Check reverse lookups
+    const batchBidRecordClaimedLookup = batchBidRecord.claimed.load();
+    assertI32Equals(
+      batchBidRecordClaimedLookup.length,
+      1,
+      "Bid: claimed lookup length",
+    );
+    assertStringEquals(
+      batchBidRecordClaimedLookup[0].id,
+      bidRecordId,
+      "Bid: claimed lookup",
+    );
+  });
 });
-
-// TODO claim bid after settle
-
-// TODO claim bid after abort
 
 // TODO linear vesting

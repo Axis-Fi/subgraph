@@ -440,12 +440,11 @@ export function handleBidClaimed(event: ClaimBidEvent): void {
   const lotId = event.params.lotId;
 
   const lotRecord: BatchAuctionLot = getLotRecord(event.address, lotId);
+  const bidRecordId = getBidId(lotRecord, event.params.bidId);
 
-  const entity = new BatchBidClaimed(
-    event.transaction.hash.concatI32(event.logIndex.toI32()),
-  );
+  const entity = new BatchBidClaimed(bidRecordId);
   entity.lot = lotRecord.id;
-  entity.bid = getBidId(lotRecord, event.params.bidId);
+  entity.bid = bidRecordId;
   entity.bidder = event.params.bidder;
 
   entity.blockNumber = event.block.number;
