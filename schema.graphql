@@ -240,15 +240,20 @@ type BatchBid @entity {
   referrer: Bytes # address
 
   amountIn: BigDecimal! # uint256
+
+  # The amount of base tokens of the bid. Only set after decryption, null before that.
   amountOut: BigDecimal # uint256
+
   rawAmountIn: BigInt!
   rawAmountOut: BigInt
 
-  # Equal to the amount of quote tokens that were settled. Equal to `amountIn - settledAmountInRefunded`
+  # Equal to the amount of quote tokens that were settled: `amountIn - settledAmountInRefunded`. Only set after settlement, null before that. Will be 0 if the bid was not settled.
   settledAmountIn: BigDecimal # uint256
-  # Equal to the amount of quote tokens that were refunded, in the case of a partial fill
+  # Equal to the amount of quote tokens that were refunded, in the case of a partial fill. Only set after settlement, null before that. Will be 0 if the bid was not settled.
   settledAmountInRefunded: BigDecimal # uint256
+  # Equal to the amount of base tokens that will be paid out. Only set after settlement, null before that. Will be 0 if the bid was not settled.
   settledAmountOut: BigDecimal # uint256
+  # The effective price of the bid. Only set after decryption, null before that.
   submittedPrice: BigDecimal
 
   rawMarginalPrice: BigInt
@@ -256,6 +261,8 @@ type BatchBid @entity {
   remainingCapacity: BigDecimal
 
   status: String! # enum: "submitted" | "decrypted" | "claimed"
+
+  # The outcome of the bid. Only set after settlement, null before that.
   outcome: String # enum: "won" | "won - partial fill" | "lost"
 
   blockNumber: BigInt!
@@ -320,10 +327,12 @@ type BatchEncryptedMarginalPriceLot @entity {
   minFilled: BigDecimal! # uint256
   minBidSize: BigDecimal! # uint256
 
-  # Only set on settlement
+  # Marginal price for the lot, in terms of quote tokens. Only set after settlement, null before that.
   marginalPrice: BigDecimal # uint256
-  hasPartialFill: Boolean # Only set after settlement
-  partialBidId: BigInt # uint96 # Only set after settlement
+  # Whether the lot has a partial fill. Only set after settlement, null before that.
+  hasPartialFill: Boolean
+  # The bidId of the bid that was partially filled. Only set after settlement, null before that.
+  partialBidId: BigInt
 }
 
 type BatchLinearVestingLot @entity(immutable: true) {
