@@ -1270,6 +1270,8 @@ describe("abort", () => {
       "BatchEncryptedMarginalPriceLot: status",
     );
 
+    // TODO check marginalPrice, hasPartialFill, partialBidId
+
     // Check the bid
     const bidRecordId = recordId + "-" + BID_ID_ONE.toString();
     const batchBidRecord = BatchBid.load(bidRecordId);
@@ -1469,6 +1471,8 @@ describe("settle", () => {
       "Settled",
       "BatchEncryptedMarginalPriceLot: status",
     );
+
+    // TODO check marginalPrice, hasPartialFill, partialBidId
 
     // Check that the bids are updated
     // TODO re-enable submitted price checks
