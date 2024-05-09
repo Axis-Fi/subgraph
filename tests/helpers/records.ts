@@ -1,0 +1,51 @@
+import { BigInt } from "@graphprotocol/graph-ts";
+
+import {
+  BatchAuctionLot,
+  BatchAuctionSettled,
+  BatchBid,
+  BatchEncryptedMarginalPriceLot,
+} from "../../generated/schema";
+
+export function getBatchAuctionSettled(recordId: string): BatchAuctionSettled {
+  const record = BatchAuctionSettled.load(recordId);
+
+  if (record == null) {
+    throw new Error("BatchAuctionSettled not found: " + recordId);
+  }
+
+  return record as BatchAuctionSettled;
+}
+
+export function getBatchAuctionLot(recordId: string): BatchAuctionLot {
+  const record = BatchAuctionLot.load(recordId);
+
+  if (record == null) {
+    throw new Error("BatchAuctionLot not found: " + recordId);
+  }
+
+  return record as BatchAuctionLot;
+}
+
+export function getBatchEncryptedMarginalPriceLot(
+  recordId: string,
+): BatchEncryptedMarginalPriceLot {
+  const record = BatchEncryptedMarginalPriceLot.load(recordId);
+
+  if (record == null) {
+    throw new Error("BatchEncryptedMarginalPriceLot not found: " + recordId);
+  }
+
+  return record as BatchEncryptedMarginalPriceLot;
+}
+
+export function getBatchBid(lotId: string, bidId: BigInt): BatchBid {
+  const recordId = lotId.concat("-").concat(bidId.toString());
+  const record = BatchBid.load(recordId);
+
+  if (record == null) {
+    throw new Error("BatchBid not found: " + recordId);
+  }
+
+  return record as BatchBid;
+}

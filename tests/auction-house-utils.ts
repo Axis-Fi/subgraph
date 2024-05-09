@@ -281,10 +281,7 @@ export function createSettleEvent(
   settleEvent.parameters = [];
 
   settleEvent.parameters.push(
-    new ethereum.EventParam(
-      "lotId_",
-      ethereum.Value.fromUnsignedBigInt(lotId_),
-    ),
+    new ethereum.EventParam("lotId", ethereum.Value.fromUnsignedBigInt(lotId_)),
   );
 
   return settleEvent;

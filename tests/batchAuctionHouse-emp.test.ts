@@ -25,6 +25,7 @@ import {
   BatchAuctionCreated,
   BatchAuctionCurated,
   BatchAuctionLot,
+  BatchAuctionSettled,
   BatchBid,
   BatchBidDecrypted,
   BatchBidRefunded,
@@ -37,6 +38,7 @@ import {
   handleBid,
   handleCurated,
   handleRefundBid,
+  handleSettle,
 } from "../src/batchAuctionHouse";
 import { handleBidDecrypted } from "../src/handleEncryptedMarginalPrice";
 import { toDecimal } from "../src/helpers/number";
@@ -56,9 +58,16 @@ import {
   createBidEvent,
   createCuratedEvent,
   createRefundBidEvent,
+  createSettleEvent,
 } from "./auction-house-utils";
 import { createBidDecryptedEvent } from "./empam-utils";
 import { calculatePrice } from "./helpers/price";
+import {
+  getBatchAuctionLot,
+  getBatchAuctionSettled,
+  getBatchBid,
+  getBatchEncryptedMarginalPriceLot,
+} from "./helpers/records";
 import { mockGetModuleForVeecode } from "./mocks/baseAuctionHouse";
 import { mockGetModuleForId } from "./mocks/baseAuctionHouse";
 import { mockLotRouting } from "./mocks/baseAuctionHouse";
@@ -119,7 +128,9 @@ const empMinBidSize: BigInt = BigInt.fromU64(3_000_000_000_000_000_000);
 const empPublicKeyX: BigInt = BigInt.fromU64(222);
 const empPublicKeyY: BigInt = BigInt.fromU64(333);
 
-const bidId: BigInt = BigInt.fromI32(111);
+const BID_ID_ONE: BigInt = BigInt.fromI32(111);
+const BID_ID_TWO: BigInt = BigInt.fromI32(111);
+const BID_ID_THREE: BigInt = BigInt.fromI32(111);
 const BIDDER: Address = Address.fromString(
   "0x0000000000000000000000000000000000000002",
 );
@@ -128,6 +139,8 @@ const bidAmountOut: BigInt = BigInt.fromString("2000000000000000000"); // == 0.0
 const bidReferrer: Address = Address.fromString(
   "0x0000000000000000000000000000000000000003",
 );
+const bidPartialFillPayout = bidAmountOut.minus(BigInt.fromU64(1e18));
+const bidPartialFillRefund = BigInt.fromU64(1e16);
 
 function setChain(chain: string): void {
   dataSourceMock.setNetwork(chain);
@@ -215,7 +228,7 @@ function _createAuctionLot(): void {
   handleAuctionCreated(auctionCreatedEvent);
 }
 
-function _createBid(): void {
+function _createBidWithId(bidId: BigInt): void {
   const bidEvent = createBidEvent(
     lotId,
     bidId,
@@ -236,6 +249,10 @@ function _createBid(): void {
   );
 
   handleBid(bidEvent);
+}
+
+function _createBid(): void {
+  _createBidWithId(BID_ID_ONE);
 }
 
 describe("auction creation", () => {
@@ -714,7 +731,7 @@ describe("bid", () => {
   test("BatchBid created and stored", () => {
     const lotRecordId =
       "mainnet-" + auctionHouse.toHexString() + "-" + lotId.toString();
-    const recordId = lotRecordId + "-" + bidId.toString();
+    const recordId = lotRecordId + "-" + BID_ID_ONE.toString();
 
     // BatchBid record is created
     assert.entityCount("BatchBid", 1);
@@ -760,7 +777,7 @@ describe("bid", () => {
 
     assertBigIntEquals(
       batchAuctionLotRecord.maxBidId,
-      bidId,
+      BID_ID_ONE,
       "BatchAuctionLot: maxBidId",
     );
 
@@ -791,7 +808,7 @@ describe("bid refund", () => {
     mockEmpBid(
       auctionModuleAddress,
       lotId,
-      bidId,
+      BID_ID_ONE,
       BIDDER,
       bidAmountIn,
       BigInt.zero(), // Encrypted
@@ -801,7 +818,7 @@ describe("bid refund", () => {
 
     const bidRefundEvent = createRefundBidEvent(
       lotId,
-      bidId,
+      BID_ID_ONE,
       BIDDER,
       auctionHouse,
     );
@@ -815,7 +832,7 @@ describe("bid refund", () => {
   test("BatchBidRefunded created and stored", () => {
     const lotRecordId =
       "mainnet-" + auctionHouse.toHexString() + "-" + lotId.toString();
-    const recordId = lotRecordId + "-" + bidId.toString();
+    const recordId = lotRecordId + "-" + BID_ID_ONE.toString();
 
     // BatchBidRefunded record is created
     assert.entityCount("BatchBidRefunded", 1);
@@ -883,7 +900,7 @@ describe("bid decryption", () => {
     mockEmpBid(
       auctionModuleAddress,
       lotId,
-      bidId,
+      BID_ID_ONE,
       BIDDER,
       bidAmountIn,
       bidAmountOut, // Decrypted
@@ -894,7 +911,7 @@ describe("bid decryption", () => {
 
     const bidDecryptedEvent = createBidDecryptedEvent(
       lotId,
-      bidId,
+      BID_ID_ONE,
       bidAmountIn,
       bidAmountOut,
       auctionModuleAddress,
@@ -905,7 +922,7 @@ describe("bid decryption", () => {
   test("BatchBidDecrypted created and stored", () => {
     const lotRecordId =
       "mainnet-" + auctionHouse.toHexString() + "-" + lotId.toString();
-    const bidRecordId = lotRecordId + "-" + bidId.toString();
+    const bidRecordId = lotRecordId + "-" + BID_ID_ONE.toString();
 
     // BatchBidDecrypted record is created
     assert.entityCount("BatchBidDecrypted", 1);
@@ -1020,7 +1037,7 @@ describe("abort", () => {
     mockEmpBidClaim(
       auctionModuleAddress,
       lotId,
-      bidId,
+      BID_ID_ONE,
       BIDDER,
       bidReferrer,
       bidAmountIn,
@@ -1099,7 +1116,7 @@ describe("abort", () => {
     );
 
     // Check the bid
-    const bidRecordId = recordId + "-" + bidId.toString();
+    const bidRecordId = recordId + "-" + BID_ID_ONE.toString();
     const batchBidRecord = BatchBid.load(bidRecordId);
     if (batchBidRecord === null) {
       throw new Error(
@@ -1109,6 +1126,232 @@ describe("abort", () => {
 
     assertStringEquals(batchBidRecord.status, "submitted", "Bid: status"); // Bid was not decrypted
     assertStringEquals(batchBidRecord.outcome, "lost", "Bid: outcome");
+  });
+});
+
+describe("settle", () => {
+  beforeEach(() => {
+    _createAuctionLot();
+
+    _createBidWithId(BID_ID_ONE); // Won
+    _createBidWithId(BID_ID_TWO); // Lost
+    _createBidWithId(BID_ID_THREE); // Partial fill
+
+    // Update mocks
+    mockEmpAuctionData(
+      auctionModuleAddress,
+      lotId,
+      0,
+      0,
+      2, // Settled
+      0,
+      BigInt.zero(),
+      empMinPrice,
+      empMinFilled,
+      empMinBidSize,
+      empPublicKeyX,
+      empPublicKeyY,
+      BigInt.zero(),
+    );
+    mockEmpParent(auctionModuleAddress, auctionHouse);
+
+    // TODO decrypt bids
+
+    // Update mocks for 3 bids
+    mockEmpBidClaim(
+      auctionModuleAddress,
+      lotId,
+      BID_ID_ONE,
+      BIDDER,
+      bidReferrer,
+      bidAmountIn,
+      bidAmountOut, // Won
+      BigInt.zero(),
+    );
+    mockEmpBidClaim(
+      auctionModuleAddress,
+      lotId,
+      BID_ID_TWO,
+      BIDDER,
+      bidReferrer,
+      bidAmountIn,
+      BigInt.zero(), // Lost
+      bidAmountIn,
+    );
+    mockEmpBidClaim(
+      auctionModuleAddress,
+      lotId,
+      BID_ID_THREE,
+      BIDDER,
+      bidReferrer,
+      bidAmountIn,
+      bidPartialFillPayout, // Partial fill
+      bidPartialFillRefund,
+    );
+    // mockEmpPartialFill(
+    //   auctionModuleAddress,
+    //   lotId,
+    //   true,
+    //   BID_ID_THREE.toI32(),
+    //   bidPartialFillPayout,
+    //   bidPartialFillRefund,
+    // );
+
+    const settleEvent = createSettleEvent(lotId, auctionHouse);
+    handleSettle(settleEvent);
+  });
+
+  afterEach(() => {
+    clearStore();
+  });
+
+  test("BatchAuctionSettled created and stored", () => {
+    const recordId =
+      "mainnet-" + auctionHouse.toHexString() + "-" + lotId.toString();
+
+    // BatchAuctionSettled record is stored
+    assert.entityCount("BatchAuctionSettled", 1);
+    const batchAuctionSettledRecord = getBatchAuctionSettled(recordId);
+
+    assertStringEquals(
+      batchAuctionSettledRecord.id,
+      recordId,
+      "BatchAuctionSettled: id",
+    );
+    assertStringEquals(
+      batchAuctionSettledRecord.lot,
+      recordId,
+      "BatchAuctionSettled: lot",
+    );
+
+    // BatchAuctionLot record is updated
+    assert.entityCount("BatchAuctionLot", 1);
+    const batchAuctionLotRecord = getBatchAuctionLot(recordId);
+    // Check reverse lookups
+    const batchAuctionLotSettledLookup = batchAuctionLotRecord.settled.load();
+    assertI32Equals(
+      batchAuctionLotSettledLookup.length,
+      1,
+      "BatchAuctionLot: settled lookup length",
+    );
+    assertStringEquals(
+      batchAuctionLotSettledLookup[0].id,
+      recordId,
+      "BatchAuctionLot: settled lookup",
+    );
+
+    // BatchEncryptedMarginalPriceLot record is updated
+    assert.entityCount("BatchEncryptedMarginalPriceLot", 1);
+    const empLotRecord = getBatchEncryptedMarginalPriceLot(recordId);
+    assertStringEquals(
+      empLotRecord.status,
+      "Settled",
+      "BatchEncryptedMarginalPriceLot: status",
+    );
+
+    // Check that the bids are updated
+    const batchBidRecordOne = getBatchBid(recordId, BID_ID_ONE);
+    assertStringEquals(
+      batchBidRecordOne.status,
+      "decrypted",
+      "Bid one: status",
+    );
+    assertStringEquals(batchBidRecordOne.outcome, "won", "Bid one: outcome");
+    assertBigDecimalEquals(
+      batchBidRecordOne.amountOut,
+      toDecimal(bidAmountOut, lotBaseTokenDecimals),
+      "Bid one: amountOut",
+    );
+    assertBigDecimalEquals(
+      batchBidRecordOne.submittedPrice,
+      calculatePrice(bidAmountIn, lotQuoteTokenDecimals, bidAmountOut),
+      "Bid one: submittedPrice",
+    );
+    assertBigDecimalEquals(
+      batchBidRecordOne.settledAmountIn,
+      toDecimal(bidAmountIn, lotQuoteTokenDecimals),
+      "Bid one: settledAmountIn",
+    );
+    assertBigDecimalEquals(
+      batchBidRecordOne.settledAmountInRefunded,
+      null,
+      "Bid one: settledAmountInRefunded",
+    );
+    assertBigDecimalEquals(
+      batchBidRecordOne.settledAmountOut,
+      toDecimal(bidAmountOut, lotBaseTokenDecimals),
+      "Bid one: settledAmountOut",
+    );
+
+    const batchBidRecordTwo = getBatchBid(recordId, BID_ID_TWO);
+    assertStringEquals(
+      batchBidRecordTwo.status,
+      "decrypted",
+      "Bid two: status",
+    );
+    assertStringEquals(batchBidRecordTwo.outcome, "lost", "Bid two: outcome");
+    assertBigDecimalEquals(
+      batchBidRecordTwo.amountOut,
+      toDecimal(bidAmountOut, lotBaseTokenDecimals),
+      "Bid two: amountOut",
+    );
+    assertBigDecimalEquals(
+      batchBidRecordTwo.submittedPrice,
+      calculatePrice(bidAmountIn, lotQuoteTokenDecimals, bidAmountOut),
+      "Bid two: submittedPrice",
+    );
+    assertBigDecimalEquals(
+      batchBidRecordTwo.settledAmountIn,
+      null,
+      "Bid two: settledAmountIn",
+    );
+    assertBigDecimalEquals(
+      batchBidRecordTwo.settledAmountInRefunded,
+      null,
+      "Bid two: settledAmountInRefunded",
+    );
+    assertBigDecimalEquals(
+      batchBidRecordTwo.settledAmountOut,
+      null,
+      "Bid two: settledAmountOut",
+    );
+
+    const batchBidRecordThree = getBatchBid(recordId, BID_ID_THREE);
+    assertStringEquals(
+      batchBidRecordThree.status,
+      "decrypted",
+      "Bid three: status",
+    );
+    assertStringEquals(
+      batchBidRecordThree.outcome,
+      "won - partial fill",
+      "Bid three: outcome",
+    );
+    assertBigDecimalEquals(
+      batchBidRecordThree.amountOut,
+      toDecimal(bidAmountOut, lotBaseTokenDecimals),
+      "Bid three: amountOut",
+    );
+    assertBigDecimalEquals(
+      batchBidRecordThree.submittedPrice,
+      calculatePrice(bidAmountIn, lotQuoteTokenDecimals, bidAmountOut),
+      "Bid three: submittedPrice",
+    );
+    assertBigDecimalEquals(
+      batchBidRecordThree.settledAmountIn,
+      toDecimal(bidAmountIn.minus(bidPartialFillRefund), lotQuoteTokenDecimals),
+      "Bid three: settledAmountIn",
+    );
+    assertBigDecimalEquals(
+      batchBidRecordThree.settledAmountInRefunded,
+      toDecimal(bidPartialFillRefund, lotQuoteTokenDecimals),
+      "Bid three: settledAmountInRefunded",
+    );
+    assertBigDecimalEquals(
+      batchBidRecordThree.settledAmountOut,
+      toDecimal(bidPartialFillPayout, lotBaseTokenDecimals),
+      "Bid three: settledAmountOut",
+    );
   });
 });
 

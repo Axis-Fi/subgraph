@@ -2101,9 +2101,9 @@ export class BatchAuctionCurated extends Entity {
 }
 
 export class BatchAuctionSettled extends Entity {
-  constructor(id: Bytes) {
+  constructor(id: string) {
     super();
-    this.set("id", Value.fromBytes(id));
+    this.set("id", Value.fromString(id));
   }
 
   save(): void {
@@ -2111,36 +2111,36 @@ export class BatchAuctionSettled extends Entity {
     assert(id != null, "Cannot save BatchAuctionSettled entity without an ID");
     if (id) {
       assert(
-        id.kind == ValueKind.BYTES,
-        `Entities of type BatchAuctionSettled must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+        id.kind == ValueKind.STRING,
+        `Entities of type BatchAuctionSettled must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`,
       );
-      store.set("BatchAuctionSettled", id.toBytes().toHexString(), this);
+      store.set("BatchAuctionSettled", id.toString(), this);
     }
   }
 
-  static loadInBlock(id: Bytes): BatchAuctionSettled | null {
+  static loadInBlock(id: string): BatchAuctionSettled | null {
     return changetype<BatchAuctionSettled | null>(
-      store.get_in_block("BatchAuctionSettled", id.toHexString()),
+      store.get_in_block("BatchAuctionSettled", id),
     );
   }
 
-  static load(id: Bytes): BatchAuctionSettled | null {
+  static load(id: string): BatchAuctionSettled | null {
     return changetype<BatchAuctionSettled | null>(
-      store.get("BatchAuctionSettled", id.toHexString()),
+      store.get("BatchAuctionSettled", id),
     );
   }
 
-  get id(): Bytes {
+  get id(): string {
     let value = this.get("id");
     if (!value || value.kind == ValueKind.NULL) {
       throw new Error("Cannot return null for a required field.");
     } else {
-      return value.toBytes();
+      return value.toString();
     }
   }
 
-  set id(value: Bytes) {
-    this.set("id", Value.fromBytes(value));
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
   }
 
   get lot(): string {
