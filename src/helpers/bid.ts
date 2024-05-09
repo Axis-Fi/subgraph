@@ -106,7 +106,7 @@ export function updateBidStatus(
 
   entity.save();
 
-  log.debug("Updated bid status to {} for bid id {}", [
+  log.info("Updated bid status to {} for bid id {}", [
     entity.status,
     entity.id,
   ]);
