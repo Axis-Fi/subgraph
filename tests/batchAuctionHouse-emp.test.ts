@@ -1,4 +1,10 @@
-import { Address, BigDecimal, BigInt, Bytes } from "@graphprotocol/graph-ts";
+import {
+  Address,
+  BigDecimal,
+  BigInt,
+  Bytes,
+  log,
+} from "@graphprotocol/graph-ts";
 import {
   afterEach,
   assert,
@@ -49,6 +55,7 @@ import {
   createRefundBidEvent,
 } from "./auction-house-utils";
 import { createBidDecryptedEvent } from "./empam-utils";
+import { calculatePrice } from "./helpers/price";
 import { mockGetModuleForVeecode } from "./mocks/baseAuctionHouse";
 import { mockGetModuleForId } from "./mocks/baseAuctionHouse";
 import { mockLotRouting } from "./mocks/baseAuctionHouse";
@@ -112,8 +119,8 @@ const bidId: BigInt = BigInt.fromI32(111);
 const BIDDER: Address = Address.fromString(
   "0x0000000000000000000000000000000000000002",
 );
-const bidAmountIn: BigInt = BigInt.fromString("1000000000000000001");
-const bidAmountOut: BigInt = BigInt.fromString("2000000000000000000");
+const bidAmountIn: BigInt = BigInt.fromString("1000000000000000001"); // == 10.00000000000000001
+const bidAmountOut: BigInt = BigInt.fromString("2000000000000000000"); // == 0.002
 const bidReferrer: Address = Address.fromString(
   "0x0000000000000000000000000000000000000003",
 );
@@ -939,9 +946,14 @@ describe("bid decryption", () => {
       bidAmountOut,
       "Bid: rawAmountOut",
     );
+    const submittedPriceDecimal = calculatePrice(
+      bidAmountIn,
+      lotQuoteTokenDecimals,
+      bidAmountOut,
+    );
     assertBigDecimalEquals(
       batchBidRecord.submittedPrice,
-      bidAmountInDecimal.div(bidAmountOutDecimal),
+      submittedPriceDecimal,
       "Bid: submittedPrice",
     );
     // TODO rawSubmittedPrice

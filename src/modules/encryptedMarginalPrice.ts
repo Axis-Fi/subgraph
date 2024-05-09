@@ -7,7 +7,12 @@ import {
   BatchEncryptedMarginalPriceLot,
 } from "../../generated/schema";
 import { getAuctionHouse } from "../helpers/batchAuction";
-import { BidOutcome_Lost, BidOutcome_Won, BidOutcome_WonPartialFill, getBidRecord } from "../helpers/bid";
+import {
+  BidOutcome_Lost,
+  BidOutcome_Won,
+  BidOutcome_WonPartialFill,
+  getBidRecord,
+} from "../helpers/bid";
 import { toDecimal } from "../helpers/number";
 import { getOrCreateToken } from "../helpers/token";
 
