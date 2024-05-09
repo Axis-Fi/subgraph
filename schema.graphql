@@ -327,7 +327,7 @@ type BatchEncryptedMarginalPriceLot @entity {
 }
 
 type BatchLinearVestingLot @entity(immutable: true) {
-  id: Bytes!
+  id: String! # chain-auctionHouse-lotId
   lot: BatchAuctionLot!
 
   startTimestamp: BigInt!

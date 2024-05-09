@@ -63,6 +63,7 @@ import {
   getBatchBid,
   getBatchBidClaimed,
   getBatchEncryptedMarginalPriceLot,
+  getBatchLinearVestingLot,
 } from "./helpers/records";
 import { mockGetModuleForVeecode } from "./mocks/baseAuctionHouse";
 import { mockGetModuleForId } from "./mocks/baseAuctionHouse";
@@ -79,6 +80,13 @@ import {
 import { mockToken } from "./mocks/token";
 
 const auctionModuleVeecode = "01EMPA";
+const linearVestingVeecode = "01LIV";
+const linearVestingParams = Bytes.fromHexString(
+  "0x00000000000000000000000000000000000000000000000000000000663d011000000000000000000000000000000000000000000000000000000000663fa410",
+);
+const linearVestingStart = 1715274000; // 0x00000000000000000000000000000000000000000000000000000000663d0110
+const linearVestingExpiry = 1715446800; // 0x00000000000000000000000000000000000000000000000000000000663fa410
+
 const auctionRef = Bytes.fromUTF8(auctionModuleVeecode);
 const QUOTE_TOKEN = Address.fromString(
   "0x6B175474E89094C44Da98b954EedeAC495271d0F",
@@ -143,7 +151,10 @@ function setChain(chain: string): void {
   dataSourceMock.setNetwork(chain);
 }
 
-function _createAuctionLot(): void {
+function _createAuctionLot(
+  derivativeVeecode: string = "",
+  derivativeParams: Bytes = Bytes.fromUTF8(""),
+): void {
   const auctionCreatedEvent = createAuctionCreatedEvent(
     LOT_ID,
     auctionRef,
@@ -193,9 +204,9 @@ function _createAuctionLot(): void {
     auctionRef,
     lotCapacity,
     Address.zero(),
-    Bytes.fromUTF8(""),
+    Bytes.fromUTF8(derivativeVeecode),
     false,
-    Bytes.fromUTF8(""),
+    derivativeParams,
   );
   mockLotFees(
     auctionHouse,
@@ -277,7 +288,7 @@ function _decryptBid(bidId: BigInt, amountOut: BigInt): void {
 
 describe("auction creation", () => {
   beforeEach(() => {
-    _createAuctionLot();
+    //
   });
 
   afterEach(() => {
@@ -285,6 +296,8 @@ describe("auction creation", () => {
   });
 
   test("BatchAuctionCreated created and stored", () => {
+    _createAuctionLot();
+
     const recordId =
       "mainnet-" + auctionHouse.toHexString() + "-" + LOT_ID.toString();
 
@@ -499,6 +512,51 @@ describe("auction creation", () => {
   // TODO curator fee not set
 
   // TODO referrer fee not set
+
+  test("BatchLinearVestingLot created and stored", () => {
+    _createAuctionLot(linearVestingVeecode, linearVestingParams);
+
+    const recordId =
+      "mainnet-" + auctionHouse.toHexString() + "-" + LOT_ID.toString();
+
+    // Check the BatchLinearVestingLot record
+    assert.entityCount("BatchLinearVestingLot", 1);
+    const linearVestingLotRecord = getBatchLinearVestingLot(recordId);
+    assertStringEquals(
+      linearVestingLotRecord.id,
+      recordId,
+      "BatchLinearVestingLot: id",
+    );
+    assertStringEquals(
+      linearVestingLotRecord.lot,
+      recordId,
+      "BatchLinearVestingLot: lot",
+    );
+    assertBigIntEquals(
+      linearVestingLotRecord.startTimestamp,
+      BigInt.fromI32(linearVestingStart),
+      "BatchLinearVestingLot: startTimestamp",
+    );
+    assertBigIntEquals(
+      linearVestingLotRecord.expiryTimestamp,
+      BigInt.fromI32(linearVestingExpiry),
+      "BatchLinearVestingLot: expiryTimestamp",
+    );
+
+    // Check reverse lookup
+    const auctionLotRecord = getBatchAuctionLot(recordId);
+    const linearVestingLotRecordLookup = auctionLotRecord.linearVesting.load();
+    assertI32Equals(
+      linearVestingLotRecordLookup.length,
+      1,
+      "BatchAuctionLot: linearVesting lookup length",
+    );
+    assertStringEquals(
+      linearVestingLotRecordLookup[0].id,
+      recordId,
+      "BatchAuctionLot: linearVesting lookup",
+    );
+  });
 });
 
 let auctionCancelledEvent: AuctionCancelled;
@@ -1593,5 +1651,3 @@ describe("settle", () => {
     );
   });
 });
-
-// TODO linear vesting

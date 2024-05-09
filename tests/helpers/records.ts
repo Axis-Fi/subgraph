@@ -6,6 +6,7 @@ import {
   BatchBid,
   BatchBidClaimed,
   BatchEncryptedMarginalPriceLot,
+  BatchLinearVestingLot,
 } from "../../generated/schema";
 
 export function getBatchAuctionSettled(recordId: string): BatchAuctionSettled {
@@ -63,4 +64,16 @@ export function getBatchBidClaimed(
   }
 
   return record as BatchBidClaimed;
+}
+
+export function getBatchLinearVestingLot(
+  recordId: string,
+): BatchLinearVestingLot {
+  const record = BatchLinearVestingLot.load(recordId);
+
+  if (record == null) {
+    throw new Error("BatchLinearVestingLot not found: " + recordId);
+  }
+
+  return record as BatchLinearVestingLot;
 }

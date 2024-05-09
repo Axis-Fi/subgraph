@@ -3282,9 +3282,9 @@ export class BatchEncryptedMarginalPriceLot extends Entity {
 }
 
 export class BatchLinearVestingLot extends Entity {
-  constructor(id: Bytes) {
+  constructor(id: string) {
     super();
-    this.set("id", Value.fromBytes(id));
+    this.set("id", Value.fromString(id));
   }
 
   save(): void {
@@ -3295,36 +3295,36 @@ export class BatchLinearVestingLot extends Entity {
     );
     if (id) {
       assert(
-        id.kind == ValueKind.BYTES,
-        `Entities of type BatchLinearVestingLot must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+        id.kind == ValueKind.STRING,
+        `Entities of type BatchLinearVestingLot must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`,
       );
-      store.set("BatchLinearVestingLot", id.toBytes().toHexString(), this);
+      store.set("BatchLinearVestingLot", id.toString(), this);
     }
   }
 
-  static loadInBlock(id: Bytes): BatchLinearVestingLot | null {
+  static loadInBlock(id: string): BatchLinearVestingLot | null {
     return changetype<BatchLinearVestingLot | null>(
-      store.get_in_block("BatchLinearVestingLot", id.toHexString()),
+      store.get_in_block("BatchLinearVestingLot", id),
     );
   }
 
-  static load(id: Bytes): BatchLinearVestingLot | null {
+  static load(id: string): BatchLinearVestingLot | null {
     return changetype<BatchLinearVestingLot | null>(
-      store.get("BatchLinearVestingLot", id.toHexString()),
+      store.get("BatchLinearVestingLot", id),
     );
   }
 
-  get id(): Bytes {
+  get id(): string {
     let value = this.get("id");
     if (!value || value.kind == ValueKind.NULL) {
       throw new Error("Cannot return null for a required field.");
     } else {
-      return value.toBytes();
+      return value.toString();
     }
   }
 
-  set id(value: Bytes) {
-    this.set("id", Value.fromBytes(value));
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
   }
 
   get lot(): string {

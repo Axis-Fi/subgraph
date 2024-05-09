@@ -13,7 +13,7 @@ export function createLinearVestingLot(
   derivativeParams: Bytes,
 ): void {
   const lvLot: BatchLinearVestingLot = new BatchLinearVestingLot(
-    createdEvent.transaction.hash.concatI32(createdEvent.logIndex.toI32()),
+    batchAuctionLot.id,
   );
   lvLot.lot = batchAuctionLot.id;
   log.info("Adding BatchLinearVestingLot for lot: {}", [lvLot.lot]);
