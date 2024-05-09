@@ -1667,6 +1667,8 @@ describe("settle", () => {
       toDecimal(bidPartialFillPayout, lotBaseTokenDecimals),
       "Bid three: settledAmountOut",
     );
+
+    // TODO sold, purchased, capacity are updated
   });
 
   test("BatchBidClaimed created and stored", () => {
