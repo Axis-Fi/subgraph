@@ -10,6 +10,14 @@ import {
   updateBidAmount,
 } from "../modules/encryptedMarginalPrice";
 
+export const BidStatus_Submitted = "submitted";
+export const BidStatus_Decrypted = "decrypted";
+export const BidStatus_Claimed = "claimed";
+
+export const BidOutcome_Won = "won";
+export const BidOutcome_WonPartialFill = "won - partial fill";
+export const BidOutcome_Lost = "lost";
+
 export function getBidId(lot: BatchAuctionLot, bidId: BigInt): string {
   return lot.id.concat("-").concat(bidId.toString());
 }
@@ -56,11 +64,11 @@ export function getBid(
 export function getBidStatus(status: i32): string {
   switch (status) {
     case 0:
-      return "submitted";
+      return BidStatus_Submitted;
     case 1:
-      return "decrypted";
+      return BidStatus_Decrypted;
     case 2:
-      return "claimed";
+      return BidStatus_Claimed;
     default:
       throw new Error("Unknown bid status: " + status.toString());
   }

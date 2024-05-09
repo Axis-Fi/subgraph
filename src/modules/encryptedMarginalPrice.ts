@@ -7,29 +7,15 @@ import {
   BatchEncryptedMarginalPriceLot,
 } from "../../generated/schema";
 import { getAuctionHouse } from "../helpers/batchAuction";
-import { getBidRecord } from "../helpers/bid";
+import { BidOutcome_Lost, BidOutcome_Won, BidOutcome_WonPartialFill, getBidRecord } from "../helpers/bid";
 import { toDecimal } from "../helpers/number";
 import { getOrCreateToken } from "../helpers/token";
 
 export const EMP_KEYCODE = "EMP";
 
-// eslint-disable-next-line no-shadow
-export enum BatchBidStatus {
-  SUBMITTED = "submitted",
-  DECRYPTED = "decrypted",
-  WON = "won",
-  WON_PARTIAL_FILL = "won - partial fill",
-  LOST = "lost",
-  REFUNDED = "refunded",
-  CLAIMED = "claimed",
-}
-
-// eslint-disable-next-line no-shadow
-export enum EncryptedMarginalPriceLotStatus {
-  CREATED = "Created",
-  DECRYPTED = "Decrypted",
-  SETTLED = "Settled",
-}
+export const EmpLotStatus_Created = "Created";
+export const EmpLotStatus_Decrypted = "Decrypted";
+export const EmpLotStatus_Settled = "Settled";
 
 export function getEncryptedMarginalPriceModule(
   auctionHouseAddress: Address,
@@ -45,13 +31,13 @@ export function getEncryptedMarginalPriceModule(
 function _getLotStatus(status: i32): string {
   switch (status) {
     case 0:
-      return EncryptedMarginalPriceLotStatus.CREATED;
+      return EmpLotStatus_Created;
     case 1:
-      return EncryptedMarginalPriceLotStatus.DECRYPTED;
+      return EmpLotStatus_Decrypted;
     case 2:
-      return EncryptedMarginalPriceLotStatus.SETTLED;
+      return EmpLotStatus_Settled;
     default:
-      throw "Unknown value";
+      throw "Unknown value: " + status.toString();
   }
 }
 
@@ -146,7 +132,7 @@ export function updateEncryptedMarginalPriceLot(
   // No need to set the minPrice, minFilled and minBidSize again
 
   // If settled
-  if (empLot.status == EncryptedMarginalPriceLotStatus.SETTLED) {
+  if (empLot.status == EmpLotStatus_Settled) {
     // Set the marginal price
     empLot.marginalPrice = toDecimal(
       lotAuctionData.getMarginalPrice(),
@@ -186,9 +172,7 @@ export function updateBidAmount(
   const baseToken = getOrCreateToken(lotRecord.baseToken);
 
   // If the lot status is settled, we can check the bid claim
-  if (empRecord.status == EncryptedMarginalPriceLotStatus.SETTLED) {
-    // TODO handle claimed and refunded status
-
+  if (empRecord.status == EmpLotStatus_Settled) {
     // Get the bid claim from the contract
     const bidClaim = empModule.getBidClaim(lotRecord.lotId, bidId);
 
@@ -209,15 +193,15 @@ export function updateBidAmount(
       bidClaim.refund.gt(BigInt.zero()) &&
       bidClaim.payout.gt(BigInt.zero())
     ) {
-      entity.status = BatchBidStatus.WON_PARTIAL_FILL;
+      entity.outcome = BidOutcome_WonPartialFill;
     }
     // If there is a payout, it is won
     else if (bidClaim.payout.gt(BigInt.zero())) {
-      entity.status = BatchBidStatus.WON;
+      entity.outcome = BidOutcome_Won;
     }
     // If there is a refund, it is lost
     else {
-      entity.status = BatchBidStatus.LOST;
+      entity.outcome = BidOutcome_Lost;
     }
   }
 

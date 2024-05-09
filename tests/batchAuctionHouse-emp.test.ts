@@ -11,8 +11,6 @@ import {
 
 import {
   AuctionCancelled,
-  AuctionCreated,
-  Bid,
   Curated,
 } from "../generated/BatchAuctionHouse/BatchAuctionHouse";
 import {
@@ -412,7 +410,7 @@ describe("auction creation", () => {
     );
     assertStringEquals(
       empLotRecord.status,
-      "Started",
+      "Created",
       "BatchEncryptedMarginalPriceLot: status",
     );
     assertBigDecimalEquals(
@@ -827,6 +825,9 @@ describe("bid refund", () => {
     }
 
     assertStringEquals(batchBidRecord.status, "claimed", "Bid: status");
+    assertNull(batchBidRecord.outcome, "Bid: outcome");
+    assertBigDecimalEquals(batchBidRecord.amountOut, null, "Bid: amountOut");
+    assertBigIntEquals(batchBidRecord.rawAmountOut, null, "Bid: rawAmountOut");
 
     // Check reverse lookups
     const batchBidRecordRefundedLookup = batchBidRecord.refunded.load();

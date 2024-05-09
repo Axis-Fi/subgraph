@@ -2608,6 +2608,23 @@ export class BatchBid extends Entity {
     this.set("status", Value.fromString(value));
   }
 
+  get outcome(): string | null {
+    let value = this.get("outcome");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set outcome(value: string | null) {
+    if (!value) {
+      this.unset("outcome");
+    } else {
+      this.set("outcome", Value.fromString(<string>value));
+    }
+  }
+
   get blockNumber(): BigInt {
     let value = this.get("blockNumber");
     if (!value || value.kind == ValueKind.NULL) {

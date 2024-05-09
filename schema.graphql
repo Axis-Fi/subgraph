@@ -255,7 +255,8 @@ type BatchBid @entity {
   rawSubmittedPrice: BigInt
   remainingCapacity: BigDecimal
 
-  status: String! # enum: "submitted" | "decrypted" | "won" | "won - partial fill" | "refunded" | "claimed"
+  status: String! # enum: "submitted" | "decrypted" | "claimed"
+  outcome: String # enum: "won" | "won - partial fill" | "lost"
 
   blockNumber: BigInt!
   blockTimestamp: BigInt!
