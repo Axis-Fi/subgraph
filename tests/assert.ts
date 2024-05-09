@@ -2,14 +2,17 @@ import { BigDecimal, BigInt, Bytes } from "@graphprotocol/graph-ts";
 import { assert } from "matchstick-as";
 
 export function assertStringEquals(
-  actual: string,
-  expected: string,
+  actual: string | null,
+  expected: string | null,
   message: string,
 ): void {
+  const actualNotNull: string = actual !== null ? actual.toString() : "";
+  const expectedNotNull: string = expected !== null ? expected.toString() : "";
+
   assert.stringEquals(
-    actual,
-    expected,
-    message + ": actual: " + actual + " expected: " + expected,
+    actualNotNull,
+    expectedNotNull,
+    message + ": actual: " + actualNotNull + " expected: " + expectedNotNull,
   );
 }
 

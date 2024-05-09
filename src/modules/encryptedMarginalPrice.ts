@@ -11,7 +11,7 @@ import {
   BidOutcome_Lost,
   BidOutcome_Won,
   BidOutcome_WonPartialFill,
-  getBidRecord,
+  getBidRecordNullable,
 } from "../helpers/bid";
 import { toDecimal } from "../helpers/number";
 import { getOrCreateToken } from "../helpers/token";
@@ -105,6 +105,8 @@ export function createEncryptedMarginalPriceLot(
     quoteToken.decimals,
   );
   empLot.save();
+
+  log.info("Created EncryptedMarginalPriceLot for lot: {}", [empLot.lot]);
 }
 
 export function updateEncryptedMarginalPriceLot(
@@ -153,6 +155,8 @@ export function updateEncryptedMarginalPriceLot(
   }
 
   empLot.save();
+
+  log.info("Updated EncryptedMarginalPriceLot for lot: {}", [empLot.lot]);
 }
 
 export function updateBidAmount(
@@ -170,7 +174,14 @@ export function updateBidAmount(
   const empRecord = _getEncryptedMarginalPriceLot(lotRecord);
 
   // Get the bid record
-  const entity = getBidRecord(lotRecord, bidId);
+  const entity = getBidRecordNullable(lotRecord, bidId);
+  if (!entity) {
+    log.debug("updateBidAmount: Skipping non-existent bid id {} on lot {}", [
+      bidId.toString(),
+      lotRecord.id,
+    ]);
+    return;
+  }
 
   // Fetch decimals
   const quoteToken = getOrCreateToken(lotRecord.quoteToken);
@@ -211,4 +222,9 @@ export function updateBidAmount(
   }
 
   entity.save();
+
+  log.info("Updated bid amount for lot {} and bid {}", [
+    lotRecord.id,
+    bidId.toString(),
+  ]);
 }

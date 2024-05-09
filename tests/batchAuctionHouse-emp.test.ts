@@ -20,6 +20,7 @@ import {
   Curated,
 } from "../generated/BatchAuctionHouse/BatchAuctionHouse";
 import {
+  BatchAuctionAborted,
   BatchAuctionCancelled,
   BatchAuctionCreated,
   BatchAuctionCurated,
@@ -30,6 +31,7 @@ import {
   BatchEncryptedMarginalPriceLot,
 } from "../generated/schema";
 import {
+  handleAbort,
   handleAuctionCancelled,
   handleAuctionCreated,
   handleBid,
@@ -48,6 +50,7 @@ import {
   assertStringEquals,
 } from "./assert";
 import {
+  createAuctionAbortedEvent,
   createAuctionCancelledEvent,
   createAuctionCreatedEvent,
   createBidEvent,
@@ -64,6 +67,7 @@ import { mockLotData } from "./mocks/batchAuctionHouse";
 import {
   mockEmpAuctionData,
   mockEmpBid,
+  mockEmpBidClaim,
   mockEmpParent,
   mockEmpPartialFill,
 } from "./mocks/emp";
@@ -934,7 +938,6 @@ describe("bid decryption", () => {
       );
     }
 
-    const bidAmountInDecimal = toDecimal(bidAmountIn, lotQuoteTokenDecimals);
     const bidAmountOutDecimal = toDecimal(bidAmountOut, lotBaseTokenDecimals);
     assertBigDecimalEquals(
       batchBidRecord.amountOut,
@@ -991,9 +994,125 @@ describe("bid decryption", () => {
   });
 });
 
-// TODO abort
+describe("abort", () => {
+  beforeEach(() => {
+    _createAuctionLot();
 
-// TODO settle
+    _createBid();
+
+    // Update mocks
+    mockEmpAuctionData(
+      auctionModuleAddress,
+      lotId,
+      0,
+      0,
+      2, // Aborted (Settled)
+      0,
+      BigInt.fromU64(2 ^ (256 - 1)), // Marginal price set to uint256 max
+      empMinPrice,
+      empMinFilled,
+      empMinBidSize,
+      empPublicKeyX,
+      empPublicKeyY,
+      BigInt.zero(),
+    );
+    mockEmpParent(auctionModuleAddress, auctionHouse);
+    mockEmpBidClaim(
+      auctionModuleAddress,
+      lotId,
+      bidId,
+      BIDDER,
+      bidReferrer,
+      bidAmountIn,
+      BigInt.zero(),
+      bidAmountIn,
+    );
+
+    const auctionAbortedEvent = createAuctionAbortedEvent(lotId, auctionHouse);
+    handleAbort(auctionAbortedEvent);
+  });
+
+  afterEach(() => {
+    clearStore();
+  });
+
+  test("BatchAuctionAborted created and stored", () => {
+    const recordId =
+      "mainnet-" + auctionHouse.toHexString() + "-" + lotId.toString();
+
+    // BatchAuctionAborted record is stored
+    assert.entityCount("BatchAuctionAborted", 1);
+    const batchAuctionAbortedRecord = BatchAuctionAborted.load(recordId);
+    if (batchAuctionAbortedRecord === null) {
+      throw new Error(
+        "Expected BatchAuctionAborted to exist for record id " + recordId,
+      );
+    }
+
+    assertStringEquals(
+      batchAuctionAbortedRecord.id,
+      recordId,
+      "BatchAuctionAborted: id",
+    );
+    assertStringEquals(
+      batchAuctionAbortedRecord.lot,
+      recordId,
+      "BatchAuctionAborted: lot",
+    );
+
+    // BatchAuctionLot record is updated
+    assert.entityCount("BatchAuctionLot", 1);
+    const batchAuctionLotRecord = BatchAuctionLot.load(recordId);
+    if (batchAuctionLotRecord === null) {
+      throw new Error(
+        "Expected BatchAuctionLot to exist for record id " + recordId,
+      );
+    }
+
+    // Check reverse lookups
+    const batchAuctionLotAbortedLookup = batchAuctionLotRecord.aborted.load();
+    assertI32Equals(
+      batchAuctionLotAbortedLookup.length,
+      1,
+      "BatchAuctionLot: aborted lookup length",
+    );
+    assertStringEquals(
+      batchAuctionLotAbortedLookup[0].id,
+      recordId,
+      "BatchAuctionLot: aborted lookup",
+    );
+
+    // BatchEncryptedMarginalPriceLot record is updated
+    assert.entityCount("BatchEncryptedMarginalPriceLot", 1);
+    const empLotRecord = BatchEncryptedMarginalPriceLot.load(recordId);
+    if (empLotRecord === null) {
+      throw new Error(
+        "Expected BatchEncryptedMarginalPriceLot to exist for record id " +
+          recordId,
+      );
+    }
+
+    assertStringEquals(
+      empLotRecord.status,
+      "Settled",
+      "BatchEncryptedMarginalPriceLot: status",
+    );
+
+    // Check the bid
+    const bidRecordId = recordId + "-" + bidId.toString();
+    const batchBidRecord = BatchBid.load(bidRecordId);
+    if (batchBidRecord === null) {
+      throw new Error(
+        "Expected BatchBid to exist for record id " + bidRecordId,
+      );
+    }
+
+    assertStringEquals(batchBidRecord.status, "submitted", "Bid: status"); // Bid was not decrypted
+    assertStringEquals(batchBidRecord.outcome, "lost", "Bid: outcome");
+  });
+});
+
+// TODO settle - partial fill, won, lost
 
 // TODO claim bid after settle
 

@@ -108,3 +108,34 @@ export function mockEmpParent(module: Address, parent: Address): void {
     false,
   );
 }
+
+export function mockEmpBidClaim(
+  module: Address,
+  lotId: BigInt,
+  bidId: BigInt,
+  bidder: Address,
+  referrer: Address,
+  paid: BigInt,
+  payout: BigInt,
+  refund: BigInt,
+): void {
+  const bidClaim: ethereum.Tuple = changetype<ethereum.Tuple>([
+    ethereum.Value.fromAddress(bidder),
+    ethereum.Value.fromAddress(referrer),
+    ethereum.Value.fromUnsignedBigInt(paid),
+    ethereum.Value.fromUnsignedBigInt(payout),
+    ethereum.Value.fromUnsignedBigInt(refund),
+  ]);
+
+  mockFunction(
+    module,
+    "getBidClaim",
+    "getBidClaim(uint96,uint64):((address,address,uint256,uint256,uint256))",
+    [
+      ethereum.Value.fromUnsignedBigInt(lotId),
+      ethereum.Value.fromUnsignedBigInt(bidId),
+    ],
+    [ethereum.Value.fromTuple(bidClaim)],
+    false,
+  );
+}

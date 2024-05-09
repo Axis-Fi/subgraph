@@ -1,4 +1,4 @@
-import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
+import { Address, BigInt, Bytes, log } from "@graphprotocol/graph-ts";
 
 import {
   EncryptedMarginalPrice__bidsResult,
@@ -22,11 +22,21 @@ export function getBidId(lot: BatchAuctionLot, bidId: BigInt): string {
   return lot.id.concat("-").concat(bidId.toString());
 }
 
-export function getBidRecord(lot: BatchAuctionLot, bidId: BigInt): BatchBid {
+export function getBidRecordNullable(
+  lot: BatchAuctionLot,
+  bidId: BigInt,
+): BatchBid | null {
   const bidRecordId = getBidId(lot, bidId);
   const entity = BatchBid.load(bidRecordId);
 
+  return entity;
+}
+
+export function getBidRecord(lot: BatchAuctionLot, bidId: BigInt): BatchBid {
+  const entity = getBidRecordNullable(lot, bidId);
+
   if (!entity) {
+    const bidRecordId = getBidId(lot, bidId);
     throw new Error("Bid not found: " + bidRecordId);
   }
 
@@ -74,20 +84,32 @@ export function getBidStatus(status: i32): string {
   }
 }
 
-export function updateBid(
+export function updateBidStatus(
   auctionHouseAddress: Address,
   auctionRef: Bytes,
   lotRecord: BatchAuctionLot,
   bidId: BigInt,
 ): void {
   // Fetch the existing bid record
-  const entity = getBidRecord(lotRecord, bidId);
+  const entity = getBidRecordNullable(lotRecord, bidId);
+  if (!entity) {
+    log.debug("updateBidStatus: Skipping non-existent bid id {} on lot {}", [
+      bidId.toString(),
+      lotRecord.id,
+    ]);
+    return;
+  }
 
   const bid = getBid(auctionHouseAddress, auctionRef, lotRecord.lotId, bidId);
 
   entity.status = getBidStatus(bid.getStatus());
 
   entity.save();
+
+  log.debug("Updated bid status to {} for bid id {}", [
+    entity.status,
+    entity.id,
+  ]);
 }
 
 export function updateBidsStatus(
@@ -103,7 +125,7 @@ export function updateBidsStatus(
     i.le(maxBidId);
     i = i.plus(BigInt.fromI32(1))
   ) {
-    updateBid(auctionHouseAddress, auctionRef, lotRecord, i);
+    updateBidStatus(auctionHouseAddress, auctionRef, lotRecord, i);
   }
 }
 
@@ -116,7 +138,7 @@ export function updateBidsAmounts(
 
   for (
     let i = BigInt.fromI32(1);
-    i.lt(maxBidId);
+    i.le(maxBidId);
     i = i.plus(BigInt.fromI32(1))
   ) {
     updateBidAmount(auctionHouseAddress, auctionRef, lotRecord, i);

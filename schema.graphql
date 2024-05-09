@@ -222,7 +222,7 @@ type BatchAuctionSettled @entity(immutable: true) {
 }
 
 type BatchAuctionAborted @entity(immutable: true) {
-  id: Bytes!
+  id: String! # chain-auctionHouse-lotId
   lot: BatchAuctionLot!
 
   blockNumber: BigInt!

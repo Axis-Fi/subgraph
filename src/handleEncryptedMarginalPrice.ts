@@ -6,7 +6,7 @@ import {
 } from "../generated/BatchAuctionHouse/EncryptedMarginalPrice";
 import { BatchAuctionLot, BatchBidDecrypted } from "../generated/schema";
 import { getAuctionLot, getLotRecord } from "./helpers/batchAuction";
-import { getBidId, getBidRecord, updateBid } from "./helpers/bid";
+import { getBidId, getBidRecord, updateBidStatus } from "./helpers/bid";
 import { toISO8601String } from "./helpers/date";
 import { toDecimal } from "./helpers/number";
 
@@ -64,7 +64,7 @@ export function handleBidDecrypted(event: BidDecryptedEvent): void {
   }
 
   // Update the bid status
-  updateBid(
+  updateBidStatus(
     auctionHouseAddress,
     Bytes.fromUTF8(lotRecord.auctionType),
     lotRecord,
