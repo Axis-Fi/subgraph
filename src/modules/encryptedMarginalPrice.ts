@@ -13,6 +13,24 @@ import { getOrCreateToken } from "../helpers/token";
 
 export const EMP_KEYCODE = "EMP";
 
+// eslint-disable-next-line no-shadow
+export enum BatchBidStatus {
+  SUBMITTED = "submitted",
+  DECRYPTED = "decrypted",
+  WON = "won",
+  WON_PARTIAL_FILL = "won - partial fill",
+  LOST = "lost",
+  REFUNDED = "refunded",
+  CLAIMED = "claimed",
+}
+
+// eslint-disable-next-line no-shadow
+export enum EncryptedMarginalPriceLotStatus {
+  CREATED = "Created",
+  DECRYPTED = "Decrypted",
+  SETTLED = "Settled",
+}
+
 export function getEncryptedMarginalPriceModule(
   auctionHouseAddress: Address,
   moduleRef: Bytes,
@@ -27,11 +45,11 @@ export function getEncryptedMarginalPriceModule(
 function _getLotStatus(status: i32): string {
   switch (status) {
     case 0:
-      return "Started";
+      return EncryptedMarginalPriceLotStatus.CREATED;
     case 1:
-      return "Decrypted";
+      return EncryptedMarginalPriceLotStatus.DECRYPTED;
     case 2:
-      return "Settled";
+      return EncryptedMarginalPriceLotStatus.SETTLED;
     default:
       throw "Unknown value";
   }
@@ -41,6 +59,22 @@ function _getEncryptedMarginalPriceLotId(
   batchAuctionLot: BatchAuctionLot,
 ): string {
   return batchAuctionLot.id;
+}
+
+function _getEncryptedMarginalPriceLot(
+  batchAuctionLot: BatchAuctionLot,
+): BatchEncryptedMarginalPriceLot {
+  const empLotId = _getEncryptedMarginalPriceLotId(batchAuctionLot);
+  const empLot = BatchEncryptedMarginalPriceLot.load(empLotId);
+
+  if (empLot == null) {
+    throw new Error(
+      "Expected EncryptedMarginalPriceLot to exist for record id " +
+        batchAuctionLot.id,
+    );
+  }
+
+  return empLot;
 }
 
 export function createEncryptedMarginalPriceLot(
@@ -112,14 +146,14 @@ export function updateEncryptedMarginalPriceLot(
   // No need to set the minPrice, minFilled and minBidSize again
 
   // If settled
-  if (empLot.status == "Settled") { // TODO add enum
+  if (empLot.status == EncryptedMarginalPriceLotStatus.SETTLED) {
     // Set the marginal price
     empLot.marginalPrice = toDecimal(
       lotAuctionData.getMarginalPrice(),
       quoteToken.decimals,
     );
 
-    // Detect partial fill
+    // Detect partial fill (only if the lot is settled)
     const partialFillData = encryptedMarginalPrice.getPartialFill(lotId);
     empLot.hasPartialFill = partialFillData.getHasPartialFill();
     if (empLot.hasPartialFill == true) {
@@ -141,6 +175,9 @@ export function updateBidAmount(
     auctionRef,
   );
 
+  // Get the EMP record
+  const empRecord = _getEncryptedMarginalPriceLot(lotRecord);
+
   // Get the bid record
   const entity = getBidRecord(lotRecord, bidId);
 
@@ -148,33 +185,40 @@ export function updateBidAmount(
   const quoteToken = getOrCreateToken(lotRecord.quoteToken);
   const baseToken = getOrCreateToken(lotRecord.baseToken);
 
-  // TODO check for lot status == settled
+  // If the lot status is settled, we can check the bid claim
+  if (empRecord.status == EncryptedMarginalPriceLotStatus.SETTLED) {
+    // TODO handle claimed and refunded status
 
-  // Get the bid claim from the contract
-  const bidClaim = empModule.getBidClaim(lotRecord.lotId, bidId);
+    // Get the bid claim from the contract
+    const bidClaim = empModule.getBidClaim(lotRecord.lotId, bidId);
 
-  const settledAmountInRefunded = toDecimal(
-    bidClaim.refund,
-    quoteToken.decimals,
-  );
-  entity.settledAmountInRefunded = settledAmountInRefunded;
-  entity.settledAmountIn = toDecimal(bidClaim.paid, quoteToken.decimals).minus(
-    settledAmountInRefunded,
-  );
-  entity.settledAmountOut = toDecimal(bidClaim.payout, baseToken.decimals);
+    const settledAmountInRefunded = toDecimal(
+      bidClaim.refund,
+      quoteToken.decimals,
+    );
+    entity.settledAmountInRefunded = settledAmountInRefunded;
+    entity.settledAmountIn = toDecimal(
+      bidClaim.paid,
+      quoteToken.decimals,
+    ).minus(settledAmountInRefunded);
+    entity.settledAmountOut = toDecimal(bidClaim.payout, baseToken.decimals);
 
-  // Set the status
-  // If there is a payout and a refund, it is a partial fill
-  if (bidClaim.refund.gt(BigInt.zero()) && bidClaim.payout.gt(BigInt.zero())) {
-    entity.status = "won - partial fill";
-  }
-  // If there is a payout, it is won
-  else if (bidClaim.payout.gt(BigInt.zero())) {
-    entity.status = "won";
-  }
-  // If there is a refund, it is lost
-  else {
-    entity.status = "lost";
+    // Set the status
+    // If there is a payout and a refund, it is a partial fill
+    if (
+      bidClaim.refund.gt(BigInt.zero()) &&
+      bidClaim.payout.gt(BigInt.zero())
+    ) {
+      entity.status = BatchBidStatus.WON_PARTIAL_FILL;
+    }
+    // If there is a payout, it is won
+    else if (bidClaim.payout.gt(BigInt.zero())) {
+      entity.status = BatchBidStatus.WON;
+    }
+    // If there is a refund, it is lost
+    else {
+      entity.status = BatchBidStatus.LOST;
+    }
   }
 
   entity.save();
