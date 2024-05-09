@@ -125,6 +125,8 @@ const lotFeesCuratorApproved: boolean = false;
 const lotFeesCuratorFee: i32 = 100;
 const lotFeesProtocolFee: i32 = 90;
 const lotFeesReferrerFee: i32 = 80;
+const lotMarginalPrice: BigInt = BigInt.fromU64(5_000_000);
+const lotMarginalPriceMax = BigInt.fromU64(2 ^ (256 - 1)); // Marginal price set to uint256 max
 
 const empMinPrice: BigInt = BigInt.fromU64(1_000_000_000_000_000_000);
 const empMinFilled: BigInt = BigInt.fromU64(2_000_000_000_000_000_000);
@@ -1177,7 +1179,7 @@ describe("abort", () => {
       0,
       2, // Aborted (Settled)
       0,
-      BigInt.fromU64(2 ^ (256 - 1)), // Marginal price set to uint256 max
+      lotMarginalPriceMax,
       empMinPrice,
       empMinFilled,
       empMinBidSize,
@@ -1256,21 +1258,27 @@ describe("abort", () => {
 
     // BatchEncryptedMarginalPriceLot record is updated
     assert.entityCount("BatchEncryptedMarginalPriceLot", 1);
-    const empLotRecord = BatchEncryptedMarginalPriceLot.load(recordId);
-    if (empLotRecord === null) {
-      throw new Error(
-        "Expected BatchEncryptedMarginalPriceLot to exist for record id " +
-          recordId,
-      );
-    }
-
+    const empLotRecord = getBatchEncryptedMarginalPriceLot(recordId);
     assertStringEquals(
       empLotRecord.status,
       "Settled",
       "BatchEncryptedMarginalPriceLot: status",
     );
-
-    // TODO check marginalPrice, hasPartialFill, partialBidId
+    assertBigDecimalEquals(
+      empLotRecord.marginalPrice,
+      toDecimal(lotMarginalPriceMax, lotQuoteTokenDecimals),
+      "BatchEncryptedMarginalPriceLot: marginalPrice",
+    );
+    assertBooleanEquals(
+      empLotRecord.hasPartialFill,
+      false,
+      "BatchEncryptedMarginalPriceLot: hasPartialFill",
+    );
+    assertBigIntEquals(
+      empLotRecord.partialBidId,
+      null,
+      "BatchEncryptedMarginalPriceLot: partialBidId",
+    );
 
     // Check the bid
     const bidRecordId = recordId + "-" + BID_ID_ONE.toString();
@@ -1363,7 +1371,7 @@ describe("settle", () => {
     _decryptBid(BID_ID_TWO, bidAmountOut);
     _decryptBid(BID_ID_THREE, bidAmountOut);
 
-    // Update mocks
+    // Update auction data for settlement
     mockEmpAuctionData(
       auctionModuleAddress,
       LOT_ID,
@@ -1371,13 +1379,13 @@ describe("settle", () => {
       0,
       2, // Settled
       0,
-      BigInt.zero(),
+      lotMarginalPrice,
       empMinPrice,
       empMinFilled,
       empMinBidSize,
       empPublicKeyX,
       empPublicKeyY,
-      BigInt.zero(),
+      empPrivateKey,
     );
 
     // Update mocks for 3 bids
@@ -1411,14 +1419,14 @@ describe("settle", () => {
       bidPartialFillPayout, // Partial fill
       bidPartialFillRefund,
     );
-    // mockEmpPartialFill(
-    //   auctionModuleAddress,
-    //   lotId,
-    //   true,
-    //   BID_ID_THREE.toI32(),
-    //   bidPartialFillPayout,
-    //   bidPartialFillRefund,
-    // );
+    mockEmpPartialFill(
+      auctionModuleAddress,
+      LOT_ID,
+      true,
+      BID_ID_THREE.toI32(),
+      bidPartialFillPayout,
+      bidPartialFillRefund,
+    );
 
     const settleEvent = createSettleEvent(LOT_ID, auctionHouse);
     handleSettle(settleEvent);
@@ -1471,8 +1479,21 @@ describe("settle", () => {
       "Settled",
       "BatchEncryptedMarginalPriceLot: status",
     );
-
-    // TODO check marginalPrice, hasPartialFill, partialBidId
+    assertBigDecimalEquals(
+      empLotRecord.marginalPrice,
+      toDecimal(lotMarginalPrice, lotQuoteTokenDecimals),
+      "BatchEncryptedMarginalPriceLot: marginalPrice",
+    );
+    assertBooleanEquals(
+      empLotRecord.hasPartialFill,
+      true,
+      "BatchEncryptedMarginalPriceLot: hasPartialFill",
+    );
+    assertBigIntEquals(
+      empLotRecord.partialBidId,
+      BID_ID_THREE,
+      "BatchEncryptedMarginalPriceLot: partialBidId",
+    );
 
     // Check that the bids are updated
     // TODO re-enable submitted price checks
