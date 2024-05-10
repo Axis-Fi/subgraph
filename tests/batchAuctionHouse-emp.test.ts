@@ -126,7 +126,11 @@ const lotFeesCuratorFee: i32 = 100;
 const lotFeesProtocolFee: i32 = 90;
 const lotFeesReferrerFee: i32 = 80;
 const lotMarginalPrice: BigInt = BigInt.fromU64(5_000_000);
-const lotMarginalPriceMax = BigInt.fromU64(2 ^ (256 - 1)); // Marginal price set to uint256 max
+const UINT256_MAX = BigInt.fromUnsignedBytes(
+  Bytes.fromHexString(
+    "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+  ),
+); // Marginal price set to uint256 max
 
 const empMinPrice: BigInt = BigInt.fromU64(1_000_000_000_000_000_000);
 const empMinFilled: BigInt = BigInt.fromU64(2_000_000_000_000_000_000);
@@ -475,6 +479,26 @@ describe("auction creation", () => {
       "Created",
       "BatchEncryptedMarginalPriceLot: status",
     );
+    assertBooleanEquals(
+      empLotRecord.settlementSuccessful,
+      false,
+      "BatchEncryptedMarginalPriceLot: settlementSuccessful",
+    );
+    assertBigDecimalEquals(
+      empLotRecord.marginalPrice,
+      null,
+      "BatchEncryptedMarginalPriceLot: marginalPrice",
+    );
+    assertBooleanEquals(
+      empLotRecord.hasPartialFill,
+      false,
+      "BatchEncryptedMarginalPriceLot: hasPartialFill",
+    );
+    assertBigIntEquals(
+      empLotRecord.partialBidId,
+      null,
+      "BatchEncryptedMarginalPriceLot: partialBidId",
+    );
     assertBigDecimalEquals(
       empLotRecord.minPrice,
       toDecimal(empMinPrice, lotQuoteTokenDecimals),
@@ -746,6 +770,11 @@ describe("auction cancellation", () => {
       empLotRecord.status,
       "Settled",
       "BatchEncryptedMarginalPriceLot: status",
+    );
+    assertBooleanEquals(
+      empLotRecord.settlementSuccessful,
+      false,
+      "BatchEncryptedMarginalPriceLot: settlementSuccessful",
     );
     assertBigDecimalEquals(
       empLotRecord.marginalPrice,
@@ -1247,7 +1276,7 @@ describe("abort", () => {
       0,
       2, // Aborted (Settled)
       0,
-      lotMarginalPriceMax,
+      UINT256_MAX,
       empMinPrice,
       empMinFilled,
       empMinBidSize,
@@ -1332,9 +1361,14 @@ describe("abort", () => {
       "Settled",
       "BatchEncryptedMarginalPriceLot: status",
     );
+    assertBooleanEquals(
+      empLotRecord.settlementSuccessful,
+      false,
+      "BatchEncryptedMarginalPriceLot: settlementSuccessful",
+    );
     assertBigDecimalEquals(
       empLotRecord.marginalPrice,
-      toDecimal(lotMarginalPriceMax, lotQuoteTokenDecimals),
+      toDecimal(UINT256_MAX, lotQuoteTokenDecimals),
       "BatchEncryptedMarginalPriceLot: marginalPrice",
     );
     assertBooleanEquals(
@@ -1546,6 +1580,11 @@ describe("settle", () => {
       empLotRecord.status,
       "Settled",
       "BatchEncryptedMarginalPriceLot: status",
+    );
+    assertBooleanEquals(
+      empLotRecord.settlementSuccessful,
+      true,
+      "BatchEncryptedMarginalPriceLot: settlementSuccessful",
     );
     assertBigDecimalEquals(
       empLotRecord.marginalPrice,

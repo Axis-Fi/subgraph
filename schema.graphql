@@ -323,6 +323,10 @@ type BatchEncryptedMarginalPriceLot @entity {
   lot: BatchAuctionLot!
 
   status: String! # enum: "Created" | "Decrypted" | "Settled"
+
+  # True if the settlement was successful, false if the lot has not settled yet, it was aborted/cancelled or did not meet settlement criteria.
+  settlementSuccessful: Boolean!
+
   minPrice: BigDecimal! # uint256
   minFilled: BigDecimal! # uint256
   minBidSize: BigDecimal! # uint256

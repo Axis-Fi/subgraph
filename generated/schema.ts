@@ -3194,6 +3194,19 @@ export class BatchEncryptedMarginalPriceLot extends Entity {
     this.set("status", Value.fromString(value));
   }
 
+  get settlementSuccessful(): boolean {
+    let value = this.get("settlementSuccessful");
+    if (!value || value.kind == ValueKind.NULL) {
+      return false;
+    } else {
+      return value.toBoolean();
+    }
+  }
+
+  set settlementSuccessful(value: boolean) {
+    this.set("settlementSuccessful", Value.fromBoolean(value));
+  }
+
   get minPrice(): BigDecimal {
     let value = this.get("minPrice");
     if (!value || value.kind == ValueKind.NULL) {

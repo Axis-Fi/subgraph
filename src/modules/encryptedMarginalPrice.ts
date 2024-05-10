@@ -91,6 +91,7 @@ export function createEncryptedMarginalPriceLot(
   );
 
   empLot.status = _getLotStatus(lotAuctionData.getStatus());
+  empLot.settlementSuccessful = false; // Set to true on successful settlement
   // marginalPrice set on settlement
   empLot.minPrice = toDecimal(
     lotAuctionData.getMinPrice(),
@@ -145,6 +146,16 @@ export function updateEncryptedMarginalPriceLot(
       lotAuctionData.getMarginalPrice(),
       quoteToken.decimals,
     );
+
+    // If the marginal price is not 0 or uint256 max, then the lot was settled successfully
+    empLot.settlementSuccessful =
+      lotAuctionData.getMarginalPrice().gt(BigInt.zero()) &&
+      lotAuctionData.getMarginalPrice() <
+        BigInt.fromUnsignedBytes(
+          Bytes.fromHexString(
+            "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          ),
+        );
 
     // Detect partial fill (only if the lot is settled)
     const partialFillData = encryptedMarginalPrice.getPartialFill(lotId);
