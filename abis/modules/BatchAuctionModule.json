@@ -269,6 +269,57 @@
     },
     {
       "type": "function",
+      "name": "getBidClaim",
+      "inputs": [
+        {
+          "name": "lotId_",
+          "type": "uint96",
+          "internalType": "uint96"
+        },
+        {
+          "name": "bidId_",
+          "type": "uint64",
+          "internalType": "uint64"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "tuple",
+          "internalType": "struct IBatchAuction.BidClaim",
+          "components": [
+            {
+              "name": "bidder",
+              "type": "address",
+              "internalType": "address"
+            },
+            {
+              "name": "referrer",
+              "type": "address",
+              "internalType": "address"
+            },
+            {
+              "name": "paid",
+              "type": "uint256",
+              "internalType": "uint256"
+            },
+            {
+              "name": "payout",
+              "type": "uint256",
+              "internalType": "uint256"
+            },
+            {
+              "name": "refund",
+              "type": "uint256",
+              "internalType": "uint256"
+            }
+          ]
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
       "name": "getBidIds",
       "inputs": [
         {

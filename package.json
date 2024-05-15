@@ -10,7 +10,7 @@
   "scripts": {
     "codegen": "rm -rf generated/ && graph codegen && pnpm run lint",
     "lint": "prettier --write \"**/*.{ts,md,json}\" && eslint --config ./.eslintrc.json --fix",
-    "test": "graph test --version 0.5.3",
+    "test": "graph test --version 0.6.0",
     "test:docker": "pnpm run test --docker",
     "test:force": "pnpm test --recompile",
     "update:constants": "node scripts/write-constants.js",

@@ -24,6 +24,7 @@ type AtomicAuctionLot @entity {
   seller: Bytes! # address
   derivativeType: String # bytes7
   wrapDerivative: Boolean!
+  callbacks: Bytes! #address
 
   # Fee details
   curator: Bytes # address
@@ -144,6 +145,7 @@ type BatchAuctionLot @entity {
   seller: Bytes! # address
   derivativeType: String # bytes7
   wrapDerivative: Boolean!
+  callbacks: Bytes! #address
 
   # Fee details
   curator: Bytes # address
@@ -161,6 +163,7 @@ type BatchAuctionLot @entity {
   lastUpdatedDate: String!
   lastUpdatedTransactionHash: Bytes!
 
+  # Bids
   maxBidId: BigInt! # uint96
 
   # Reverse lookups
@@ -178,7 +181,7 @@ type BatchAuctionLot @entity {
 }
 
 type BatchAuctionCreated @entity(immutable: true) {
-  id: Bytes!
+  id: String! # chain-auctionHouse-lotId
   lot: BatchAuctionLot!
   infoHash: String! # IPFS info hash
 
@@ -189,7 +192,7 @@ type BatchAuctionCreated @entity(immutable: true) {
 }
 
 type BatchAuctionCancelled @entity(immutable: true) {
-  id: Bytes!
+  id: String! # chain-auctionHouse-lotId
   lot: BatchAuctionLot!
   auctionRef: Bytes! # bytes7
 
@@ -200,7 +203,7 @@ type BatchAuctionCancelled @entity(immutable: true) {
 }
 
 type BatchAuctionCurated @entity(immutable: true) {
-  id: Bytes!
+  id: String! # chain-auctionHouse-lotId
   lot: BatchAuctionLot!
   curator: Bytes! # address
 
@@ -211,7 +214,7 @@ type BatchAuctionCurated @entity(immutable: true) {
 }
 
 type BatchAuctionSettled @entity(immutable: true) {
-  id: Bytes!
+  id: String! # chain-auctionHouse-lotId
   lot: BatchAuctionLot!
 
   blockNumber: BigInt!
@@ -221,7 +224,7 @@ type BatchAuctionSettled @entity(immutable: true) {
 }
 
 type BatchAuctionAborted @entity(immutable: true) {
-  id: Bytes!
+  id: String! # chain-auctionHouse-lotId
   lot: BatchAuctionLot!
 
   blockNumber: BigInt!
@@ -236,20 +239,33 @@ type BatchBid @entity {
 
   bidId: BigInt! # uint96
   bidder: Bytes! # address
+  referrer: Bytes # address
 
   amountIn: BigDecimal! # uint256
+
+  # The amount of base tokens of the bid. Only set after decryption, null before that.
   amountOut: BigDecimal # uint256
+
   rawAmountIn: BigInt!
   rawAmountOut: BigInt
 
+  # Equal to the amount of quote tokens that were settled: `amountIn - settledAmountInRefunded`. Only set after settlement, null before that. Will be 0 if the bid was not settled.
+  settledAmountIn: BigDecimal # uint256
+  # Equal to the amount of quote tokens that were refunded, in the case of a partial fill. Only set after settlement, null before that. Will be 0 if the bid was not settled.
+  settledAmountInRefunded: BigDecimal # uint256
+  # Equal to the amount of base tokens that will be paid out. Only set after settlement, null before that. Will be 0 if the bid was not settled.
   settledAmountOut: BigDecimal # uint256
+  # The effective price of the bid. Only set after decryption, null before that.
   submittedPrice: BigDecimal
 
   rawMarginalPrice: BigInt
   rawSubmittedPrice: BigInt
   remainingCapacity: BigDecimal
 
-  status: String! # enum: "submitted" | "decrypted" | "won" | "refunded" | "claimed"
+  status: String! # enum: "submitted" | "decrypted" | "claimed"
+
+  # The outcome of the bid. Only set after settlement, null before that.
+  outcome: String # enum: "won" | "won - partial fill" | "lost"
 
   blockNumber: BigInt!
   blockTimestamp: BigInt!
@@ -263,7 +279,7 @@ type BatchBid @entity {
 }
 
 type BatchBidRefunded @entity(immutable: true) {
-  id: Bytes!
+  id: String! # lot id + bidId
   lot: BatchAuctionLot!
   bid: BatchBid!
 
@@ -276,12 +292,12 @@ type BatchBidRefunded @entity(immutable: true) {
 }
 
 type BatchBidDecrypted @entity(immutable: true) {
-  id: Bytes!
+  id: String! # lot id + bidId
   lot: BatchAuctionLot!
   bid: BatchBid!
 
   amountIn: BigDecimal!
-  amountOut: BigDecimal!
+  amountOut: BigDecimal
 
   blockNumber: BigInt!
   blockTimestamp: BigInt!
@@ -290,7 +306,7 @@ type BatchBidDecrypted @entity(immutable: true) {
 }
 
 type BatchBidClaimed @entity(immutable: true) {
-  id: Bytes!
+  id: String! # lot id + bidId
   lot: BatchAuctionLot!
   bid: BatchBid!
 
@@ -305,18 +321,28 @@ type BatchBidClaimed @entity(immutable: true) {
 ### Batch Modules
 
 type BatchEncryptedMarginalPriceLot @entity {
-  id: Bytes!
+  id: String! # chain-auctionHouse-lotId
   lot: BatchAuctionLot!
 
   status: String! # enum: "Created" | "Decrypted" | "Settled"
-  marginalPrice: BigDecimal # uint256
+
+  # True if the settlement was successful, false if the lot has not settled yet, it was aborted/cancelled or did not meet settlement criteria.
+  settlementSuccessful: Boolean!
+
   minPrice: BigDecimal! # uint256
   minFilled: BigDecimal! # uint256
   minBidSize: BigDecimal! # uint256
+
+  # Marginal price for the lot, in terms of quote tokens. Only set after settlement, null before that.
+  marginalPrice: BigDecimal # uint256
+  # Whether the lot has a partial fill. Only set after settlement, null before that.
+  hasPartialFill: Boolean
+  # The bidId of the bid that was partially filled. Only set after settlement, null before that.
+  partialBidId: BigInt
 }
 
 type BatchLinearVestingLot @entity(immutable: true) {
-  id: Bytes!
+  id: String! # chain-auctionHouse-lotId
   lot: BatchAuctionLot!
 
   startTimestamp: BigInt!

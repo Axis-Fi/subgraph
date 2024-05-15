@@ -60,6 +60,28 @@ export class BatchAuctionModule__claimBidsResult {
   }
 }
 
+export class BatchAuctionModule__getBidClaimResultValue0Struct extends ethereum.Tuple {
+  get bidder(): Address {
+    return this[0].toAddress();
+  }
+
+  get referrer(): Address {
+    return this[1].toAddress();
+  }
+
+  get paid(): BigInt {
+    return this[2].toBigInt();
+  }
+
+  get payout(): BigInt {
+    return this[3].toBigInt();
+  }
+
+  get refund(): BigInt {
+    return this[4].toBigInt();
+  }
+}
+
 export class BatchAuctionModule__getLotResultValue0Struct extends ethereum.Tuple {
   get start(): BigInt {
     return this[0].toBigInt();
@@ -427,6 +449,47 @@ export class BatchAuctionModule extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
+
+  getBidClaim(
+    lotId_: BigInt,
+    bidId_: BigInt,
+  ): BatchAuctionModule__getBidClaimResultValue0Struct {
+    let result = super.call(
+      "getBidClaim",
+      "getBidClaim(uint96,uint64):((address,address,uint256,uint256,uint256))",
+      [
+        ethereum.Value.fromUnsignedBigInt(lotId_),
+        ethereum.Value.fromUnsignedBigInt(bidId_),
+      ],
+    );
+
+    return changetype<BatchAuctionModule__getBidClaimResultValue0Struct>(
+      result[0].toTuple(),
+    );
+  }
+
+  try_getBidClaim(
+    lotId_: BigInt,
+    bidId_: BigInt,
+  ): ethereum.CallResult<BatchAuctionModule__getBidClaimResultValue0Struct> {
+    let result = super.tryCall(
+      "getBidClaim",
+      "getBidClaim(uint96,uint64):((address,address,uint256,uint256,uint256))",
+      [
+        ethereum.Value.fromUnsignedBigInt(lotId_),
+        ethereum.Value.fromUnsignedBigInt(bidId_),
+      ],
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(
+      changetype<BatchAuctionModule__getBidClaimResultValue0Struct>(
+        value[0].toTuple(),
+      ),
+    );
   }
 
   getBidIds(lotId_: BigInt, start_: BigInt, count_: BigInt): Array<BigInt> {

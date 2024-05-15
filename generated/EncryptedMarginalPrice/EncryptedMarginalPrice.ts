@@ -418,6 +418,28 @@ export class EncryptedMarginalPrice__getBidResult {
   }
 }
 
+export class EncryptedMarginalPrice__getBidClaimResultBidClaimStruct extends ethereum.Tuple {
+  get bidder(): Address {
+    return this[0].toAddress();
+  }
+
+  get referrer(): Address {
+    return this[1].toAddress();
+  }
+
+  get paid(): BigInt {
+    return this[2].toBigInt();
+  }
+
+  get payout(): BigInt {
+    return this[3].toBigInt();
+  }
+
+  get refund(): BigInt {
+    return this[4].toBigInt();
+  }
+}
+
 export class EncryptedMarginalPrice__getLotResultValue0Struct extends ethereum.Tuple {
   get start(): BigInt {
     return this[0].toBigInt();
@@ -452,7 +474,7 @@ export class EncryptedMarginalPrice__getLotResultValue0Struct extends ethereum.T
   }
 }
 
-export class EncryptedMarginalPrice__getPartialFillResultValue0Struct extends ethereum.Tuple {
+export class EncryptedMarginalPrice__getPartialFillResultPartialFillStruct extends ethereum.Tuple {
   get bidId(): BigInt {
     return this[0].toBigInt();
   }
@@ -463,6 +485,34 @@ export class EncryptedMarginalPrice__getPartialFillResultValue0Struct extends et
 
   get payout(): BigInt {
     return this[2].toBigInt();
+  }
+}
+
+export class EncryptedMarginalPrice__getPartialFillResult {
+  value0: boolean;
+  value1: EncryptedMarginalPrice__getPartialFillResultPartialFillStruct;
+
+  constructor(
+    value0: boolean,
+    value1: EncryptedMarginalPrice__getPartialFillResultPartialFillStruct,
+  ) {
+    this.value0 = value0;
+    this.value1 = value1;
+  }
+
+  toMap(): TypedMap<string, ethereum.Value> {
+    let map = new TypedMap<string, ethereum.Value>();
+    map.set("value0", ethereum.Value.fromBoolean(this.value0));
+    map.set("value1", ethereum.Value.fromTuple(this.value1));
+    return map;
+  }
+
+  getHasPartialFill(): boolean {
+    return this.value0;
+  }
+
+  getPartialFill(): EncryptedMarginalPrice__getPartialFillResultPartialFillStruct {
+    return this.value1;
   }
 }
 
@@ -1084,6 +1134,47 @@ export class EncryptedMarginalPrice extends ethereum.SmartContract {
     );
   }
 
+  getBidClaim(
+    lotId_: BigInt,
+    bidId_: BigInt,
+  ): EncryptedMarginalPrice__getBidClaimResultBidClaimStruct {
+    let result = super.call(
+      "getBidClaim",
+      "getBidClaim(uint96,uint64):((address,address,uint256,uint256,uint256))",
+      [
+        ethereum.Value.fromUnsignedBigInt(lotId_),
+        ethereum.Value.fromUnsignedBigInt(bidId_),
+      ],
+    );
+
+    return changetype<EncryptedMarginalPrice__getBidClaimResultBidClaimStruct>(
+      result[0].toTuple(),
+    );
+  }
+
+  try_getBidClaim(
+    lotId_: BigInt,
+    bidId_: BigInt,
+  ): ethereum.CallResult<EncryptedMarginalPrice__getBidClaimResultBidClaimStruct> {
+    let result = super.tryCall(
+      "getBidClaim",
+      "getBidClaim(uint96,uint64):((address,address,uint256,uint256,uint256))",
+      [
+        ethereum.Value.fromUnsignedBigInt(lotId_),
+        ethereum.Value.fromUnsignedBigInt(bidId_),
+      ],
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(
+      changetype<EncryptedMarginalPrice__getBidClaimResultBidClaimStruct>(
+        value[0].toTuple(),
+      ),
+    );
+  }
+
   getBidIdAtIndex(lotId_: BigInt, index_: BigInt): BigInt {
     let result = super.call(
       "getBidIdAtIndex",
@@ -1253,26 +1344,27 @@ export class EncryptedMarginalPrice extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
-  getPartialFill(
-    lotId_: BigInt,
-  ): EncryptedMarginalPrice__getPartialFillResultValue0Struct {
+  getPartialFill(lotId_: BigInt): EncryptedMarginalPrice__getPartialFillResult {
     let result = super.call(
       "getPartialFill",
-      "getPartialFill(uint96):((uint64,uint96,uint256))",
+      "getPartialFill(uint96):(bool,(uint64,uint96,uint256))",
       [ethereum.Value.fromUnsignedBigInt(lotId_)],
     );
 
-    return changetype<EncryptedMarginalPrice__getPartialFillResultValue0Struct>(
-      result[0].toTuple(),
+    return new EncryptedMarginalPrice__getPartialFillResult(
+      result[0].toBoolean(),
+      changetype<EncryptedMarginalPrice__getPartialFillResultPartialFillStruct>(
+        result[1].toTuple(),
+      ),
     );
   }
 
   try_getPartialFill(
     lotId_: BigInt,
-  ): ethereum.CallResult<EncryptedMarginalPrice__getPartialFillResultValue0Struct> {
+  ): ethereum.CallResult<EncryptedMarginalPrice__getPartialFillResult> {
     let result = super.tryCall(
       "getPartialFill",
-      "getPartialFill(uint96):((uint64,uint96,uint256))",
+      "getPartialFill(uint96):(bool,(uint64,uint96,uint256))",
       [ethereum.Value.fromUnsignedBigInt(lotId_)],
     );
     if (result.reverted) {
@@ -1280,8 +1372,11 @@ export class EncryptedMarginalPrice extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(
-      changetype<EncryptedMarginalPrice__getPartialFillResultValue0Struct>(
-        value[0].toTuple(),
+      new EncryptedMarginalPrice__getPartialFillResult(
+        value[0].toBoolean(),
+        changetype<EncryptedMarginalPrice__getPartialFillResultPartialFillStruct>(
+          value[1].toTuple(),
+        ),
       ),
     );
   }

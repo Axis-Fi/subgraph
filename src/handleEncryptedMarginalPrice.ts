@@ -1,4 +1,4 @@
-import { BigInt, Bytes } from "@graphprotocol/graph-ts";
+import { BigInt, Bytes, log } from "@graphprotocol/graph-ts";
 
 import {
   BidDecrypted as BidDecryptedEvent,
@@ -6,7 +6,7 @@ import {
 } from "../generated/BatchAuctionHouse/EncryptedMarginalPrice";
 import { BatchAuctionLot, BatchBidDecrypted } from "../generated/schema";
 import { getAuctionLot, getLotRecord } from "./helpers/batchAuction";
-import { getBidId, getBidRecord, updateBid } from "./helpers/bid";
+import { getBidId, getBidRecord, updateBidStatus } from "./helpers/bid";
 import { toISO8601String } from "./helpers/date";
 import { toDecimal } from "./helpers/number";
 
@@ -20,11 +20,11 @@ export function handleBidDecrypted(event: BidDecryptedEvent): void {
   // Get the lot record
   const lotRecord: BatchAuctionLot = getLotRecord(auctionHouseAddress, lotId);
 
-  const entity = new BatchBidDecrypted(
-    event.transaction.hash.concatI32(event.logIndex.toI32()),
-  );
-  entity.lot = event.params.lotId.toString();
-  entity.bid = getBidId(lotRecord, event.params.bidId);
+  const bidRecordId = getBidId(lotRecord, event.params.bidId);
+  const entity = new BatchBidDecrypted(bidRecordId);
+  entity.lot = lotRecord.id;
+  entity.bid = bidRecordId;
+  log.info("Adding BatchBidDecrypted record with id: {}", [bidRecordId]);
 
   const auctionLot = getAuctionLot(auctionHouseAddress, lotId);
   entity.amountIn = toDecimal(
@@ -64,7 +64,7 @@ export function handleBidDecrypted(event: BidDecryptedEvent): void {
   }
 
   // Update the bid status
-  updateBid(
+  updateBidStatus(
     auctionHouseAddress,
     Bytes.fromUTF8(lotRecord.auctionType),
     lotRecord,

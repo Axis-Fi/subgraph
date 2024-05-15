@@ -1,26 +1,26 @@
-import {
-  Address,
-  BigDecimal,
-  BigInt,
-  Bytes,
-  log,
-} from "@graphprotocol/graph-ts";
+import { Address, BigInt, Bytes, log } from "@graphprotocol/graph-ts";
 
-import {
-  AuctionCreated,
-  BatchAuctionHouse,
-} from "../../generated/BatchAuctionHouse/BatchAuctionHouse";
+import { BatchAuctionHouse } from "../../generated/BatchAuctionHouse/BatchAuctionHouse";
 import { EncryptedMarginalPrice } from "../../generated/BatchAuctionHouse/EncryptedMarginalPrice";
 import {
   BatchAuctionLot,
   BatchEncryptedMarginalPriceLot,
 } from "../../generated/schema";
 import { getAuctionHouse } from "../helpers/batchAuction";
-import { getBidRecord } from "../helpers/bid";
+import {
+  BidOutcome_Lost,
+  BidOutcome_Won,
+  BidOutcome_WonPartialFill,
+  getBidRecordNullable,
+} from "../helpers/bid";
 import { toDecimal } from "../helpers/number";
 import { getOrCreateToken } from "../helpers/token";
 
 export const EMP_KEYCODE = "EMP";
+
+export const EmpLotStatus_Created = "Created";
+export const EmpLotStatus_Decrypted = "Decrypted";
+export const EmpLotStatus_Settled = "Settled";
 
 export function getEncryptedMarginalPriceModule(
   auctionHouseAddress: Address,
@@ -36,23 +36,44 @@ export function getEncryptedMarginalPriceModule(
 function _getLotStatus(status: i32): string {
   switch (status) {
     case 0:
-      return "Started";
+      return EmpLotStatus_Created;
     case 1:
-      return "Decrypted";
+      return EmpLotStatus_Decrypted;
     case 2:
-      return "Settled";
+      return EmpLotStatus_Settled;
     default:
-      throw "Unknown value";
+      throw "Unknown value: " + status.toString();
   }
+}
+
+function _getEncryptedMarginalPriceLotId(
+  batchAuctionLot: BatchAuctionLot,
+): string {
+  return batchAuctionLot.id;
+}
+
+function _getEncryptedMarginalPriceLot(
+  batchAuctionLot: BatchAuctionLot,
+): BatchEncryptedMarginalPriceLot {
+  const empLotId = _getEncryptedMarginalPriceLotId(batchAuctionLot);
+  const empLot = BatchEncryptedMarginalPriceLot.load(empLotId);
+
+  if (empLot == null) {
+    throw new Error(
+      "Expected EncryptedMarginalPriceLot to exist for record id " +
+        batchAuctionLot.id,
+    );
+  }
+
+  return empLot;
 }
 
 export function createEncryptedMarginalPriceLot(
   batchAuctionLot: BatchAuctionLot,
-  createdEvent: AuctionCreated,
 ): void {
   const empLot: BatchEncryptedMarginalPriceLot =
     new BatchEncryptedMarginalPriceLot(
-      createdEvent.transaction.hash.concatI32(createdEvent.logIndex.toI32()),
+      _getEncryptedMarginalPriceLotId(batchAuctionLot),
     );
   empLot.lot = batchAuctionLot.id;
   log.info("Adding BatchEncryptedMarginalPriceLot for lot: {}", [empLot.lot]);
@@ -70,6 +91,7 @@ export function createEncryptedMarginalPriceLot(
   );
 
   empLot.status = _getLotStatus(lotAuctionData.getStatus());
+  empLot.settlementSuccessful = false; // Set to true on successful settlement
   // marginalPrice set on settlement
   empLot.minPrice = toDecimal(
     lotAuctionData.getMinPrice(),
@@ -84,6 +106,68 @@ export function createEncryptedMarginalPriceLot(
     quoteToken.decimals,
   );
   empLot.save();
+
+  log.info("Created EncryptedMarginalPriceLot for lot: {}", [empLot.lot]);
+}
+
+export function updateEncryptedMarginalPriceLot(
+  batchAuctionLot: BatchAuctionLot,
+  lotId: BigInt,
+): void {
+  const empLot = BatchEncryptedMarginalPriceLot.load(
+    _getEncryptedMarginalPriceLotId(batchAuctionLot),
+  );
+
+  // Check if null
+  if (empLot == null) {
+    throw new Error(
+      "Expected EncryptedMarginalPriceLot to exist for record id " +
+        batchAuctionLot.id,
+    );
+  }
+
+  // Get the EncryptedMarginalPrice module
+  const encryptedMarginalPrice = getEncryptedMarginalPriceModule(
+    Address.fromBytes(batchAuctionLot.auctionHouse),
+    Bytes.fromUTF8(batchAuctionLot.auctionType),
+  );
+
+  const quoteToken = getOrCreateToken(batchAuctionLot.quoteToken);
+  const lotAuctionData = encryptedMarginalPrice.auctionData(lotId);
+
+  empLot.status = _getLotStatus(lotAuctionData.getStatus());
+
+  // No need to set the minPrice, minFilled and minBidSize again
+
+  // If settled
+  if (empLot.status == EmpLotStatus_Settled) {
+    // Set the marginal price
+    empLot.marginalPrice = toDecimal(
+      lotAuctionData.getMarginalPrice(),
+      quoteToken.decimals,
+    );
+
+    // If the marginal price is not 0 or uint256 max, then the lot was settled successfully
+    empLot.settlementSuccessful =
+      lotAuctionData.getMarginalPrice().gt(BigInt.zero()) &&
+      lotAuctionData.getMarginalPrice() <
+        BigInt.fromUnsignedBytes(
+          Bytes.fromHexString(
+            "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          ),
+        );
+
+    // Detect partial fill (only if the lot is settled)
+    const partialFillData = encryptedMarginalPrice.getPartialFill(lotId);
+    empLot.hasPartialFill = partialFillData.getHasPartialFill();
+    if (empLot.hasPartialFill == true) {
+      empLot.partialBidId = partialFillData.getPartialFill().bidId;
+    }
+  }
+
+  empLot.save();
+
+  log.info("Updated EncryptedMarginalPriceLot for lot: {}", [empLot.lot]);
 }
 
 export function updateBidAmount(
@@ -91,56 +175,67 @@ export function updateBidAmount(
   auctionRef: Bytes,
   lotRecord: BatchAuctionLot,
   bidId: BigInt,
-  // remainingCapacity: BigDecimal
-): BigDecimal {
+): void {
   const empModule = getEncryptedMarginalPriceModule(
     auctionHouseAddress,
     auctionRef,
   );
 
+  // Get the EMP record
+  const empRecord = _getEncryptedMarginalPriceLot(lotRecord);
+
   // Get the bid record
-  const entity = getBidRecord(lotRecord, bidId);
+  const entity = getBidRecordNullable(lotRecord, bidId);
+  if (!entity) {
+    log.debug("updateBidAmount: Skipping non-existent bid id {} on lot {}", [
+      bidId.toString(),
+      lotRecord.id,
+    ]);
+    return;
+  }
 
-  // Get marginal price from contract
-  const rawMarginalPrice = empModule
-    .auctionData(lotRecord.lotId)
-    .getMarginalPrice();
+  // Fetch decimals
+  const quoteToken = getOrCreateToken(lotRecord.quoteToken);
+  const baseToken = getOrCreateToken(lotRecord.baseToken);
 
-  // Get the raw amount out
-  const rawAmountOut = entity.rawAmountOut || BigInt.fromI32(0);
-  const rawSubmittedPrice = entity.rawSubmittedPrice || BigInt.fromI32(0);
+  // If the lot status is settled, we can check the bid claim
+  if (empRecord.status == EmpLotStatus_Settled) {
+    // Get the bid claim from the contract
+    const bidClaim = empModule.getBidClaim(lotRecord.lotId, bidId);
 
-  const settledAmountOut = BigDecimal.fromString("0");
-  const ZERO = BigInt.fromI32(0);
+    const settledAmountInRefunded = toDecimal(
+      bidClaim.refund,
+      quoteToken.decimals,
+    );
+    entity.settledAmountInRefunded = settledAmountInRefunded;
+    entity.settledAmountIn = toDecimal(
+      bidClaim.paid,
+      quoteToken.decimals,
+    ).minus(settledAmountInRefunded);
+    entity.settledAmountOut = toDecimal(bidClaim.payout, baseToken.decimals);
 
-  // Ensure the bid has been decrypted and has a valid value
-  if (rawAmountOut && rawAmountOut.gt(BigInt.fromI32(0))) {
-    // A bid is won if its submitted price is >= than marginalPrice
+    // Set the status
+    // If there is a payout and a refund, it is a partial fill
     if (
-      rawSubmittedPrice &&
-      rawSubmittedPrice.ge(rawMarginalPrice) &&
-      rawSubmittedPrice.gt(ZERO) &&
-      rawMarginalPrice.gt(ZERO)
+      bidClaim.refund.gt(BigInt.zero()) &&
+      bidClaim.payout.gt(BigInt.zero())
     ) {
-      // Calculate the actual amount out
-      const rawSettledAmountOut = entity.rawAmountIn.div(rawMarginalPrice);
-      // entity.remainingCapacity = remainingCapacity;
-      // The lowest winning bid may not be fully filled out
-      // So it gets the remaining capacity
-      // settledAmountOut = rawSettledAmountOut
-      //   .toBigDecimal()
-      //   .gt(remainingCapacity)
-      //   ? remainingCapacity
-      //   : rawSettledAmountOut.toBigDecimal();
-
-      entity.settledAmountOut = rawSettledAmountOut.toBigDecimal();
-      entity.status = "won";
-    } else {
-      entity.status = "lost";
+      entity.outcome = BidOutcome_WonPartialFill;
+    }
+    // If there is a payout, it is won
+    else if (bidClaim.payout.gt(BigInt.zero())) {
+      entity.outcome = BidOutcome_Won;
+    }
+    // If there is a refund, it is lost
+    else {
+      entity.outcome = BidOutcome_Lost;
     }
   }
 
   entity.save();
-  // Returns the amount settled to decrease remaining capacity
-  return settledAmountOut;
+
+  log.info("Updated bid amount for lot {} and bid {}", [
+    lotRecord.id,
+    bidId.toString(),
+  ]);
 }
