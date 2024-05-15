@@ -24,6 +24,7 @@ type AtomicAuctionLot @entity {
   seller: Bytes! # address
   derivativeType: String # bytes7
   wrapDerivative: Boolean!
+  callbacks: Bytes! #address
 
   # Fee details
   curator: Bytes # address
@@ -144,6 +145,7 @@ type BatchAuctionLot @entity {
   seller: Bytes! # address
   derivativeType: String # bytes7
   wrapDerivative: Boolean!
+  callbacks: Bytes! #address
 
   # Fee details
   curator: Bytes # address

@@ -279,6 +279,19 @@ export class AtomicAuctionLot extends Entity {
     this.set("wrapDerivative", Value.fromBoolean(value));
   }
 
+  get callbacks(): Bytes {
+    let value = this.get("callbacks");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set callbacks(value: Bytes) {
+    this.set("callbacks", Value.fromBytes(value));
+  }
+
   get curator(): Bytes | null {
     let value = this.get("curator");
     if (!value || value.kind == ValueKind.NULL) {
@@ -1467,6 +1480,19 @@ export class BatchAuctionLot extends Entity {
 
   set wrapDerivative(value: boolean) {
     this.set("wrapDerivative", Value.fromBoolean(value));
+  }
+
+  get callbacks(): Bytes {
+    let value = this.get("callbacks");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set callbacks(value: Bytes) {
+    this.set("callbacks", Value.fromBytes(value));
   }
 
   get curator(): Bytes | null {

@@ -116,6 +116,7 @@ export function handleAuctionCreated(event: AuctionCreatedEvent): void {
       ? null
       : auctionRouting.getDerivativeReference().toString();
   auctionLot.wrapDerivative = auctionRouting.getWrapDerivative();
+  auctionLot.callbacks = auctionRouting.getCallbacks();
 
   // Fee details
   const auctionFees = auctionHouse.lotFees(lotId);
