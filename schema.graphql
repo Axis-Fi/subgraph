@@ -173,10 +173,12 @@ type BatchAuctionLot @entity {
   settled: BatchAuctionSettled @derivedFrom(field: "lot")
   aborted: BatchAuctionAborted @derivedFrom(field: "lot")
   bids: [BatchBid!]! @derivedFrom(field: "lot")
+  # TODO consider if this should be pushed to the EMP entity
   bidsDecrypted: [BatchBidDecrypted!]! @derivedFrom(field: "lot")
   bidsClaimed: [BatchBidClaimed!]! @derivedFrom(field: "lot")
   bidsRefunded: [BatchBidRefunded!]! @derivedFrom(field: "lot")
   encryptedMarginalPrice: BatchEncryptedMarginalPriceLot @derivedFrom(field: "lot")
+  fixedPrice: BatchFixedPriceLot @derivedFrom(field: "lot")
   linearVesting: BatchLinearVestingLot @derivedFrom(field: "lot")
 }
 
@@ -335,6 +337,24 @@ type BatchEncryptedMarginalPriceLot @entity {
 
   # Marginal price for the lot, in terms of quote tokens. Only set after settlement, null before that.
   marginalPrice: BigDecimal # uint256
+  # Whether the lot has a partial fill. Only set after settlement, null before that.
+  hasPartialFill: Boolean
+  # The bidId of the bid that was partially filled. Only set after settlement, null before that.
+  partialBidId: BigInt
+}
+
+type BatchFixedPriceLot @entity {
+  id: String! # chain-auctionHouse-lotId
+  lot: BatchAuctionLot!
+
+  status: String! # enum: "Created" | "Settled"
+
+  # True if the settlement was successful, false if the lot has not settled yet, it was aborted/cancelled or did not meet settlement criteria.
+  settlementSuccessful: Boolean!
+
+  price: BigDecimal! # uint256
+  maxPayout: BigDecimal! # uint256
+
   # Whether the lot has a partial fill. Only set after settlement, null before that.
   hasPartialFill: Boolean
   # The bidId of the bid that was partially filled. Only set after settlement, null before that.

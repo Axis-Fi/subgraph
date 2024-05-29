@@ -1748,6 +1748,14 @@ export class BatchAuctionLot extends Entity {
     );
   }
 
+  get fixedPrice(): BatchFixedPriceLotLoader {
+    return new BatchFixedPriceLotLoader(
+      "BatchAuctionLot",
+      this.get("id")!.toString(),
+      "fixedPrice",
+    );
+  }
+
   get linearVesting(): BatchLinearVestingLotLoader {
     return new BatchLinearVestingLotLoader(
       "BatchAuctionLot",
@@ -3320,6 +3328,145 @@ export class BatchEncryptedMarginalPriceLot extends Entity {
   }
 }
 
+export class BatchFixedPriceLot extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save BatchFixedPriceLot entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type BatchFixedPriceLot must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+      );
+      store.set("BatchFixedPriceLot", id.toString(), this);
+    }
+  }
+
+  static loadInBlock(id: string): BatchFixedPriceLot | null {
+    return changetype<BatchFixedPriceLot | null>(
+      store.get_in_block("BatchFixedPriceLot", id),
+    );
+  }
+
+  static load(id: string): BatchFixedPriceLot | null {
+    return changetype<BatchFixedPriceLot | null>(
+      store.get("BatchFixedPriceLot", id),
+    );
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get lot(): string {
+    let value = this.get("lot");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set lot(value: string) {
+    this.set("lot", Value.fromString(value));
+  }
+
+  get status(): string {
+    let value = this.get("status");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set status(value: string) {
+    this.set("status", Value.fromString(value));
+  }
+
+  get settlementSuccessful(): boolean {
+    let value = this.get("settlementSuccessful");
+    if (!value || value.kind == ValueKind.NULL) {
+      return false;
+    } else {
+      return value.toBoolean();
+    }
+  }
+
+  set settlementSuccessful(value: boolean) {
+    this.set("settlementSuccessful", Value.fromBoolean(value));
+  }
+
+  get price(): BigDecimal {
+    let value = this.get("price");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigDecimal();
+    }
+  }
+
+  set price(value: BigDecimal) {
+    this.set("price", Value.fromBigDecimal(value));
+  }
+
+  get maxPayout(): BigDecimal {
+    let value = this.get("maxPayout");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigDecimal();
+    }
+  }
+
+  set maxPayout(value: BigDecimal) {
+    this.set("maxPayout", Value.fromBigDecimal(value));
+  }
+
+  get hasPartialFill(): boolean {
+    let value = this.get("hasPartialFill");
+    if (!value || value.kind == ValueKind.NULL) {
+      return false;
+    } else {
+      return value.toBoolean();
+    }
+  }
+
+  set hasPartialFill(value: boolean) {
+    this.set("hasPartialFill", Value.fromBoolean(value));
+  }
+
+  get partialBidId(): BigInt | null {
+    let value = this.get("partialBidId");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set partialBidId(value: BigInt | null) {
+    if (!value) {
+      this.unset("partialBidId");
+    } else {
+      this.set("partialBidId", Value.fromBigInt(<BigInt>value));
+    }
+  }
+}
+
 export class BatchLinearVestingLot extends Entity {
   constructor(id: string) {
     super();
@@ -4246,6 +4393,24 @@ export class BatchEncryptedMarginalPriceLotLoader extends Entity {
   load(): BatchEncryptedMarginalPriceLot[] {
     let value = store.loadRelated(this._entity, this._id, this._field);
     return changetype<BatchEncryptedMarginalPriceLot[]>(value);
+  }
+}
+
+export class BatchFixedPriceLotLoader extends Entity {
+  _entity: string;
+  _field: string;
+  _id: string;
+
+  constructor(entity: string, id: string, field: string) {
+    super();
+    this._entity = entity;
+    this._id = id;
+    this._field = field;
+  }
+
+  load(): BatchFixedPriceLot[] {
+    let value = store.loadRelated(this._entity, this._id, this._field);
+    return changetype<BatchFixedPriceLot[]>(value);
   }
 }
 
