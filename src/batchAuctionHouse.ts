@@ -31,7 +31,6 @@ import {
   BatchAuctionCurated,
   BatchAuctionLot,
   BatchAuctionSettled,
-  BatchBid,
   BatchBidClaimed,
   BatchBidRefunded,
 } from "../generated/schema";
@@ -43,9 +42,7 @@ import {
   getLotRecordId,
 } from "./helpers/batchAuction";
 import {
-  getBid,
   getBidId,
-  getBidStatus,
   updateBidsAmounts,
   updateBidsStatus,
   updateBidStatus,
@@ -58,10 +55,17 @@ import {
   LV_KEYCODE,
 } from "./modules/batchLinearVesting";
 import {
+  createEncryptedMarginalPriceBid,
   createEncryptedMarginalPriceLot,
   EMP_KEYCODE,
   updateEncryptedMarginalPriceLot,
 } from "./modules/encryptedMarginalPrice";
+import {
+  createFixedPriceBatchBid,
+  createFixedPriceBatchLot,
+  FPB_KEYCODE,
+  updateFixedPriceBatchLot,
+} from "./modules/fixedPriceBatch";
 
 function _updateAuctionLot(
   auctionHouseAddress: Address,
@@ -108,6 +112,12 @@ function _updateAuctionLot(
   // If using EncryptedMarginalPrice, update details
   if (entity.auctionType.includes(EMP_KEYCODE)) {
     updateEncryptedMarginalPriceLot(entity, lotId);
+  }
+  // If using FixedPriceBatch, update details
+  else if (entity.auctionType.includes(FPB_KEYCODE)) {
+    updateFixedPriceBatchLot(entity, lotId);
+  } else {
+    throw new Error("Unsupported auction type: " + entity.auctionType);
   }
 
   entity.save();
@@ -193,6 +203,12 @@ export function handleAuctionCreated(event: AuctionCreatedEvent): void {
   // If using EncryptedMarginalPrice, save details
   if (auctionLot.auctionType.includes(EMP_KEYCODE)) {
     createEncryptedMarginalPriceLot(auctionLot);
+  }
+  // If using FixedPriceBatch, save details
+  else if (auctionLot.auctionType.includes(FPB_KEYCODE)) {
+    createFixedPriceBatchLot(auctionLot);
+  } else {
+    throw new Error("Unsupported auction type: " + auctionLot.auctionType);
   }
 
   // If using LinearVesting, save details
@@ -362,37 +378,15 @@ export function handleBid(event: BidEvent): void {
 
   // Get the encrypted bid
   const lotRecord: BatchAuctionLot = getLotRecord(event.address, lotId);
-  const bid = getBid(
-    event.address,
-    Bytes.fromUTF8(lotRecord.auctionType),
-    lotId,
-    bidId,
-  );
 
-  const bidRecordId = getBidId(lotRecord, bidId);
-
-  const entity = new BatchBid(bidRecordId);
-  entity.lot = lotRecord.id;
-  entity.bidId = bidId;
-  entity.bidder = event.params.bidder;
-  entity.referrer = bid.getReferrer();
-
-  entity.amountIn = toDecimal(
-    event.params.amount,
-    getAuctionLot(event.address, lotId).getQuoteTokenDecimals(),
-  );
-  entity.rawAmountIn = event.params.amount;
-
-  entity.status = getBidStatus(bid.getStatus());
-
-  entity.blockNumber = event.block.number;
-  entity.blockTimestamp = event.block.timestamp;
-  entity.date = toISO8601String(event.block.timestamp);
-  entity.transactionHash = event.transaction.hash;
-
-  entity.save();
-
-  log.info("BatchBid event saved with id: {}", [entity.id.toString()]);
+  // Create the BatchBid record based on the auction type
+  if (lotRecord.auctionType.includes(EMP_KEYCODE)) {
+    createEncryptedMarginalPriceBid(lotRecord, event, bidId);
+  } else if (lotRecord.auctionType.includes(FPB_KEYCODE)) {
+    createFixedPriceBatchBid(lotRecord, event, bidId);
+  } else {
+    throw new Error("Unsupported auction type: " + lotRecord.auctionType);
+  }
 
   _updateAuctionLot(
     event.address,
@@ -461,12 +455,13 @@ export function handleBidClaimed(event: ClaimBidEvent): void {
 
   log.info("BatchBidClaimed event saved with id: {}", [entity.id.toString()]);
 
-  // Update the bid record
   const auctionLot: BatchAuctionLot = getLotRecord(event.address, lotId);
+
+  // Update the bid record
   updateBidStatus(
     event.address,
     Bytes.fromUTF8(auctionLot.auctionType),
-    lotRecord,
+    auctionLot,
     event.params.bidId,
   );
 

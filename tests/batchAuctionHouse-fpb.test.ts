@@ -17,7 +17,6 @@ import {
   BatchAuctionLot,
   BatchBid,
   BatchBidRefunded,
-  BatchEncryptedMarginalPriceLot,
   BatchFixedPriceLot,
 } from "../generated/schema";
 import {
@@ -329,7 +328,7 @@ describe("auction creation", () => {
     // Fee details
     assertBytesEquals(
       batchAuctionLotRecord.curator,
-      Address.zero(),
+      null,
       "BatchAuctionLot: curator",
     );
     assertBooleanEquals(
@@ -457,7 +456,7 @@ describe("auction cancellation", () => {
       auctionModuleAddress,
       LOT_ID,
       fpbPrice,
-      2, // Settled
+      1, // Settled
       1,
       false,
       BigInt.zero(),
@@ -514,7 +513,7 @@ describe("auction cancellation", () => {
     );
 
     // BatchAuctionLot record is updated
-    assert.entityCount("BatchAuctionLot", 1);
+    assert.entityCount("BatchAuctionLot", 1, "BatchAuctionLot count");
     const batchAuctionLotRecord = BatchAuctionLot.load(recordId);
     if (batchAuctionLotRecord === null) {
       throw new Error(
@@ -532,39 +531,33 @@ describe("auction cancellation", () => {
       "BatchAuctionLot: conclusion",
     );
 
-    // BatchEncryptedMarginalPriceLot record is updated
-    assert.entityCount("BatchEncryptedMarginalPriceLot", 1);
-    const empLotRecord = BatchEncryptedMarginalPriceLot.load(recordId);
-    if (empLotRecord === null) {
+    // BatchFixedPriceLot record is updated
+    assert.entityCount("BatchFixedPriceLot", 1, "BatchFixedPriceLot count");
+    const fpbLotRecord = BatchFixedPriceLot.load(recordId);
+    if (fpbLotRecord === null) {
       throw new Error(
-        "Expected BatchEncryptedMarginalPriceLot to exist for record id " +
-          recordId,
+        "Expected BatchFixedPriceLot to exist for record id " + recordId,
       );
     }
     assertStringEquals(
-      empLotRecord.status,
+      fpbLotRecord.status,
       "Settled",
-      "BatchEncryptedMarginalPriceLot: status",
+      "BatchFixedPriceLot: status",
     );
     assertBooleanEquals(
-      empLotRecord.settlementSuccessful,
+      fpbLotRecord.settlementSuccessful,
       false,
-      "BatchEncryptedMarginalPriceLot: settlementSuccessful",
-    );
-    assertBigDecimalEquals(
-      empLotRecord.marginalPrice,
-      BigDecimal.zero(),
-      "BatchEncryptedMarginalPriceLot: marginalPrice",
+      "BatchFixedPriceLot: settlementSuccessful",
     );
     assertBooleanEquals(
-      empLotRecord.hasPartialFill,
+      fpbLotRecord.hasPartialFill,
       false,
-      "BatchEncryptedMarginalPriceLot: hasPartialFill",
+      "BatchFixedPriceLot: hasPartialFill",
     );
     assertBigIntEquals(
-      empLotRecord.partialBidId,
+      fpbLotRecord.partialBidId,
       null,
-      "BatchEncryptedMarginalPriceLot: partialBidId",
+      "BatchFixedPriceLot: partialBidId",
     );
 
     // Check reverse lookups
@@ -770,8 +763,8 @@ describe("abort", () => {
       auctionModuleAddress,
       LOT_ID,
       fpbPrice,
-      2, // Aborted (Settled)
-      1,
+      1, // Aborted (Settled)
+      2,
       false,
       BigInt.zero(),
       fpbMinFilled,
@@ -1073,7 +1066,7 @@ describe("settle", () => {
     const batchBidRecordOne = getBatchBid(recordId, BID_ID_ONE);
     assertStringEquals(
       batchBidRecordOne.status,
-      "decrypted",
+      "submitted",
       "Bid one: status",
     );
     assertStringEquals(batchBidRecordOne.outcome, "won", "Bid one: outcome");
@@ -1106,7 +1099,7 @@ describe("settle", () => {
     const batchBidRecordTwo = getBatchBid(recordId, BID_ID_TWO);
     assertStringEquals(
       batchBidRecordTwo.status,
-      "decrypted",
+      "submitted",
       "Bid two: status",
     );
     assertStringEquals(batchBidRecordTwo.outcome, "lost", "Bid two: outcome");
@@ -1139,7 +1132,7 @@ describe("settle", () => {
     const batchBidRecordThree = getBatchBid(recordId, BID_ID_THREE);
     assertStringEquals(
       batchBidRecordThree.status,
-      "decrypted",
+      "submitted",
       "Bid three: status",
     );
     assertStringEquals(

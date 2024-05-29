@@ -11,19 +11,21 @@ export function mockFpbAuctionData(
   totalBidAmount: BigInt,
   minFilled: BigInt,
 ): void {
+  const auctionData: ethereum.Tuple = changetype<ethereum.Tuple>([
+    ethereum.Value.fromUnsignedBigInt(price),
+    ethereum.Value.fromI32(status),
+    ethereum.Value.fromI32(nextBidId),
+    ethereum.Value.fromBoolean(settlementCleared),
+    ethereum.Value.fromUnsignedBigInt(totalBidAmount),
+    ethereum.Value.fromUnsignedBigInt(minFilled),
+  ]);
+
   mockFunction(
     module,
-    "auctionData",
-    "auctionData(uint96):(uint256,uint8,uint64,bool,uint256,uint256)",
+    "getAuctionData",
+    "getAuctionData(uint96):((uint256,uint8,uint64,bool,uint256,uint256))",
     [ethereum.Value.fromUnsignedBigInt(lotId)],
-    [
-      ethereum.Value.fromUnsignedBigInt(price),
-      ethereum.Value.fromI32(status),
-      ethereum.Value.fromI32(nextBidId),
-      ethereum.Value.fromBoolean(settlementCleared),
-      ethereum.Value.fromUnsignedBigInt(totalBidAmount),
-      ethereum.Value.fromUnsignedBigInt(minFilled),
-    ],
+    [ethereum.Value.fromTuple(auctionData)],
     false,
   );
 }
@@ -64,20 +66,22 @@ export function mockFpbBid(
   referrer: Address,
   status: i32,
 ): void {
+  const bidTuple: ethereum.Tuple = changetype<ethereum.Tuple>([
+    ethereum.Value.fromAddress(bidder),
+    ethereum.Value.fromUnsignedBigInt(amount),
+    ethereum.Value.fromAddress(referrer),
+    ethereum.Value.fromI32(status),
+  ]);
+
   mockFunction(
     module,
-    "bids",
-    "bids(uint96,uint64):(address,uint96,address,uint8)",
+    "getBid",
+    "getBid(uint96,uint64):((address,uint96,address,uint8))",
     [
       ethereum.Value.fromUnsignedBigInt(lotId),
       ethereum.Value.fromUnsignedBigInt(bidId),
     ],
-    [
-      ethereum.Value.fromAddress(bidder),
-      ethereum.Value.fromUnsignedBigInt(amount),
-      ethereum.Value.fromAddress(referrer),
-      ethereum.Value.fromI32(status),
-    ],
+    [ethereum.Value.fromTuple(bidTuple)],
     false,
   );
 }

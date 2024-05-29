@@ -6,9 +6,10 @@ import {
 } from "../generated/BatchAuctionHouse/EncryptedMarginalPrice";
 import { BatchAuctionLot, BatchBidDecrypted } from "../generated/schema";
 import { getAuctionLot, getLotRecord } from "./helpers/batchAuction";
-import { getBidId, getBidRecord, updateBidStatus } from "./helpers/bid";
+import { getBidId, getBidRecord } from "./helpers/bid";
 import { toISO8601String } from "./helpers/date";
 import { toDecimal } from "./helpers/number";
+import { updateEncryptedMarginalPriceBidStatus } from "./modules/encryptedMarginalPrice";
 
 export function handleBidDecrypted(event: BidDecryptedEvent): void {
   const lotId = event.params.lotId;
@@ -64,7 +65,7 @@ export function handleBidDecrypted(event: BidDecryptedEvent): void {
   }
 
   // Update the bid status
-  updateBidStatus(
+  updateEncryptedMarginalPriceBidStatus(
     auctionHouseAddress,
     Bytes.fromUTF8(lotRecord.auctionType),
     lotRecord,
