@@ -3423,8 +3423,8 @@ export class BatchFixedPriceLot extends Entity {
     this.set("price", Value.fromBigDecimal(value));
   }
 
-  get maxPayout(): BigDecimal {
-    let value = this.get("maxPayout");
+  get minFilled(): BigDecimal {
+    let value = this.get("minFilled");
     if (!value || value.kind == ValueKind.NULL) {
       throw new Error("Cannot return null for a required field.");
     } else {
@@ -3432,8 +3432,8 @@ export class BatchFixedPriceLot extends Entity {
     }
   }
 
-  set maxPayout(value: BigDecimal) {
-    this.set("maxPayout", Value.fromBigDecimal(value));
+  set minFilled(value: BigDecimal) {
+    this.set("minFilled", Value.fromBigDecimal(value));
   }
 
   get hasPartialFill(): boolean {

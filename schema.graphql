@@ -353,7 +353,7 @@ type BatchFixedPriceLot @entity {
   settlementSuccessful: Boolean!
 
   price: BigDecimal! # uint256
-  maxPayout: BigDecimal! # uint256
+  minFilled: BigDecimal! # uint256
 
   # Whether the lot has a partial fill. Only set after settlement, null before that.
   hasPartialFill: Boolean
