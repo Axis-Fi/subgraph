@@ -298,12 +298,17 @@ export function createFixedPriceBatchBid(
   entity.rawAmountIn = event.params.amount;
 
   // Set amount out (since the price is known)
-  entity.amountOut = toDecimal(
-    // amount in * 10^quote token decimals / price
-    event.params.amount
-      .times(BigInt.fromI32(10).pow(<u8>auctionLot.getBaseTokenDecimals()))
-      .div(lotAuctionData.price),
-    auctionLot.getBaseTokenDecimals(),
+  const amountOut = event.params.amount
+    .times(BigInt.fromI32(10).pow(<u8>auctionLot.getBaseTokenDecimals()))
+    .div(lotAuctionData.price); // amount in * 10^quote token decimals / price
+  entity.rawAmountOut = amountOut;
+  entity.amountOut = toDecimal(amountOut, auctionLot.getBaseTokenDecimals());
+
+  // Set submitted price (since the price is known)
+  entity.rawSubmittedPrice = lotAuctionData.price;
+  entity.submittedPrice = toDecimal(
+    lotAuctionData.price,
+    auctionLot.getQuoteTokenDecimals(),
   );
 
   entity.status = getFixedPriceBatchBidStatus(bid.status);

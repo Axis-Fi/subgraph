@@ -94,13 +94,13 @@ const lotConclusion: BigInt = BigInt.fromI32(1630000000);
 const lotQuoteTokenDecimals: i32 = 17;
 const lotBaseTokenDecimals: i32 = 21;
 const lotCapacityInQuote: boolean = false;
-const lotCapacity: BigInt = BigInt.fromU64(1_000_000_000_000_000_000);
+const lotCapacity: BigInt = BigInt.fromU64(10_000_000_000_000_000_000_000); // 10 e21
 const lotSold: BigInt = BigInt.fromI32(0);
 const lotPurchased: BigInt = BigInt.fromI32(0);
 
 // FPB
-const fpbPrice: BigInt = BigInt.fromU64(10_000_000_000_000_000_000); // 10
-const fpbMinFilled: BigInt = BigInt.fromU64(1_000_000_000_000_000_000); // 1
+const fpbPrice: BigInt = BigInt.fromU64(1_000_000_000_000_000_000); // 10 e17
+const fpbMinFilled: BigInt = BigInt.fromU64(1_000_000_000_000_000_000); // 1e18 = 0.0001 e21
 
 // Bids
 const BID_ID_ONE: BigInt = BigInt.fromI32(1);
@@ -112,8 +112,10 @@ const BIDDER: Address = Address.fromString(
 const bidReferrer: Address = Address.fromString(
   "0x0000000000000000000000000000000000000003",
 );
-const bidAmountIn: BigInt = BigInt.fromString("10_000_000_000_000_000_000"); // == 10
-const bidAmountOut: BigInt = BigInt.fromString("1_000_000_000_000_000_000"); // == 10 / 10 = 1
+const bidAmountIn: BigInt = BigInt.fromString("10_000_000_000_000_000_000"); // == 100 e17
+const bidAmountOut: BigInt = BigInt.fromString(
+  "10_000_000_000_000_000_000_000",
+); // == 100 / 10 = 10
 const bidPartialFillPayout = bidAmountOut.minus(BigInt.fromString("100000"));
 const bidPartialFillRefund = BigInt.fromString("100000");
 
@@ -956,8 +958,28 @@ describe("settle", () => {
       1, // Settled
       4,
       true,
-      bidAmountIn.plus(bidAmountIn).plus(bidAmountIn), // 30
+      bidAmountIn
+        .plus(bidAmountIn)
+        .plus(bidAmountIn)
+        .minus(bidPartialFillRefund), // 30 - refund
       fpbMinFilled,
+    );
+
+    // Update lot data for settlement
+    mockLotData(
+      auctionModuleAddress,
+      LOT_ID,
+      lotStart,
+      lotConclusion,
+      lotQuoteTokenDecimals,
+      lotBaseTokenDecimals,
+      lotCapacityInQuote,
+      lotCapacity,
+      bidAmountOut.plus(bidAmountOut).plus(bidPartialFillPayout), // sold: 20 + partial fill
+      bidAmountIn
+        .plus(bidAmountIn)
+        .plus(bidAmountIn)
+        .minus(bidPartialFillRefund), // purchased: 30 - refund
     );
 
     // Update mocks for 3 bids
