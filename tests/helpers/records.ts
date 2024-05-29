@@ -6,6 +6,7 @@ import {
   BatchBid,
   BatchBidClaimed,
   BatchEncryptedMarginalPriceLot,
+  BatchFixedPriceLot,
   BatchLinearVestingLot,
 } from "../../generated/schema";
 
@@ -39,6 +40,16 @@ export function getBatchEncryptedMarginalPriceLot(
   }
 
   return record as BatchEncryptedMarginalPriceLot;
+}
+
+export function getBatchFixedPriceLot(recordId: string): BatchFixedPriceLot {
+  const record = BatchFixedPriceLot.load(recordId);
+
+  if (record == null) {
+    throw new Error("BatchFixedPriceLot not found: " + recordId);
+  }
+
+  return record as BatchFixedPriceLot;
 }
 
 export function getBatchBid(lotId: string, bidId: BigInt): BatchBid {
