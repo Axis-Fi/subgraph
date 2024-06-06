@@ -1074,6 +1074,11 @@ describe("settle", () => {
       "BatchFixedPriceLot: status",
     );
     assertBooleanEquals(
+      empLotRecord.settlementSuccessful,
+      true,
+      "BatchFixedPriceLot: settlementSuccessful",
+    );
+    assertBooleanEquals(
       empLotRecord.hasPartialFill,
       true,
       "BatchEncryptedMarginalPriceLot: hasPartialFill",

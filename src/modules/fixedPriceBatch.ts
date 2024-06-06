@@ -125,6 +125,11 @@ export function updateFixedPriceBatchLot(
 
   // If settled
   if (fpbLot.status == FpbLotStatus_Settled) {
+    // If the filled amount is greater than the minimum filled amount, it is successful
+    if (lotAuctionData.totalBidAmount >= lotAuctionData.minFilled) {
+      fpbLot.settlementSuccessful = true;
+    }
+
     // Detect partial fill (only if the lot is settled)
     const partialFillData = auctionModule.getPartialFill(lotId);
     fpbLot.hasPartialFill = partialFillData.getHasPartialFill();
