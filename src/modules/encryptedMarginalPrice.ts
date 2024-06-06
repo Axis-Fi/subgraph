@@ -1,18 +1,27 @@
 import { Address, BigInt, Bytes, log } from "@graphprotocol/graph-ts";
 
-import { BatchAuctionHouse } from "../../generated/BatchAuctionHouse/BatchAuctionHouse";
-import { EncryptedMarginalPrice } from "../../generated/BatchAuctionHouse/EncryptedMarginalPrice";
+import {
+  BatchAuctionHouse,
+  Bid as BidEvent,
+} from "../../generated/BatchAuctionHouse/BatchAuctionHouse";
+import {
+  EncryptedMarginalPrice,
+  EncryptedMarginalPrice__bidsResult,
+} from "../../generated/BatchAuctionHouse/EncryptedMarginalPrice";
 import {
   BatchAuctionLot,
+  BatchBid,
   BatchEncryptedMarginalPriceLot,
 } from "../../generated/schema";
-import { getAuctionHouse } from "../helpers/batchAuction";
+import { getAuctionHouse, getAuctionLot } from "../helpers/batchAuction";
 import {
   BidOutcome_Lost,
   BidOutcome_Won,
   BidOutcome_WonPartialFill,
+  getBidId,
   getBidRecordNullable,
 } from "../helpers/bid";
+import { toISO8601String } from "../helpers/date";
 import { toDecimal } from "../helpers/number";
 import { getOrCreateToken } from "../helpers/token";
 
@@ -21,6 +30,10 @@ export const EMP_KEYCODE = "EMP";
 export const EmpLotStatus_Created = "Created";
 export const EmpLotStatus_Decrypted = "Decrypted";
 export const EmpLotStatus_Settled = "Settled";
+
+export const EmpBidStatus_Submitted = "submitted";
+export const EmpBidStatus_Decrypted = "decrypted";
+export const EmpBidStatus_Claimed = "claimed";
 
 export function getEncryptedMarginalPriceModule(
   auctionHouseAddress: Address,
@@ -76,7 +89,10 @@ export function createEncryptedMarginalPriceLot(
       _getEncryptedMarginalPriceLotId(batchAuctionLot),
     );
   empLot.lot = batchAuctionLot.id;
-  log.info("Adding BatchEncryptedMarginalPriceLot for lot: {}", [empLot.lot]);
+  log.info(
+    "createEncryptedMarginalPriceLot: Adding BatchEncryptedMarginalPriceLot for lot: {}",
+    [empLot.lot],
+  );
 
   // Get the EncryptedMarginalPrice module
   const encryptedMarginalPrice = getEncryptedMarginalPriceModule(
@@ -107,7 +123,10 @@ export function createEncryptedMarginalPriceLot(
   );
   empLot.save();
 
-  log.info("Created EncryptedMarginalPriceLot for lot: {}", [empLot.lot]);
+  log.info(
+    "createEncryptedMarginalPriceLot: Created EncryptedMarginalPriceLot for lot: {}",
+    [empLot.lot],
+  );
 }
 
 export function updateEncryptedMarginalPriceLot(
@@ -167,10 +186,13 @@ export function updateEncryptedMarginalPriceLot(
 
   empLot.save();
 
-  log.info("Updated EncryptedMarginalPriceLot for lot: {}", [empLot.lot]);
+  log.info(
+    "updateEncryptedMarginalPriceLot: Updated EncryptedMarginalPriceLot for lot: {}",
+    [empLot.lot],
+  );
 }
 
-export function updateBidAmount(
+export function updateEncryptedMarginalPriceBidAmount(
   auctionHouseAddress: Address,
   auctionRef: Bytes,
   lotRecord: BatchAuctionLot,
@@ -187,10 +209,10 @@ export function updateBidAmount(
   // Get the bid record
   const entity = getBidRecordNullable(lotRecord, bidId);
   if (!entity) {
-    log.debug("updateBidAmount: Skipping non-existent bid id {} on lot {}", [
-      bidId.toString(),
-      lotRecord.id,
-    ]);
+    log.debug(
+      "updateEncryptedMarginalPriceBidAmount: Skipping non-existent bid id {} on lot {}",
+      [bidId.toString(), lotRecord.id],
+    );
     return;
   }
 
@@ -234,8 +256,104 @@ export function updateBidAmount(
 
   entity.save();
 
-  log.info("Updated bid amount for lot {} and bid {}", [
-    lotRecord.id,
-    bidId.toString(),
-  ]);
+  log.info(
+    "updateEncryptedMarginalPriceBidAmount: Updated bid amount for lot {} and bid {}",
+    [lotRecord.id, bidId.toString()],
+  );
+}
+
+function _getBid(
+  auctionHouseAddress: Address,
+  auctionRef: Bytes,
+  lotId: BigInt,
+  bidId: BigInt,
+): EncryptedMarginalPrice__bidsResult {
+  const auctionModule = getEncryptedMarginalPriceModule(
+    auctionHouseAddress,
+    auctionRef,
+  );
+
+  return auctionModule.bids(lotId, bidId);
+}
+
+export function getEncryptedMarginalPriceBidStatus(status: i32): string {
+  switch (status) {
+    case 0:
+      return EmpBidStatus_Submitted;
+    case 1:
+      return EmpBidStatus_Decrypted;
+    case 2:
+      return EmpBidStatus_Claimed;
+    default:
+      throw new Error("Unknown bid status: " + status.toString());
+  }
+}
+
+export function updateEncryptedMarginalPriceBidStatus(
+  auctionHouseAddress: Address,
+  auctionRef: Bytes,
+  lotRecord: BatchAuctionLot,
+  bidId: BigInt,
+): void {
+  // Fetch the existing bid record
+  const entity = getBidRecordNullable(lotRecord, bidId);
+  if (!entity) {
+    log.debug(
+      "updateEncryptedMarginalPriceBidStatus: Skipping non-existent bid id {} on lot {}",
+      [bidId.toString(), lotRecord.id],
+    );
+    return;
+  }
+
+  const bid = _getBid(auctionHouseAddress, auctionRef, lotRecord.lotId, bidId);
+
+  entity.status = getEncryptedMarginalPriceBidStatus(bid.getStatus());
+
+  entity.save();
+
+  log.info(
+    "updateEncryptedMarginalPriceBidStatus: Updated bid status to {} for bid id {}",
+    [entity.status, entity.id],
+  );
+}
+
+export function createEncryptedMarginalPriceBid(
+  lotRecord: BatchAuctionLot,
+  event: BidEvent,
+  bidId: BigInt,
+): BatchBid {
+  const bidRecordId = getBidId(lotRecord, bidId);
+
+  // Get the bid record
+  const bid = _getBid(
+    Address.fromBytes(lotRecord.auctionHouse),
+    Bytes.fromUTF8(lotRecord.auctionType),
+    lotRecord.lotId,
+    bidId,
+  );
+
+  const entity = new BatchBid(bidRecordId);
+  entity.lot = lotRecord.id;
+  entity.bidId = bidId;
+  entity.bidder = event.params.bidder;
+  entity.referrer = bid.getReferrer();
+
+  entity.amountIn = toDecimal(
+    event.params.amount,
+    getAuctionLot(event.address, lotRecord.lotId).getQuoteTokenDecimals(),
+  );
+  entity.rawAmountIn = event.params.amount;
+
+  entity.status = getEncryptedMarginalPriceBidStatus(bid.getStatus());
+
+  entity.blockNumber = event.block.number;
+  entity.blockTimestamp = event.block.timestamp;
+  entity.date = toISO8601String(event.block.timestamp);
+  entity.transactionHash = event.transaction.hash;
+
+  entity.save();
+
+  log.info("BatchBid event saved with id: {}", [entity.id.toString()]);
+
+  return entity;
 }

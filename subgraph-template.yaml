@@ -83,6 +83,8 @@ dataSources:
           file: ./abis/modules/BatchAuctionModule.json
         - name: EncryptedMarginalPrice
           file: ./abis/modules/EncryptedMarginalPrice.json
+        - name: FixedPriceBatch
+          file: ./abis/modules/FixedPriceBatch.json
         - name: LinearVesting
           file: ./abis/modules/LinearVesting.json
         - name: ERC20
