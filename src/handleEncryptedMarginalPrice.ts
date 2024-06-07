@@ -3,13 +3,17 @@ import { BigInt, Bytes, log } from "@graphprotocol/graph-ts";
 import {
   BidDecrypted as BidDecryptedEvent,
   EncryptedMarginalPrice,
+  PrivateKeySubmitted as PrivateKeySubmittedEvent,
 } from "../generated/BatchAuctionHouse/EncryptedMarginalPrice";
 import { BatchAuctionLot, BatchBidDecrypted } from "../generated/schema";
 import { getAuctionLot, getLotRecord } from "./helpers/batchAuction";
 import { getBidId, getBidRecord } from "./helpers/bid";
 import { toISO8601String } from "./helpers/date";
 import { toDecimal } from "./helpers/number";
-import { updateEncryptedMarginalPriceBidStatus } from "./modules/encryptedMarginalPrice";
+import {
+  updateEncryptedMarginalPriceBidStatus,
+  updateEncryptedMarginalPriceLot,
+} from "./modules/encryptedMarginalPrice";
 
 export function handleBidDecrypted(event: BidDecryptedEvent): void {
   const lotId = event.params.lotId;
@@ -71,4 +75,19 @@ export function handleBidDecrypted(event: BidDecryptedEvent): void {
     lotRecord,
     event.params.bidId,
   );
+}
+
+export function handlePrivateKeySubmitted(
+  event: PrivateKeySubmittedEvent,
+): void {
+  const lotId = event.params.lotId;
+
+  // No need to handle bid decryption, as a separate event is emitted for that
+  // To handle an auction lot without bids, we need to handle the PrivateKeySubmitted event
+
+  // Get the auction lot record
+  const lotRecord = getLotRecord(event.address, lotId);
+
+  // Update the EMP lot record
+  updateEncryptedMarginalPriceLot(lotRecord, lotId);
 }
