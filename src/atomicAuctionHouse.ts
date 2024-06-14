@@ -4,6 +4,8 @@ import {
   Bytes,
   dataSource,
   ethereum,
+  ipfs,
+  log,
 } from "@graphprotocol/graph-ts";
 
 import {
@@ -142,6 +144,19 @@ export function handleAuctionCreated(event: AuctionCreatedEvent): void {
   auctionLot.lastUpdatedBlockTimestamp = event.block.timestamp;
   auctionLot.lastUpdatedDate = toISO8601String(event.block.timestamp);
   auctionLot.lastUpdatedTransactionHash = event.transaction.hash;
+
+  // Load IPFS data if the hash is set
+  if (event.params.infoHash != "") {
+    const ipfsData = ipfs.cat(event.params.infoHash);
+
+    if (ipfsData !== null) {
+      const ipfsDataString = ipfsData.toString();
+      log.info("IPFS data: {}", [ipfsDataString]);
+    }
+    else {
+      log.warning("IPFS data not found for hash: {}", [event.params.infoHash]);
+    }
+  }
 
   auctionLot.save();
 
