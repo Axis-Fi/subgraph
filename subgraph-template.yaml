@@ -138,4 +138,6 @@ dataSources:
       eventHandlers:
         - event: BidDecrypted(indexed uint96,indexed uint64,uint96,uint96)
           handler: handleBidDecrypted
+        - event: PrivateKeySubmitted(indexed uint96)
+          handler: handlePrivateKeySubmitted
       file: ./src/handleEncryptedMarginalPrice.ts

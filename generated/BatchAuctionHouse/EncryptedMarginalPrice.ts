@@ -40,6 +40,24 @@ export class BidDecrypted__Params {
   }
 }
 
+export class PrivateKeySubmitted extends ethereum.Event {
+  get params(): PrivateKeySubmitted__Params {
+    return new PrivateKeySubmitted__Params(this);
+  }
+}
+
+export class PrivateKeySubmitted__Params {
+  _event: PrivateKeySubmitted;
+
+  constructor(event: PrivateKeySubmitted) {
+    this._event = event;
+  }
+
+  get lotId(): BigInt {
+    return this._event.parameters[0].value.toBigInt();
+  }
+}
+
 export class EncryptedMarginalPrice__auctionDataResultPublicKeyStruct extends ethereum.Tuple {
   get x(): BigInt {
     return this[0].toBigInt();
@@ -1410,6 +1428,25 @@ export class EncryptedMarginalPrice extends ethereum.SmartContract {
 
   try_isLive(lotId_: BigInt): ethereum.CallResult<boolean> {
     let result = super.tryCall("isLive", "isLive(uint96):(bool)", [
+      ethereum.Value.fromUnsignedBigInt(lotId_),
+    ]);
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBoolean());
+  }
+
+  isUpcoming(lotId_: BigInt): boolean {
+    let result = super.call("isUpcoming", "isUpcoming(uint96):(bool)", [
+      ethereum.Value.fromUnsignedBigInt(lotId_),
+    ]);
+
+    return result[0].toBoolean();
+  }
+
+  try_isUpcoming(lotId_: BigInt): ethereum.CallResult<boolean> {
+    let result = super.tryCall("isUpcoming", "isUpcoming(uint96):(bool)", [
       ethereum.Value.fromUnsignedBigInt(lotId_),
     ]);
     if (result.reverted) {

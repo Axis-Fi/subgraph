@@ -5,12 +5,12 @@
       "startBlock": 41602192
     },
     "BatchAuctionHouse": {
-      "address": "0xBA00003Cc5713c5339f4fD5cA0339D54A88BC87b",
-      "startBlock": 41602197
+      "address": "0xBA00002999aBfa63cA25B3A7aD4c8F3a578aBe28",
+      "startBlock": 54697601
     },
     "EncryptedMarginalPrice": {
-      "address": "0x87F2a19FBbf9e557a68bD35D85FAd20dEec40494",
-      "startBlock": 41602206
+      "address": "0x2Ca8954B468E2FbfE55240B69db937861c12F0d0",
+      "startBlock": 54697607
     }
   },
   "blast-sepolia": {
@@ -19,12 +19,12 @@
       "startBlock": 5207451
     },
     "BatchAuctionHouse": {
-      "address": "0xBA00001Bd857EFd2dF10Da01DFe3a97CFa836Cc9",
-      "startBlock": 5207455
+      "address": "0xBA00007A1868f4AEFdd39041327CbC4Ba5bF1632",
+      "startBlock": 6851881
     },
     "EncryptedMarginalPrice": {
-      "address": "0x96B52Ab3e5CAc0BbF49Be5039F2f9ef5d53bD322",
-      "startBlock": 5207466
+      "address": "0x8F34bBB3edd28017f826FE7a73eb9297384BF0d8",
+      "startBlock": 6851889
     }
   },
   "mode-testnet": {
@@ -33,12 +33,12 @@
       "startBlock": 13619130
     },
     "BatchAuctionHouse": {
-      "address": "0xBA00003Cc5713c5339f4fD5cA0339D54A88BC87b",
-      "startBlock": 13619134
+      "address": "0xBA00002999aBfa63cA25B3A7aD4c8F3a578aBe28",
+      "startBlock": 15261776
     },
     "EncryptedMarginalPrice": {
-      "address": "0x4e519eEf63b9e127cFCeCA31C8E5485CdA65D355",
-      "startBlock": 13619145
+      "address": "0x1A6Ba70B8e5957bCd03C20f9CF42D9e6D3d9b514",
+      "startBlock": 15261783
     }
   }
 }
