@@ -120,13 +120,21 @@ export function updateFixedPriceBatchLot(
   );
 
   const lotAuctionData = auctionModule.getAuctionData(lotId);
+  const lotData = auctionModule.lotData(lotId);
 
   fpbLot.status = _getLotStatus(lotAuctionData.status);
 
   // If settled
   if (fpbLot.status == FpbLotStatus_Settled) {
     // If the filled amount is greater than the minimum filled amount, it is successful
-    if (lotAuctionData.totalBidAmount >= lotAuctionData.minFilled) {
+    const baseScale = BigInt.fromI32(10).pow(
+      lotData.getBaseTokenDecimals() as u8,
+    );
+
+    const filled: BigInt = lotAuctionData.totalBidAmount
+      .times(baseScale)
+      .div(lotAuctionData.price);
+    if (filled >= lotAuctionData.minFilled) {
       fpbLot.settlementSuccessful = true;
     }
 
