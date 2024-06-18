@@ -25,6 +25,7 @@ import { toISO8601String } from "../helpers/date";
 import { toDecimal } from "../helpers/number";
 import { getOrCreateToken } from "../helpers/token";
 
+
 export const FPB_KEYCODE = "FPB";
 
 export const FpbLotStatus_Created = "Created";
@@ -57,7 +58,7 @@ function _getFixedPriceBatchLot(
   if (lot == null) {
     throw new Error(
       "Expected BatchFixedPriceLot to exist for record id " +
-        batchAuctionLot.id,
+      batchAuctionLot.id,
     );
   }
 
@@ -125,8 +126,8 @@ export function updateFixedPriceBatchLot(
 
   // If settled
   if (fpbLot.status == FpbLotStatus_Settled) {
-    // If the filled amount is greater than the minimum filled amount, it is successful
-    if (lotAuctionData.totalBidAmount >= lotAuctionData.minFilled) {
+    // If the sold amount is at least the minimum filled amount, it is successful
+    if (batchAuctionLot.sold >= fpbLot.minFilled) {
       fpbLot.settlementSuccessful = true;
     }
 
