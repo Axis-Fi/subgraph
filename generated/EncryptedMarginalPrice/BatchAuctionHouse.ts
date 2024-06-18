@@ -329,20 +329,24 @@ export class BatchAuctionHouse__bidInputParams_Struct extends ethereum.Tuple {
     return this[0].toBigInt();
   }
 
-  get referrer(): Address {
+  get bidder(): Address {
     return this[1].toAddress();
   }
 
+  get referrer(): Address {
+    return this[2].toAddress();
+  }
+
   get amount(): BigInt {
-    return this[2].toBigInt();
+    return this[3].toBigInt();
   }
 
   get auctionData(): Bytes {
-    return this[3].toBytes();
+    return this[4].toBytes();
   }
 
   get permit2Data(): Bytes {
-    return this[4].toBytes();
+    return this[5].toBytes();
   }
 }
 
@@ -688,7 +692,7 @@ export class BatchAuctionHouse extends ethereum.SmartContract {
   ): BigInt {
     let result = super.call(
       "bid",
-      "bid((uint96,address,uint256,bytes,bytes),bytes):(uint64)",
+      "bid((uint96,address,address,uint256,bytes,bytes),bytes):(uint64)",
       [
         ethereum.Value.fromTuple(params_),
         ethereum.Value.fromBytes(callbackData_),
@@ -704,7 +708,7 @@ export class BatchAuctionHouse extends ethereum.SmartContract {
   ): ethereum.CallResult<BigInt> {
     let result = super.tryCall(
       "bid",
-      "bid((uint96,address,uint256,bytes,bytes),bytes):(uint64)",
+      "bid((uint96,address,address,uint256,bytes,bytes),bytes):(uint64)",
       [
         ethereum.Value.fromTuple(params_),
         ethereum.Value.fromBytes(callbackData_),
@@ -861,6 +865,29 @@ export class BatchAuctionHouse extends ethereum.SmartContract {
     );
   }
 
+  getAuctionModuleForId(lotId_: BigInt): Address {
+    let result = super.call(
+      "getAuctionModuleForId",
+      "getAuctionModuleForId(uint96):(address)",
+      [ethereum.Value.fromUnsignedBigInt(lotId_)],
+    );
+
+    return result[0].toAddress();
+  }
+
+  try_getAuctionModuleForId(lotId_: BigInt): ethereum.CallResult<Address> {
+    let result = super.tryCall(
+      "getAuctionModuleForId",
+      "getAuctionModuleForId(uint96):(address)",
+      [ethereum.Value.fromUnsignedBigInt(lotId_)],
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toAddress());
+  }
+
   getBatchModuleForId(lotId_: BigInt): Address {
     let result = super.call(
       "getBatchModuleForId",
@@ -916,6 +943,29 @@ export class BatchAuctionHouse extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
+  getDerivativeModuleForId(lotId_: BigInt): Address {
+    let result = super.call(
+      "getDerivativeModuleForId",
+      "getDerivativeModuleForId(uint96):(address)",
+      [ethereum.Value.fromUnsignedBigInt(lotId_)],
+    );
+
+    return result[0].toAddress();
+  }
+
+  try_getDerivativeModuleForId(lotId_: BigInt): ethereum.CallResult<Address> {
+    let result = super.tryCall(
+      "getDerivativeModuleForId",
+      "getDerivativeModuleForId(uint96):(address)",
+      [ethereum.Value.fromUnsignedBigInt(lotId_)],
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toAddress());
+  }
+
   getFees(auctionType_: Bytes): BatchAuctionHouse__getFeesResult {
     let result = super.call(
       "getFees",
@@ -949,29 +999,6 @@ export class BatchAuctionHouse extends ethereum.SmartContract {
         value[2].toBigInt(),
       ),
     );
-  }
-
-  getModuleForId(lotId_: BigInt): Address {
-    let result = super.call(
-      "getModuleForId",
-      "getModuleForId(uint96):(address)",
-      [ethereum.Value.fromUnsignedBigInt(lotId_)],
-    );
-
-    return result[0].toAddress();
-  }
-
-  try_getModuleForId(lotId_: BigInt): ethereum.CallResult<Address> {
-    let result = super.tryCall(
-      "getModuleForId",
-      "getModuleForId(uint96):(address)",
-      [ethereum.Value.fromUnsignedBigInt(lotId_)],
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toAddress());
   }
 
   getModuleForVeecode(param0: Bytes): Address {
@@ -1535,20 +1562,24 @@ export class BidCallParams_Struct extends ethereum.Tuple {
     return this[0].toBigInt();
   }
 
-  get referrer(): Address {
+  get bidder(): Address {
     return this[1].toAddress();
   }
 
+  get referrer(): Address {
+    return this[2].toAddress();
+  }
+
   get amount(): BigInt {
-    return this[2].toBigInt();
+    return this[3].toBigInt();
   }
 
   get auctionData(): Bytes {
-    return this[3].toBytes();
+    return this[4].toBytes();
   }
 
   get permit2Data(): Bytes {
-    return this[4].toBytes();
+    return this[5].toBytes();
   }
 }
 

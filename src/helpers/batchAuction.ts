@@ -20,7 +20,7 @@ export function getAuctionModule(
   auctionHouse: BatchAuctionHouse,
   lotId: BigInt,
 ): BatchAuctionModule {
-  return BatchAuctionModule.bind(auctionHouse.getModuleForId(lotId));
+  return BatchAuctionModule.bind(auctionHouse.getAuctionModuleForId(lotId));
 }
 
 export function getAuctionLot(
