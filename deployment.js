@@ -5,11 +5,11 @@ require("dotenv").config();
 const TARGET_NETWORK = process.env.TARGET_NETWORK || "blast-sepolia";
 
 /** The version that will it'll be deployed as */
-const VERSION = "0.3.5";
+const VERSION = "0.3.3";
 
 /**  Deployments to be deployed to Goldsky
  * otherwise they're deployed to Alchemy Subgraphs */
-const GOLDSKY_DEPLOYMENTS = ["mode-sepolia", "blast-sepolia"];
+const GOLDSKY_DEPLOYMENTS = ["mode-testnet", "blast-sepolia"];
 
 /** The base subgraph name shared by all chains*/
 const BASE_NAME = "axis-origin";
