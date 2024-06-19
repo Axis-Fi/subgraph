@@ -1,9 +1,5 @@
 {
   "arbitrum-sepolia": {
-    "AtomicAuctionHouse": {
-      "address": "0xAA0000A0F9FF55d5F00aB9cc8d05eF78DE4f9E8f",
-      "startBlock": 41602192
-    },
     "BatchAuctionHouse": {
       "address": "0xBA00002999aBfa63cA25B3A7aD4c8F3a578aBe28",
       "startBlock": 54697601
@@ -32,10 +28,6 @@
     }
   },
   "blast-sepolia": {
-    "AtomicAuctionHouse": {
-      "address": "0xAA0000E35F2042621ff29B2f3d0F89665f896502",
-      "startBlock": 5207451
-    },
     "BatchAuctionHouse": {
       "address": "0xBA00007A1868f4AEFdd39041327CbC4Ba5bF1632",
       "startBlock": 6851881
@@ -50,10 +42,6 @@
     }
   },
   "mode-testnet": {
-    "AtomicAuctionHouse": {
-      "address": "0xAA0000A0F9FF55d5F00aB9cc8d05eF78DE4f9E8f",
-      "startBlock": 13619130
-    },
     "BatchAuctionHouse": {
       "address": "0xBA00002999aBfa63cA25B3A7aD4c8F3a578aBe28",
       "startBlock": 15261776
