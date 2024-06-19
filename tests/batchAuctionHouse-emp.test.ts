@@ -826,7 +826,7 @@ describe("auction cancellation", () => {
     }
     assertStringEquals(
       empLotRecord.status,
-      "settled",
+      "cancelled",
       "BatchEncryptedMarginalPriceLot: status",
     );
     assertBooleanEquals(
@@ -1416,7 +1416,7 @@ describe("abort", () => {
     const empLotRecord = getBatchEncryptedMarginalPriceLot(recordId);
     assertStringEquals(
       empLotRecord.status,
-      "settled",
+      "aborted",
       "BatchEncryptedMarginalPriceLot: status",
     );
     assertBooleanEquals(

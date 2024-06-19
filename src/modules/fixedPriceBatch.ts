@@ -29,6 +29,8 @@ export const FPB_KEYCODE = "FPB";
 
 export const FpbLotStatus_Created = "created";
 export const FpbLotStatus_Settled = "settled";
+export const FpbLotStatus_Cancelled = "cancelled";
+export const FpbLotStatus_Aborted = "aborted";
 
 export const FpbBidStatus_Submitted = "submitted";
 export const FpbBidStatus_Claimed = "claimed";
@@ -107,6 +109,22 @@ export function createFixedPriceBatchLot(
   ]);
 }
 
+export function setFixedPriceBatchLotStatusCancelled(
+  batchAuctionLot: BatchAuctionLot,
+): void {
+  const fpbLot = _getFixedPriceBatchLot(batchAuctionLot);
+  fpbLot.status = FpbLotStatus_Cancelled;
+  fpbLot.save();
+}
+
+export function setFixedPriceBatchLotStatusAborted(
+  batchAuctionLot: BatchAuctionLot,
+): void {
+  const fpbLot = _getFixedPriceBatchLot(batchAuctionLot);
+  fpbLot.status = FpbLotStatus_Aborted;
+  fpbLot.save();
+}
+
 export function updateFixedPriceBatchLot(
   batchAuctionLot: BatchAuctionLot,
   lotId: BigInt,
@@ -121,10 +139,24 @@ export function updateFixedPriceBatchLot(
 
   const lotAuctionData = auctionModule.getAuctionData(lotId);
 
-  fpbLot.status = _getLotStatus(lotAuctionData.status);
+  // Don't change the status if already cancelled or aborted
+  if (
+    fpbLot.status != FpbLotStatus_Cancelled &&
+    fpbLot.status != FpbLotStatus_Aborted
+  ) {
+    fpbLot.status = _getLotStatus(lotAuctionData.status);
+    log.info("updateFixedPriceBatchLot: Updated status for lot {} to {}", [
+      lotId.toString(),
+      fpbLot.status,
+    ]);
+  }
 
-  // If settled
-  if (fpbLot.status == FpbLotStatus_Settled) {
+  // If settled/cancelled/aborted
+  if (
+    fpbLot.status == FpbLotStatus_Settled ||
+    fpbLot.status == FpbLotStatus_Cancelled ||
+    fpbLot.status == FpbLotStatus_Aborted
+  ) {
     // If the sold amount is at least the minimum filled amount, it is successful
     if (batchAuctionLot.sold >= fpbLot.minFilled) {
       fpbLot.settlementSuccessful = true;
@@ -185,7 +217,10 @@ export function updateFixedPriceBatchBidAmount(
   const baseToken = getOrCreateToken(lotRecord.baseToken);
 
   // If the lot status is settled, we can check the bid claim
-  if (fpbRecord.status == FpbLotStatus_Settled) {
+  if (
+    fpbRecord.status == FpbLotStatus_Settled ||
+    fpbRecord.status == FpbLotStatus_Aborted
+  ) {
     // Get the bid claim from the contract
     const bidClaim = fpbModule.getBidClaim(lotRecord.lotId, bidId);
 
