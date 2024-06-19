@@ -14,6 +14,7 @@ import {
   RefundBid,
   Settle,
 } from "../generated/BatchAuctionHouse/BatchAuctionHouse";
+import { Redeemed } from "../generated/BatchLinearVesting/LinearVesting";
 import { newMockEvent } from "./mocks/event";
 
 export function createAuctionCancelledEvent(
@@ -309,4 +310,33 @@ export function createSettleEvent(
   );
 
   return settleEvent;
+}
+
+export function createLinearVestingRedeemEvent(
+  tokenId: BigInt,
+  owner: Address,
+  amount: BigInt,
+  derivativeModule: Address,
+): Redeemed {
+  const redeemEvent = changetype<Redeemed>(newMockEvent(derivativeModule));
+
+  redeemEvent.parameters = [];
+
+  redeemEvent.parameters.push(
+    new ethereum.EventParam(
+      "tokenId",
+      ethereum.Value.fromUnsignedBigInt(tokenId),
+    ),
+  );
+  redeemEvent.parameters.push(
+    new ethereum.EventParam("owner", ethereum.Value.fromAddress(owner)),
+  );
+  redeemEvent.parameters.push(
+    new ethereum.EventParam(
+      "amount",
+      ethereum.Value.fromUnsignedBigInt(amount),
+    ),
+  );
+
+  return redeemEvent;
 }

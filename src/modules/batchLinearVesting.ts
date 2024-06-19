@@ -6,7 +6,6 @@ import {
   log,
 } from "@graphprotocol/graph-ts";
 
-import { AuctionCreated } from "../../generated/BatchAuctionHouse/BatchAuctionHouse";
 import { LinearVesting } from "../../generated/BatchLinearVesting/LinearVesting";
 import { BatchAuctionLot, BatchLinearVestingLot } from "../../generated/schema";
 import { toISO8601String } from "../helpers/date";
@@ -62,18 +61,18 @@ export function getBalanceOf(
 
 export function createLinearVestingLot(
   batchAuctionLot: BatchAuctionLot,
-  createdEvent: AuctionCreated,
+  moduleAddress: Address,
   derivativeParams: Bytes,
 ): void {
   // Determine the tokenId
   const tokenId: BigInt = getTokenId(
-    createdEvent.address,
+    moduleAddress,
     Address.fromBytes(batchAuctionLot.baseToken),
     derivativeParams,
   );
 
   // Create the lot
-  const lvLotId: string = _getLinearVestingLotId(createdEvent.address, tokenId);
+  const lvLotId: string = _getLinearVestingLotId(moduleAddress, tokenId);
   const lvLot: BatchLinearVestingLot = new BatchLinearVestingLot(lvLotId);
   lvLot.lot = batchAuctionLot.id;
   log.info("Adding BatchLinearVestingLot for lot: {}", [lvLot.lot]);

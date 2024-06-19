@@ -217,9 +217,13 @@ export function handleAuctionCreated(event: AuctionCreatedEvent): void {
       ? ""
       : (auctionLot.derivativeType as string);
   if (derivativeTypeNotNull.includes(LV_KEYCODE)) {
+    const moduleAddress = auctionHouse.getModuleForVeecode(
+      Bytes.fromUTF8(derivativeTypeNotNull),
+    );
+
     createLinearVestingLot(
       auctionLot,
-      event,
+      moduleAddress,
       auctionRouting.getDerivativeParams(),
     );
   }

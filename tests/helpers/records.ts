@@ -8,6 +8,7 @@ import {
   BatchEncryptedMarginalPriceLot,
   BatchFixedPriceLot,
   BatchLinearVestingLot,
+  BatchLinearVestingRedeemed,
 } from "../../generated/schema";
 
 export function getBatchAuctionSettled(recordId: string): BatchAuctionSettled {
@@ -87,4 +88,16 @@ export function getBatchLinearVestingLot(
   }
 
   return record as BatchLinearVestingLot;
+}
+
+export function getBatchLinearVestingRedeemed(
+  recordId: string,
+): BatchLinearVestingRedeemed {
+  const record = BatchLinearVestingRedeemed.load(recordId);
+
+  if (record == null) {
+    throw new Error("BatchLinearVestingRedeemed not found: " + recordId);
+  }
+
+  return record as BatchLinearVestingRedeemed;
 }
