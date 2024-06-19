@@ -741,6 +741,29 @@ export class AtomicAuctionHouse extends ethereum.SmartContract {
     );
   }
 
+  getAuctionModuleForId(lotId_: BigInt): Address {
+    let result = super.call(
+      "getAuctionModuleForId",
+      "getAuctionModuleForId(uint96):(address)",
+      [ethereum.Value.fromUnsignedBigInt(lotId_)],
+    );
+
+    return result[0].toAddress();
+  }
+
+  try_getAuctionModuleForId(lotId_: BigInt): ethereum.CallResult<Address> {
+    let result = super.tryCall(
+      "getAuctionModuleForId",
+      "getAuctionModuleForId(uint96):(address)",
+      [ethereum.Value.fromUnsignedBigInt(lotId_)],
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toAddress());
+  }
+
   getCuratorFee(auctionType_: Bytes, curator_: Address): BigInt {
     let result = super.call(
       "getCuratorFee",
@@ -771,6 +794,29 @@ export class AtomicAuctionHouse extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
+
+  getDerivativeModuleForId(lotId_: BigInt): Address {
+    let result = super.call(
+      "getDerivativeModuleForId",
+      "getDerivativeModuleForId(uint96):(address)",
+      [ethereum.Value.fromUnsignedBigInt(lotId_)],
+    );
+
+    return result[0].toAddress();
+  }
+
+  try_getDerivativeModuleForId(lotId_: BigInt): ethereum.CallResult<Address> {
+    let result = super.tryCall(
+      "getDerivativeModuleForId",
+      "getDerivativeModuleForId(uint96):(address)",
+      [ethereum.Value.fromUnsignedBigInt(lotId_)],
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toAddress());
   }
 
   getFees(auctionType_: Bytes): AtomicAuctionHouse__getFeesResult {
@@ -806,29 +852,6 @@ export class AtomicAuctionHouse extends ethereum.SmartContract {
         value[2].toBigInt(),
       ),
     );
-  }
-
-  getModuleForId(lotId_: BigInt): Address {
-    let result = super.call(
-      "getModuleForId",
-      "getModuleForId(uint96):(address)",
-      [ethereum.Value.fromUnsignedBigInt(lotId_)],
-    );
-
-    return result[0].toAddress();
-  }
-
-  try_getModuleForId(lotId_: BigInt): ethereum.CallResult<Address> {
-    let result = super.tryCall(
-      "getModuleForId",
-      "getModuleForId(uint96):(address)",
-      [ethereum.Value.fromUnsignedBigInt(lotId_)],
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toAddress());
   }
 
   getModuleForVeecode(param0: Bytes): Address {
