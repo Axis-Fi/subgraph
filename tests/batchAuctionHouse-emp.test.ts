@@ -460,7 +460,7 @@ describe("auction creation", () => {
     if (empLotRecord === null) {
       throw new Error(
         "Expected BatchEncryptedMarginalPriceLot to exist for record id " +
-        recordId,
+          recordId,
       );
     }
 
@@ -763,7 +763,7 @@ describe("auction cancellation", () => {
     if (empLotRecord === null) {
       throw new Error(
         "Expected BatchEncryptedMarginalPriceLot to exist for record id " +
-        recordId,
+          recordId,
       );
     }
     assertStringEquals(
