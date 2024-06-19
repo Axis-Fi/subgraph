@@ -326,7 +326,7 @@ type BatchEncryptedMarginalPriceLot @entity {
   id: String! # chain-auctionHouse-lotId
   lot: BatchAuctionLot!
 
-  status: String! # enum: "Created" | "Decrypted" | "Settled"
+  status: String! # enum: "created" | "decrypted" | "settled"
 
   # True if the settlement was successful, false if the lot has not settled yet, it was aborted/cancelled or did not meet settlement criteria.
   settlementSuccessful: Boolean!
@@ -347,7 +347,7 @@ type BatchFixedPriceLot @entity {
   id: String! # chain-auctionHouse-lotId
   lot: BatchAuctionLot!
 
-  status: String! # enum: "Created" | "Settled"
+  status: String! # enum: "created" | "settled"
 
   # True if the settlement was successful, false if the lot has not settled yet, it was aborted/cancelled or did not meet settlement criteria.
   settlementSuccessful: Boolean!

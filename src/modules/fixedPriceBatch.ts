@@ -27,8 +27,8 @@ import { getOrCreateToken } from "../helpers/token";
 
 export const FPB_KEYCODE = "FPB";
 
-export const FpbLotStatus_Created = "Created";
-export const FpbLotStatus_Settled = "Settled";
+export const FpbLotStatus_Created = "created";
+export const FpbLotStatus_Settled = "settled";
 
 export const FpbBidStatus_Submitted = "submitted";
 export const FpbBidStatus_Claimed = "claimed";

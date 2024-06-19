@@ -27,9 +27,9 @@ import { getOrCreateToken } from "../helpers/token";
 
 export const EMP_KEYCODE = "EMP";
 
-export const EmpLotStatus_Created = "Created";
-export const EmpLotStatus_Decrypted = "Decrypted";
-export const EmpLotStatus_Settled = "Settled";
+export const EmpLotStatus_Created = "created";
+export const EmpLotStatus_Decrypted = "decrypted";
+export const EmpLotStatus_Settled = "settled";
 
 export const EmpBidStatus_Submitted = "submitted";
 export const EmpBidStatus_Decrypted = "decrypted";
