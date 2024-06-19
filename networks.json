@@ -11,6 +11,10 @@
     "EncryptedMarginalPrice": {
       "address": "0x2Ca8954B468E2FbfE55240B69db937861c12F0d0",
       "startBlock": 54697607
+    },
+    "BatchLinearVesting": {
+      "address": "0xFB1113E170CA6d95f3a91121BDD2370a822598E9",
+      "startBlock": 54697617
     }
   },
   "base-sepolia": {
@@ -21,6 +25,10 @@
     "EncryptedMarginalPrice": {
       "address": "0x02c63F8aE0a8e9D0F7267AA4d0Af0567858188C2",
       "startBlock": 11315285
+    },
+    "BatchLinearVesting": {
+      "address": "0x392C629741a0c7350c7181addD5870dE178eeD94",
+      "startBlock": 11315168
     }
   },
   "blast-sepolia": {
@@ -35,6 +43,10 @@
     "EncryptedMarginalPrice": {
       "address": "0x8F34bBB3edd28017f826FE7a73eb9297384BF0d8",
       "startBlock": 6851889
+    },
+    "BatchLinearVesting": {
+      "address": "0xBD0474b8e7b65f3dF35d2817BA09aC864a199e31",
+      "startBlock": 6851903
     }
   },
   "mode-testnet": {
@@ -49,6 +61,10 @@
     "EncryptedMarginalPrice": {
       "address": "0x1A6Ba70B8e5957bCd03C20f9CF42D9e6D3d9b514",
       "startBlock": 15261783
+    },
+    "BatchLinearVesting": {
+      "address": "0x90608F57161aC771b28fb0adCd2434cfa1463201",
+      "startBlock": 15261797
     }
   }
 }
