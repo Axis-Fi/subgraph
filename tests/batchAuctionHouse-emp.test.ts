@@ -66,7 +66,7 @@ import {
   getBatchLinearVestingLot,
 } from "./helpers/records";
 import { mockGetModuleForVeecode } from "./mocks/baseAuctionHouse";
-import { mockGetModuleForId } from "./mocks/baseAuctionHouse";
+import { mockGetAuctionModuleForId } from "./mocks/baseAuctionHouse";
 import { mockLotRouting } from "./mocks/baseAuctionHouse";
 import { mockLotFees } from "./mocks/baseAuctionHouse";
 import { mockLotData } from "./mocks/batchAuctionHouse";
@@ -187,7 +187,7 @@ function _createAuctionLot(
     lotQuoteTokenDecimals,
     BigInt.fromU64(1_000_000_000_000_000_000),
   );
-  mockGetModuleForId(auctionHouse, LOT_ID, auctionModuleAddress);
+  mockGetAuctionModuleForId(auctionHouse, LOT_ID, auctionModuleAddress);
   mockGetModuleForVeecode(
     auctionHouse,
     auctionModuleVeecode,

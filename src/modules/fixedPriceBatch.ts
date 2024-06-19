@@ -25,7 +25,6 @@ import { toISO8601String } from "../helpers/date";
 import { toDecimal } from "../helpers/number";
 import { getOrCreateToken } from "../helpers/token";
 
-
 export const FPB_KEYCODE = "FPB";
 
 export const FpbLotStatus_Created = "Created";
@@ -58,7 +57,7 @@ function _getFixedPriceBatchLot(
   if (lot == null) {
     throw new Error(
       "Expected BatchFixedPriceLot to exist for record id " +
-      batchAuctionLot.id,
+        batchAuctionLot.id,
     );
   }
 
