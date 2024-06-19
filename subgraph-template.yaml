@@ -5,6 +5,8 @@ schema:
   file: ./schema.graphql
 dataSources:
   # AtomicAuctionHouse
+  # Optional block as it is not deployed on all chains
+  {{#AtomicAuctionHouse}}
   - kind: ethereum
     name: AtomicAuctionHouse
     network: {{network}}
@@ -53,6 +55,7 @@ dataSources:
         - event: OwnershipTransferred(indexed address,indexed address)
           handler: handleOwnershipTransferred
       file: ./src/atomicAuctionHouse.ts
+  {{/AtomicAuctionHouse}}
   # BatchAuctionHouse
   - kind: ethereum
     name: BatchAuctionHouse

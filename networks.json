@@ -14,10 +14,6 @@
     }
   },
   "base-sepolia": {
-    "AtomicAuctionHouse": {
-      "address": "0x0000000000000000000000000000000000000000",
-      "startBlock": 11315285
-    },
     "BatchAuctionHouse": {
       "address": "0xBA00002999aBfa63cA25B3A7aD4c8F3a578aBe28",
       "startBlock": 11315285
