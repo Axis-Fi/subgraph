@@ -68,7 +68,7 @@ export function createLinearVestingLot(
   // Determine the tokenId
   const tokenId: BigInt = getTokenId(
     createdEvent.address,
-    batchAuctionLot.baseToken,
+    Address.fromBytes(batchAuctionLot.baseToken),
     derivativeParams,
   );
 
