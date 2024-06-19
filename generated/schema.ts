@@ -3526,6 +3526,19 @@ export class BatchLinearVestingLot extends Entity {
     this.set("lot", Value.fromString(value));
   }
 
+  get tokenId(): BigInt {
+    let value = this.get("tokenId");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set tokenId(value: BigInt) {
+    this.set("tokenId", Value.fromBigInt(value));
+  }
+
   get startTimestamp(): BigInt {
     let value = this.get("startTimestamp");
     if (!value || value.kind == ValueKind.NULL) {

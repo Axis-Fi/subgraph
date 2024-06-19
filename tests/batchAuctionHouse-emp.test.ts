@@ -680,6 +680,11 @@ describe("auction creation", () => {
       "BatchLinearVestingLot: lot",
     );
     assertBigIntEquals(
+      linearVestingLotRecord.tokenId,
+      derivativeTokenId,
+      "BatchLinearVestingLot: tokenId",
+    );
+    assertBigIntEquals(
       linearVestingLotRecord.startTimestamp,
       BigInt.fromI32(linearVestingStart),
       "BatchLinearVestingLot: startTimestamp",

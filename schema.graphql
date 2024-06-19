@@ -365,6 +365,8 @@ type BatchLinearVestingLot @entity(immutable: true) {
   id: String! # chain-linearVesting-tokenId
   lot: BatchAuctionLot!
 
+  tokenId: BigInt! # uint256
+
   startTimestamp: BigInt!
   startDate: String!
   expiryTimestamp: BigInt!
