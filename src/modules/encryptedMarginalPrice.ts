@@ -27,9 +27,11 @@ import { getOrCreateToken } from "../helpers/token";
 
 export const EMP_KEYCODE = "EMP";
 
-export const EmpLotStatus_Created = "Created";
-export const EmpLotStatus_Decrypted = "Decrypted";
-export const EmpLotStatus_Settled = "Settled";
+export const EmpLotStatus_Created = "created";
+export const EmpLotStatus_Decrypted = "decrypted";
+export const EmpLotStatus_Settled = "settled";
+export const EmpLotStatus_Cancelled = "cancelled";
+export const EmpLotStatus_Aborted = "aborted";
 
 export const EmpBidStatus_Submitted = "submitted";
 export const EmpBidStatus_Decrypted = "decrypted";
@@ -95,17 +97,16 @@ export function createEncryptedMarginalPriceLot(
   );
 
   // Get the EncryptedMarginalPrice module
-  const encryptedMarginalPrice = getEncryptedMarginalPriceModule(
+  const empModule = getEncryptedMarginalPriceModule(
     Address.fromBytes(batchAuctionLot.auctionHouse),
     Bytes.fromUTF8(batchAuctionLot.auctionType),
   );
 
   const quoteToken = getOrCreateToken(batchAuctionLot.quoteToken);
   const baseToken = getOrCreateToken(batchAuctionLot.baseToken);
-  const lotAuctionData = encryptedMarginalPrice.auctionData(
-    batchAuctionLot.lotId,
-  );
+  const lotAuctionData = empModule.auctionData(batchAuctionLot.lotId);
 
+  empLot.module = empModule._address;
   empLot.status = _getLotStatus(lotAuctionData.getStatus());
   empLot.settlementSuccessful = false; // Set to true on successful settlement
   // marginalPrice set on settlement
@@ -129,21 +130,27 @@ export function createEncryptedMarginalPriceLot(
   );
 }
 
+export function setEncryptedMarginalPriceLotStatusCancelled(
+  batchAuctionLot: BatchAuctionLot,
+): void {
+  const empLot = _getEncryptedMarginalPriceLot(batchAuctionLot);
+  empLot.status = EmpLotStatus_Cancelled;
+  empLot.save();
+}
+
+export function setEncryptedMarginalPriceLotStatusAborted(
+  batchAuctionLot: BatchAuctionLot,
+): void {
+  const empLot = _getEncryptedMarginalPriceLot(batchAuctionLot);
+  empLot.status = EmpLotStatus_Aborted;
+  empLot.save();
+}
+
 export function updateEncryptedMarginalPriceLot(
   batchAuctionLot: BatchAuctionLot,
   lotId: BigInt,
 ): void {
-  const empLot = BatchEncryptedMarginalPriceLot.load(
-    _getEncryptedMarginalPriceLotId(batchAuctionLot),
-  );
-
-  // Check if null
-  if (empLot == null) {
-    throw new Error(
-      "Expected EncryptedMarginalPriceLot to exist for record id " +
-        batchAuctionLot.id,
-    );
-  }
+  const empLot = _getEncryptedMarginalPriceLot(batchAuctionLot);
 
   // Get the EncryptedMarginalPrice module
   const encryptedMarginalPrice = getEncryptedMarginalPriceModule(
@@ -154,12 +161,26 @@ export function updateEncryptedMarginalPriceLot(
   const quoteToken = getOrCreateToken(batchAuctionLot.quoteToken);
   const lotAuctionData = encryptedMarginalPrice.auctionData(lotId);
 
-  empLot.status = _getLotStatus(lotAuctionData.getStatus());
+  // Don't update the status if the lot is already cancelled or aborted
+  if (
+    empLot.status != EmpLotStatus_Cancelled &&
+    empLot.status != EmpLotStatus_Aborted
+  ) {
+    empLot.status = _getLotStatus(lotAuctionData.getStatus());
+    log.info(
+      "updateEncryptedMarginalPriceLot: Updated status for lot {} to {}",
+      [lotId.toString(), empLot.status],
+    );
+  }
 
   // No need to set the minPrice, minFilled and minBidSize again
 
-  // If settled
-  if (empLot.status == EmpLotStatus_Settled) {
+  // If settled/cancelled/aborted
+  if (
+    empLot.status == EmpLotStatus_Settled ||
+    empLot.status == EmpLotStatus_Aborted ||
+    empLot.status == EmpLotStatus_Cancelled
+  ) {
     // Set the marginal price
     empLot.marginalPrice = toDecimal(
       lotAuctionData.getMarginalPrice(),
@@ -221,7 +242,10 @@ export function updateEncryptedMarginalPriceBidAmount(
   const baseToken = getOrCreateToken(lotRecord.baseToken);
 
   // If the lot status is settled, we can check the bid claim
-  if (empRecord.status == EmpLotStatus_Settled) {
+  if (
+    empRecord.status == EmpLotStatus_Settled ||
+    empRecord.status == EmpLotStatus_Aborted
+  ) {
     // Get the bid claim from the contract
     const bidClaim = empModule.getBidClaim(lotRecord.lotId, bidId);
 

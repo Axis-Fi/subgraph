@@ -15,6 +15,7 @@ export function mockGetModuleForVeecode(
     false,
   );
 }
+
 export function mockGetAuctionModuleForId(
   auctionHouse: Address,
   lotId: BigInt,
@@ -29,6 +30,7 @@ export function mockGetAuctionModuleForId(
     false,
   );
 }
+
 export function mockLotRouting(
   auctionHouse: Address,
   lotId: BigInt,
@@ -61,6 +63,7 @@ export function mockLotRouting(
     false,
   );
 }
+
 export function mockLotFees(
   auctionHouse: Address,
   lotId: BigInt,

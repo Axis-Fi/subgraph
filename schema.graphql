@@ -325,8 +325,9 @@ type BatchBidClaimed @entity(immutable: true) {
 type BatchEncryptedMarginalPriceLot @entity {
   id: String! # chain-auctionHouse-lotId
   lot: BatchAuctionLot!
+  module: Bytes! # Address
 
-  status: String! # enum: "Created" | "Decrypted" | "Settled"
+  status: String! # enum: "created" | "decrypted" | "settled"
 
   # True if the settlement was successful, false if the lot has not settled yet, it was aborted/cancelled or did not meet settlement criteria.
   settlementSuccessful: Boolean!
@@ -346,8 +347,9 @@ type BatchEncryptedMarginalPriceLot @entity {
 type BatchFixedPriceLot @entity {
   id: String! # chain-auctionHouse-lotId
   lot: BatchAuctionLot!
+  module: Bytes! # Address
 
-  status: String! # enum: "Created" | "Settled"
+  status: String! # enum: "created" | "settled"
 
   # True if the settlement was successful, false if the lot has not settled yet, it was aborted/cancelled or did not meet settlement criteria.
   settlementSuccessful: Boolean!
@@ -362,8 +364,11 @@ type BatchFixedPriceLot @entity {
 }
 
 type BatchLinearVestingLot @entity(immutable: true) {
-  id: String! # chain-auctionHouse-lotId
+  id: String! # chain-linearVesting-tokenId
   lot: BatchAuctionLot!
+  module: Bytes! # Address
+
+  tokenId: BigInt! # uint256
 
   startTimestamp: BigInt!
   startDate: String!
@@ -371,6 +376,23 @@ type BatchLinearVestingLot @entity(immutable: true) {
   expiryDate: String!
 
   # TODO consider timeseries data for redemption/vesting
+
+  # Reverse lookups
+  redemptions: [BatchLinearVestingRedeemed!]! @derivedFrom(field: "lot")
+}
+
+type BatchLinearVestingRedeemed @entity(immutable: true) {
+  id: String! # chain-linearVesting-tokenId-tx-logIndex
+  lot: BatchLinearVestingLot!
+
+  bidder: Bytes! # address
+  redeemed: BigDecimal! # uint256
+  remaining: BigDecimal! # uint256
+
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  date: String!
+  transactionHash: Bytes!
 }
 
 ### Shared types
