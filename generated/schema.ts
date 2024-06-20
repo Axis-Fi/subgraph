@@ -4221,6 +4221,95 @@ export class AuctionInfo extends Entity {
       this.set("description", Value.fromString(<string>value));
     }
   }
+
+  get links(): AuctionInfoLinkLoader {
+    return new AuctionInfoLinkLoader(
+      "AuctionInfo",
+      this.get("id")!.toString(),
+      "links",
+    );
+  }
+}
+
+export class AuctionInfoLink extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save AuctionInfoLink entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type AuctionInfoLink must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+      );
+      store.set("AuctionInfoLink", id.toString(), this);
+    }
+  }
+
+  static loadInBlock(id: string): AuctionInfoLink | null {
+    return changetype<AuctionInfoLink | null>(
+      store.get_in_block("AuctionInfoLink", id),
+    );
+  }
+
+  static load(id: string): AuctionInfoLink | null {
+    return changetype<AuctionInfoLink | null>(store.get("AuctionInfoLink", id));
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get auctionInfo(): string {
+    let value = this.get("auctionInfo");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set auctionInfo(value: string) {
+    this.set("auctionInfo", Value.fromString(value));
+  }
+
+  get title(): string {
+    let value = this.get("title");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set title(value: string) {
+    this.set("title", Value.fromString(value));
+  }
+
+  get url(): string {
+    let value = this.get("url");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set url(value: string) {
+    this.set("url", Value.fromString(value));
+  }
 }
 
 export class AtomicAuctionCancelledLoader extends Entity {
@@ -4544,5 +4633,23 @@ export class BatchLinearVestingLotLoader extends Entity {
   load(): BatchLinearVestingLot[] {
     let value = store.loadRelated(this._entity, this._id, this._field);
     return changetype<BatchLinearVestingLot[]>(value);
+  }
+}
+
+export class AuctionInfoLinkLoader extends Entity {
+  _entity: string;
+  _field: string;
+  _id: string;
+
+  constructor(entity: string, id: string, field: string) {
+    super();
+    this._entity = entity;
+    this._id = id;
+    this._field = field;
+  }
+
+  load(): AuctionInfoLink[] {
+    let value = store.loadRelated(this._entity, this._id, this._field);
+    return changetype<AuctionInfoLink[]>(value);
   }
 }

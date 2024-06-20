@@ -427,4 +427,14 @@ type AuctionInfo @entity(immutable: true) {
   hash: String! # IPFS hash
   name: String
   description: String
+
+  # Reverse lookups
+  links: AuctionInfoLink @derivedFrom(field: "auctionInfo")
+}
+
+type AuctionInfoLink @entity(immutable: true) {
+  id: ID! # IPFS hash-link name
+  auctionInfo: AuctionInfo!
+  title: String!
+  url: String!
 }
