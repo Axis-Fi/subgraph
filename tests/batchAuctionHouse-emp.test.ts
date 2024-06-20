@@ -34,6 +34,7 @@ import {
   handleRefundBid,
   handleSettle,
 } from "../src/batchAuctionHouse";
+import { handleRedeemed } from "../src/handleBatchLinearVesting";
 import { handleBidDecrypted } from "../src/handleEncryptedMarginalPrice";
 import { toDecimal } from "../src/helpers/number";
 import {
@@ -52,6 +53,7 @@ import {
   createBidEvent,
   createClaimBidEvent,
   createCuratedEvent,
+  createLinearVestingRedeemEvent,
   createRefundBidEvent,
   createSettleEvent,
 } from "./auction-house-utils";
@@ -64,9 +66,10 @@ import {
   getBatchBidClaimed,
   getBatchEncryptedMarginalPriceLot,
   getBatchLinearVestingLot,
+  getBatchLinearVestingRedeemed,
 } from "./helpers/records";
 import { mockGetModuleForVeecode } from "./mocks/baseAuctionHouse";
-import { mockGetModuleForId } from "./mocks/baseAuctionHouse";
+import { mockGetAuctionModuleForId } from "./mocks/baseAuctionHouse";
 import { mockLotRouting } from "./mocks/baseAuctionHouse";
 import { mockLotFees } from "./mocks/baseAuctionHouse";
 import { mockLotData } from "./mocks/batchAuctionHouse";
@@ -77,6 +80,11 @@ import {
   mockEmpParent,
   mockEmpPartialFill,
 } from "./mocks/emp";
+import {
+  mockBalanceOf,
+  mockDecimals,
+  mockTokenId,
+} from "./mocks/linearVesting";
 import { mockToken } from "./mocks/token";
 
 const auctionModuleVeecode = "01EMPA";
@@ -104,6 +112,15 @@ const auctionHouse: Address = Address.fromString(
 const auctionModuleAddress: Address = Address.fromString(
   "0x87F2a19FBbf9e557a68bD35D85FAd20dEec40494",
 );
+
+const derivativeModuleAddress: Address = Address.fromString(
+  "0x90608F57161aC771b28fb0adCd2434cfa1463201",
+);
+const derivativeTokenId: BigInt = BigInt.fromString("22331111");
+const derivativeTokenBalance: BigInt = BigInt.fromString(
+  "10000000000000000000000",
+); // 10
+const derivativeRedeemed: BigInt = BigInt.fromString("1500000000000000000000"); // 1.5
 
 const SELLER: Address = Address.fromString(
   "0x0000000000000000000000000000000000000001",
@@ -187,7 +204,7 @@ function _createAuctionLot(
     lotQuoteTokenDecimals,
     BigInt.fromU64(1_000_000_000_000_000_000),
   );
-  mockGetModuleForId(auctionHouse, LOT_ID, auctionModuleAddress);
+  mockGetAuctionModuleForId(auctionHouse, LOT_ID, auctionModuleAddress);
   mockGetModuleForVeecode(
     auctionHouse,
     auctionModuleVeecode,
@@ -242,6 +259,34 @@ function _createAuctionLot(
     empPublicKeyY,
     BigInt.zero(),
   );
+
+  if (derivativeVeecode === linearVestingVeecode) {
+    mockGetModuleForVeecode(
+      auctionHouse,
+      linearVestingVeecode,
+      derivativeModuleAddress,
+    );
+
+    mockTokenId(
+      derivativeModuleAddress,
+      BASE_TOKEN,
+      derivativeParams,
+      derivativeTokenId,
+    );
+
+    mockDecimals(
+      derivativeModuleAddress,
+      derivativeTokenId,
+      lotBaseTokenDecimals,
+    );
+
+    mockBalanceOf(
+      derivativeModuleAddress,
+      BIDDER,
+      derivativeTokenId,
+      derivativeTokenBalance,
+    );
+  }
 
   handleAuctionCreated(auctionCreatedEvent);
 }
@@ -476,7 +521,7 @@ describe("auction creation", () => {
     );
     assertStringEquals(
       empLotRecord.status,
-      "Created",
+      "created",
       "BatchEncryptedMarginalPriceLot: status",
     );
     assertBooleanEquals(
@@ -610,21 +655,33 @@ describe("auction creation", () => {
       linearVestingParams,
     );
 
-    const recordId =
+    const lotRecordId =
       "mainnet-" + auctionHouse.toHexString() + "-" + LOT_ID.toString();
+    const batchAuctonLotRecord = getBatchAuctionLot(lotRecordId);
+
+    const lvRecordId =
+      "mainnet-" +
+      derivativeModuleAddress.toHexString() +
+      "-" +
+      derivativeTokenId.toString();
 
     // Check the BatchLinearVestingLot record
     assert.entityCount("BatchLinearVestingLot", 1);
-    const linearVestingLotRecord = getBatchLinearVestingLot(recordId);
+    const linearVestingLotRecord = getBatchLinearVestingLot(lvRecordId);
     assertStringEquals(
       linearVestingLotRecord.id,
-      recordId,
+      lvRecordId,
       "BatchLinearVestingLot: id",
     );
     assertStringEquals(
       linearVestingLotRecord.lot,
-      recordId,
+      batchAuctonLotRecord.id,
       "BatchLinearVestingLot: lot",
+    );
+    assertBigIntEquals(
+      linearVestingLotRecord.tokenId,
+      derivativeTokenId,
+      "BatchLinearVestingLot: tokenId",
     );
     assertBigIntEquals(
       linearVestingLotRecord.startTimestamp,
@@ -638,7 +695,7 @@ describe("auction creation", () => {
     );
 
     // Check reverse lookup
-    const auctionLotRecord = getBatchAuctionLot(recordId);
+    const auctionLotRecord = getBatchAuctionLot(lotRecordId);
     const linearVestingLotRecordLookup = auctionLotRecord.linearVesting.load();
     assertI32Equals(
       linearVestingLotRecordLookup.length,
@@ -647,7 +704,7 @@ describe("auction creation", () => {
     );
     assertStringEquals(
       linearVestingLotRecordLookup[0].id,
-      recordId,
+      lvRecordId,
       "BatchAuctionLot: linearVesting lookup",
     );
   });
@@ -768,7 +825,7 @@ describe("auction cancellation", () => {
     }
     assertStringEquals(
       empLotRecord.status,
-      "Settled",
+      "cancelled",
       "BatchEncryptedMarginalPriceLot: status",
     );
     assertBooleanEquals(
@@ -1358,7 +1415,7 @@ describe("abort", () => {
     const empLotRecord = getBatchEncryptedMarginalPriceLot(recordId);
     assertStringEquals(
       empLotRecord.status,
-      "Settled",
+      "aborted",
       "BatchEncryptedMarginalPriceLot: status",
     );
     assertBooleanEquals(
@@ -1578,7 +1635,7 @@ describe("settle", () => {
     const empLotRecord = getBatchEncryptedMarginalPriceLot(recordId);
     assertStringEquals(
       empLotRecord.status,
-      "Settled",
+      "settled",
       "BatchEncryptedMarginalPriceLot: status",
     );
     assertBooleanEquals(
@@ -1782,6 +1839,94 @@ describe("settle", () => {
       batchBidRecordClaimedLookup[0].id,
       bidRecordId,
       "Bid: claimed lookup",
+    );
+  });
+});
+
+describe("linear vesting redemption", () => {
+  beforeEach(() => {
+    _createAuctionLot(
+      lotFeesCurator,
+      lotFeesCuratorFee,
+      lotFeesProtocolFee,
+      lotFeesProtocolFee,
+      linearVestingVeecode,
+      linearVestingParams,
+    );
+  });
+
+  afterEach(() => {
+    clearStore();
+  });
+
+  test("BatchLinearVestingRedemption created and stored", () => {
+    const event = createLinearVestingRedeemEvent(
+      derivativeTokenId,
+      BIDDER,
+      derivativeRedeemed,
+      derivativeModuleAddress,
+    );
+    handleRedeemed(event);
+
+    const lvLotRecordId =
+      "mainnet-" +
+      derivativeModuleAddress.toHexString() +
+      "-" +
+      derivativeTokenId.toString();
+
+    // BatchLinearVestingRedeemed record is stored
+    const recordId =
+      "mainnet-" +
+      derivativeModuleAddress.toHexString() +
+      "-" +
+      derivativeTokenId.toString() +
+      "-" +
+      event.transaction.hash.toHexString() +
+      "-" +
+      event.logIndex.toString();
+
+    const batchLinearVestingRedemptionRecord =
+      getBatchLinearVestingRedeemed(recordId);
+
+    assertStringEquals(
+      batchLinearVestingRedemptionRecord.id,
+      recordId,
+      "BatchLinearVestingRedemption: id",
+    );
+    assertStringEquals(
+      batchLinearVestingRedemptionRecord.lot,
+      lvLotRecordId,
+      "BatchLinearVestingRedemption: lot",
+    );
+    assertBytesEquals(
+      batchLinearVestingRedemptionRecord.bidder,
+      BIDDER,
+      "BatchLinearVestingRedemption: bidder",
+    );
+    assertBigDecimalEquals(
+      batchLinearVestingRedemptionRecord.redeemed,
+      toDecimal(derivativeRedeemed, lotBaseTokenDecimals),
+      "BatchLinearVestingRedemption: redeemed",
+    );
+    assertBigDecimalEquals(
+      batchLinearVestingRedemptionRecord.remaining,
+      toDecimal(derivativeTokenBalance, lotBaseTokenDecimals),
+      "BatchLinearVestingRedemption: remaining",
+    );
+
+    // Check reverse lookup
+    const batchLinearVestingLotRecord = getBatchLinearVestingLot(lvLotRecordId);
+    const batchLinearVestingLotRedeemedLookup =
+      batchLinearVestingLotRecord.redemptions.load();
+    assertI32Equals(
+      batchLinearVestingLotRedeemedLookup.length,
+      1,
+      "BatchLinearVestingLot: redemptions lookup length",
+    );
+    assertStringEquals(
+      batchLinearVestingLotRedeemedLookup[0].id,
+      recordId,
+      "BatchLinearVestingLot: redemptions lookup",
     );
   });
 });

@@ -1,6 +1,6 @@
 import { Address, Bytes } from "@graphprotocol/graph-ts";
 
-import { ERC20 } from "../../generated/AtomicAuctionHouse/ERC20";
+import { ERC20 } from "../../generated/BatchAuctionHouse/ERC20";
 import { Token } from "../../generated/schema";
 
 function _getERC20Contract(address: Bytes): ERC20 {

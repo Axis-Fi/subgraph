@@ -1,6 +1,5 @@
 import { Address, BigInt, Bytes, ethereum } from "@graphprotocol/graph-ts";
 
-import { Purchase } from "../generated/AtomicAuctionHouse/AtomicAuctionHouse";
 import {
   Abort,
   AuctionCancelled,
@@ -14,6 +13,7 @@ import {
   RefundBid,
   Settle,
 } from "../generated/BatchAuctionHouse/BatchAuctionHouse";
+import { Redeemed } from "../generated/BatchLinearVesting/LinearVesting";
 import { newMockEvent } from "./mocks/event";
 
 export function createAuctionCancelledEvent(
@@ -256,45 +256,45 @@ export function createOwnershipTransferredEvent(
   return ownershipTransferredEvent;
 }
 
-export function createPurchaseEvent(
-  lotId_: BigInt,
-  buyer: Address,
-  referrer: Address,
-  amount: BigInt,
-  payout: BigInt,
-  auctionHouse: Address,
-): Purchase {
-  const purchaseEvent = changetype<Purchase>(newMockEvent(auctionHouse));
+// export function createPurchaseEvent(
+//   lotId_: BigInt,
+//   buyer: Address,
+//   referrer: Address,
+//   amount: BigInt,
+//   payout: BigInt,
+//   auctionHouse: Address,
+// ): Purchase {
+//   const purchaseEvent = changetype<Purchase>(newMockEvent(auctionHouse));
 
-  purchaseEvent.parameters = [];
+//   purchaseEvent.parameters = [];
 
-  purchaseEvent.parameters.push(
-    new ethereum.EventParam(
-      "lotId_",
-      ethereum.Value.fromUnsignedBigInt(lotId_),
-    ),
-  );
-  purchaseEvent.parameters.push(
-    new ethereum.EventParam("buyer", ethereum.Value.fromAddress(buyer)),
-  );
-  purchaseEvent.parameters.push(
-    new ethereum.EventParam("referrer", ethereum.Value.fromAddress(referrer)),
-  );
-  purchaseEvent.parameters.push(
-    new ethereum.EventParam(
-      "amount",
-      ethereum.Value.fromUnsignedBigInt(amount),
-    ),
-  );
-  purchaseEvent.parameters.push(
-    new ethereum.EventParam(
-      "payout",
-      ethereum.Value.fromUnsignedBigInt(payout),
-    ),
-  );
+//   purchaseEvent.parameters.push(
+//     new ethereum.EventParam(
+//       "lotId_",
+//       ethereum.Value.fromUnsignedBigInt(lotId_),
+//     ),
+//   );
+//   purchaseEvent.parameters.push(
+//     new ethereum.EventParam("buyer", ethereum.Value.fromAddress(buyer)),
+//   );
+//   purchaseEvent.parameters.push(
+//     new ethereum.EventParam("referrer", ethereum.Value.fromAddress(referrer)),
+//   );
+//   purchaseEvent.parameters.push(
+//     new ethereum.EventParam(
+//       "amount",
+//       ethereum.Value.fromUnsignedBigInt(amount),
+//     ),
+//   );
+//   purchaseEvent.parameters.push(
+//     new ethereum.EventParam(
+//       "payout",
+//       ethereum.Value.fromUnsignedBigInt(payout),
+//     ),
+//   );
 
-  return purchaseEvent;
-}
+//   return purchaseEvent;
+// }
 
 export function createSettleEvent(
   lotId_: BigInt,
@@ -309,4 +309,33 @@ export function createSettleEvent(
   );
 
   return settleEvent;
+}
+
+export function createLinearVestingRedeemEvent(
+  tokenId: BigInt,
+  owner: Address,
+  amount: BigInt,
+  derivativeModule: Address,
+): Redeemed {
+  const redeemEvent = changetype<Redeemed>(newMockEvent(derivativeModule));
+
+  redeemEvent.parameters = [];
+
+  redeemEvent.parameters.push(
+    new ethereum.EventParam(
+      "tokenId",
+      ethereum.Value.fromUnsignedBigInt(tokenId),
+    ),
+  );
+  redeemEvent.parameters.push(
+    new ethereum.EventParam("owner", ethereum.Value.fromAddress(owner)),
+  );
+  redeemEvent.parameters.push(
+    new ethereum.EventParam(
+      "amount",
+      ethereum.Value.fromUnsignedBigInt(amount),
+    ),
+  );
+
+  return redeemEvent;
 }

@@ -5,6 +5,8 @@ schema:
   file: ./schema.graphql
 dataSources:
   # AtomicAuctionHouse
+  # Optional block as it is not deployed on all chains
+  {{#AtomicAuctionHouse}}
   - kind: ethereum
     name: AtomicAuctionHouse
     network: {{network}}
@@ -53,6 +55,7 @@ dataSources:
         - event: OwnershipTransferred(indexed address,indexed address)
           handler: handleOwnershipTransferred
       file: ./src/atomicAuctionHouse.ts
+  {{/AtomicAuctionHouse}}
   # BatchAuctionHouse
   - kind: ethereum
     name: BatchAuctionHouse
@@ -138,7 +141,29 @@ dataSources:
       eventHandlers:
         - event: BidDecrypted(indexed uint96,indexed uint64,uint96,uint96)
           handler: handleBidDecrypted
+        - event: PrivateKeySubmitted(indexed uint96)
+          handler: handlePrivateKeySubmitted
       file: ./src/handleEncryptedMarginalPrice.ts
+  - kind: ethereum
+    name: BatchLinearVesting
+    network: {{network}}
+    source:
+      abi: LinearVesting
+      address: "{{BatchLinearVesting.address}}"
+      startBlock: {{BatchLinearVesting.startBlock}}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - BatchLinearVestingRedeemed
+      abis:
+        - name: LinearVesting
+          file: ./abis/modules/LinearVesting.json
+      eventHandlers:
+        - event: Redeemed(indexed uint256,indexed address,uint256)
+          handler: handleRedeemed
+      file: ./src/handleBatchLinearVesting.ts
 templates:
   - kind: file/ipfs
     name: AtomicAuctionInfo

@@ -291,6 +291,25 @@
     },
     {
       "type": "function",
+      "name": "getAuctionModuleForId",
+      "inputs": [
+        {
+          "name": "lotId_",
+          "type": "uint96",
+          "internalType": "uint96"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "address",
+          "internalType": "contract IAuction"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
       "name": "getCuratorFee",
       "inputs": [
         {
@@ -309,6 +328,25 @@
           "name": "curatorFee",
           "type": "uint48",
           "internalType": "uint48"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "getDerivativeModuleForId",
+      "inputs": [
+        {
+          "name": "lotId_",
+          "type": "uint96",
+          "internalType": "uint96"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "address",
+          "internalType": "contract IDerivative"
         }
       ],
       "stateMutability": "view"
@@ -338,25 +376,6 @@
           "name": "maxCuratorFee",
           "type": "uint48",
           "internalType": "uint48"
-        }
-      ],
-      "stateMutability": "view"
-    },
-    {
-      "type": "function",
-      "name": "getModuleForId",
-      "inputs": [
-        {
-          "name": "lotId_",
-          "type": "uint96",
-          "internalType": "uint96"
-        }
-      ],
-      "outputs": [
-        {
-          "name": "",
-          "type": "address",
-          "internalType": "contract AuctionModule"
         }
       ],
       "stateMutability": "view"
@@ -538,12 +557,12 @@
         {
           "name": "baseToken",
           "type": "address",
-          "internalType": "contract ERC20"
+          "internalType": "address"
         },
         {
           "name": "quoteToken",
           "type": "address",
-          "internalType": "contract ERC20"
+          "internalType": "address"
         },
         {
           "name": "auctionReference",

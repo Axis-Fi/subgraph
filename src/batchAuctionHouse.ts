@@ -61,14 +61,54 @@ import {
   createEncryptedMarginalPriceBid,
   createEncryptedMarginalPriceLot,
   EMP_KEYCODE,
+  setEncryptedMarginalPriceLotStatusAborted,
+  setEncryptedMarginalPriceLotStatusCancelled,
   updateEncryptedMarginalPriceLot,
 } from "./modules/encryptedMarginalPrice";
 import {
   createFixedPriceBatchBid,
   createFixedPriceBatchLot,
   FPB_KEYCODE,
+  setFixedPriceBatchLotStatusAborted,
+  setFixedPriceBatchLotStatusCancelled,
   updateFixedPriceBatchLot,
 } from "./modules/fixedPriceBatch";
+
+function _setAuctionStatusCancelled(
+  auctionHouseAddress: Address,
+  lotId: BigInt,
+): void {
+  // Get the auction lot record
+  const entity = getLotRecord(auctionHouseAddress, lotId);
+
+  if (entity.auctionType.includes(EMP_KEYCODE)) {
+    setEncryptedMarginalPriceLotStatusCancelled(entity);
+  } else if (entity.auctionType.includes(FPB_KEYCODE)) {
+    setFixedPriceBatchLotStatusCancelled(entity);
+  }
+
+  log.info("Auction lot status set to cancelled for lotId: {}", [
+    lotId.toString(),
+  ]);
+}
+
+function _setAuctionStatusAborted(
+  auctionHouseAddress: Address,
+  lotId: BigInt,
+): void {
+  // Get the auction lot record
+  const entity = getLotRecord(auctionHouseAddress, lotId);
+
+  if (entity.auctionType.includes(EMP_KEYCODE)) {
+    setEncryptedMarginalPriceLotStatusAborted(entity);
+  } else if (entity.auctionType.includes(FPB_KEYCODE)) {
+    setFixedPriceBatchLotStatusAborted(entity);
+  }
+
+  log.info("Auction lot status set to aborted for lotId: {}", [
+    lotId.toString(),
+  ]);
+}
 
 function _updateAuctionLot(
   auctionHouseAddress: Address,
@@ -232,9 +272,13 @@ export function handleAuctionCreated(event: AuctionCreatedEvent): void {
       ? ""
       : (auctionLot.derivativeType as string);
   if (derivativeTypeNotNull.includes(LV_KEYCODE)) {
+    const moduleAddress = auctionHouse.getModuleForVeecode(
+      Bytes.fromUTF8(derivativeTypeNotNull),
+    );
+
     createLinearVestingLot(
       auctionLot,
-      event,
+      moduleAddress,
       auctionRouting.getDerivativeParams(),
     );
   }
@@ -273,6 +317,8 @@ export function handleAuctionCancelled(event: AuctionCancelledEvent): void {
   log.info("BatchAuctionCancelled event saved with id: {}", [
     entity.id.toString(),
   ]);
+
+  _setAuctionStatusCancelled(event.address, lotId);
 
   _updateAuctionLot(
     event.address,
@@ -365,6 +411,8 @@ export function handleAbort(event: AbortEvent): void {
   log.info("BatchAuctionAborted event saved with id: {}", [
     entity.id.toString(),
   ]);
+
+  _setAuctionStatusAborted(event.address, lotId);
 
   _updateAuctionLot(
     event.address,

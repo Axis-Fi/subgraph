@@ -1,6 +1,10 @@
 import { Bytes, dataSource, json, log } from "@graphprotocol/graph-ts";
 
-import { AtomicAuctionInfo, AtomicAuctionInfoAllowlistEntry, AtomicAuctionInfoLink } from "../generated/schema";
+import {
+  AtomicAuctionInfo,
+  AtomicAuctionInfoAllowlistEntry,
+  AtomicAuctionInfoLink,
+} from "../generated/schema";
 import { KEY_AUCTION_LOT_ID } from "./constants";
 
 export function handleAtomicAuctionInfo(content: Bytes): void {

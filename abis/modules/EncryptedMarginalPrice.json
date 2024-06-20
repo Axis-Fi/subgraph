@@ -149,7 +149,7 @@
         {
           "name": "status",
           "type": "uint8",
-          "internalType": "enum EncryptedMarginalPrice.LotStatus"
+          "internalType": "enum IEncryptedMarginalPrice.LotStatus"
         },
         {
           "name": "marginalBidId",
@@ -292,7 +292,7 @@
         {
           "name": "status",
           "type": "uint8",
-          "internalType": "enum EncryptedMarginalPrice.BidStatus"
+          "internalType": "enum IEncryptedMarginalPrice.BidStatus"
         }
       ],
       "stateMutability": "view"
@@ -519,7 +519,7 @@
         {
           "name": "auctionData_",
           "type": "tuple",
-          "internalType": "struct EncryptedMarginalPrice.AuctionData",
+          "internalType": "struct IEncryptedMarginalPrice.AuctionData",
           "components": [
             {
               "name": "nextBidId",
@@ -534,7 +534,7 @@
             {
               "name": "status",
               "type": "uint8",
-              "internalType": "enum EncryptedMarginalPrice.LotStatus"
+              "internalType": "enum IEncryptedMarginalPrice.LotStatus"
             },
             {
               "name": "marginalBidId",
@@ -612,7 +612,7 @@
         {
           "name": "bid",
           "type": "tuple",
-          "internalType": "struct EncryptedMarginalPrice.Bid",
+          "internalType": "struct IEncryptedMarginalPrice.Bid",
           "components": [
             {
               "name": "bidder",
@@ -637,14 +637,14 @@
             {
               "name": "status",
               "type": "uint8",
-              "internalType": "enum EncryptedMarginalPrice.BidStatus"
+              "internalType": "enum IEncryptedMarginalPrice.BidStatus"
             }
           ]
         },
         {
           "name": "encryptedBid",
           "type": "tuple",
-          "internalType": "struct EncryptedMarginalPrice.EncryptedBid",
+          "internalType": "struct IEncryptedMarginalPrice.EncryptedBid",
           "components": [
             {
               "name": "encryptedAmountOut",
@@ -919,7 +919,7 @@
         {
           "name": "partialFill",
           "type": "tuple",
-          "internalType": "struct EncryptedMarginalPrice.PartialFill",
+          "internalType": "struct IEncryptedMarginalPrice.PartialFill",
           "components": [
             {
               "name": "bidId",
@@ -963,6 +963,25 @@
     {
       "type": "function",
       "name": "isLive",
+      "inputs": [
+        {
+          "name": "lotId_",
+          "type": "uint96",
+          "internalType": "uint96"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool",
+          "internalType": "bool"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "isUpcoming",
       "inputs": [
         {
           "name": "lotId_",
@@ -1242,6 +1261,19 @@
           "name": "amountOut",
           "type": "uint96",
           "indexed": false,
+          "internalType": "uint96"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "PrivateKeySubmitted",
+      "inputs": [
+        {
+          "name": "lotId",
+          "type": "uint96",
+          "indexed": true,
           "internalType": "uint96"
         }
       ],

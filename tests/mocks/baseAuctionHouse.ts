@@ -15,20 +15,22 @@ export function mockGetModuleForVeecode(
     false,
   );
 }
-export function mockGetModuleForId(
+
+export function mockGetAuctionModuleForId(
   auctionHouse: Address,
   lotId: BigInt,
   module: Address,
 ): void {
   mockFunction(
     auctionHouse,
-    "getModuleForId",
-    "getModuleForId(uint96):(address)",
+    "getAuctionModuleForId",
+    "getAuctionModuleForId(uint96):(address)",
     [ethereum.Value.fromUnsignedBigInt(lotId)],
     [ethereum.Value.fromAddress(module)],
     false,
   );
 }
+
 export function mockLotRouting(
   auctionHouse: Address,
   lotId: BigInt,
@@ -61,6 +63,7 @@ export function mockLotRouting(
     false,
   );
 }
+
 export function mockLotFees(
   auctionHouse: Address,
   lotId: BigInt,
