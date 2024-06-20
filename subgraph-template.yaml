@@ -144,6 +144,7 @@ dataSources:
         - event: PrivateKeySubmitted(indexed uint96)
           handler: handlePrivateKeySubmitted
       file: ./src/handleEncryptedMarginalPrice.ts
+  # TODO AtomicLinearVesting
   - kind: ethereum
     name: BatchLinearVesting
     network: {{network}}
