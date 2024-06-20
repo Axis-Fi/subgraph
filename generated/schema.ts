@@ -3215,6 +3215,19 @@ export class BatchEncryptedMarginalPriceLot extends Entity {
     this.set("lot", Value.fromString(value));
   }
 
+  get module(): Bytes {
+    let value = this.get("module");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set module(value: Bytes) {
+    this.set("module", Value.fromBytes(value));
+  }
+
   get status(): string {
     let value = this.get("status");
     if (!value || value.kind == ValueKind.NULL) {
@@ -3384,6 +3397,19 @@ export class BatchFixedPriceLot extends Entity {
     this.set("lot", Value.fromString(value));
   }
 
+  get module(): Bytes {
+    let value = this.get("module");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set module(value: Bytes) {
+    this.set("module", Value.fromBytes(value));
+  }
+
   get status(): string {
     let value = this.get("status");
     if (!value || value.kind == ValueKind.NULL) {
@@ -3524,6 +3550,19 @@ export class BatchLinearVestingLot extends Entity {
 
   set lot(value: string) {
     this.set("lot", Value.fromString(value));
+  }
+
+  get module(): Bytes {
+    let value = this.get("module");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set module(value: Bytes) {
+    this.set("module", Value.fromBytes(value));
   }
 
   get tokenId(): BigInt {

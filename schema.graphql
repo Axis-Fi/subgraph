@@ -325,6 +325,7 @@ type BatchBidClaimed @entity(immutable: true) {
 type BatchEncryptedMarginalPriceLot @entity {
   id: String! # chain-auctionHouse-lotId
   lot: BatchAuctionLot!
+  module: Bytes! # Address
 
   status: String! # enum: "created" | "decrypted" | "settled"
 
@@ -346,6 +347,7 @@ type BatchEncryptedMarginalPriceLot @entity {
 type BatchFixedPriceLot @entity {
   id: String! # chain-auctionHouse-lotId
   lot: BatchAuctionLot!
+  module: Bytes! # Address
 
   status: String! # enum: "created" | "settled"
 
@@ -364,6 +366,7 @@ type BatchFixedPriceLot @entity {
 type BatchLinearVestingLot @entity(immutable: true) {
   id: String! # chain-linearVesting-tokenId
   lot: BatchAuctionLot!
+  module: Bytes! # Address
 
   tokenId: BigInt! # uint256
 

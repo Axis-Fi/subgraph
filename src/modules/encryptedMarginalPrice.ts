@@ -97,17 +97,16 @@ export function createEncryptedMarginalPriceLot(
   );
 
   // Get the EncryptedMarginalPrice module
-  const encryptedMarginalPrice = getEncryptedMarginalPriceModule(
+  const empModule = getEncryptedMarginalPriceModule(
     Address.fromBytes(batchAuctionLot.auctionHouse),
     Bytes.fromUTF8(batchAuctionLot.auctionType),
   );
 
   const quoteToken = getOrCreateToken(batchAuctionLot.quoteToken);
   const baseToken = getOrCreateToken(batchAuctionLot.baseToken);
-  const lotAuctionData = encryptedMarginalPrice.auctionData(
-    batchAuctionLot.lotId,
-  );
+  const lotAuctionData = empModule.auctionData(batchAuctionLot.lotId);
 
+  empLot.module = empModule._address;
   empLot.status = _getLotStatus(lotAuctionData.getStatus());
   empLot.settlementSuccessful = false; // Set to true on successful settlement
   // marginalPrice set on settlement

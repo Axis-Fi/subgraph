@@ -76,6 +76,7 @@ export function createLinearVestingLot(
   const lvLot: BatchLinearVestingLot = new BatchLinearVestingLot(lvLotId);
   lvLot.lot = batchAuctionLot.id;
   log.info("Adding BatchLinearVestingLot for lot: {}", [lvLot.lot]);
+  lvLot.module = moduleAddress;
   lvLot.tokenId = tokenId;
 
   // Decode the parameters

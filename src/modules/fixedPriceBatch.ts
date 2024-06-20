@@ -98,6 +98,7 @@ export function createFixedPriceBatchLot(
   const baseToken = getOrCreateToken(batchAuctionLot.baseToken);
   const lotAuctionData = fpbModule.getAuctionData(batchAuctionLot.lotId);
 
+  fpbLot.module = fpbModule._address;
   fpbLot.status = _getLotStatus(lotAuctionData.status);
   fpbLot.settlementSuccessful = false; // Set to true on successful settlement
   fpbLot.price = toDecimal(lotAuctionData.price, quoteToken.decimals);
