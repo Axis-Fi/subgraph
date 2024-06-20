@@ -5,7 +5,7 @@ require("dotenv").config();
 const TARGET_NETWORK = process.env.TARGET_NETWORK || "blast-sepolia";
 
 /** The version that will it'll be deployed as */
-const VERSION = "0.5.0";
+const VERSION = "0.5.1";
 
 /**  Deployments to be deployed to Goldsky
  * otherwise they're deployed to Alchemy Subgraphs */
