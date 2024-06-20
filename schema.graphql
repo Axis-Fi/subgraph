@@ -131,6 +131,7 @@ type AtomicAuctionInfo @entity(immutable: true) {
 
   # Reverse lookups
   links: [AtomicAuctionInfoLink!]! @derivedFrom(field: "auctionInfo")
+  allowlist: [AtomicAuctionInfoAllowlistEntry!]! @derivedFrom(field: "auctionInfo")
 }
 
 type AtomicAuctionInfoLink @entity(immutable: true) {
@@ -138,6 +139,12 @@ type AtomicAuctionInfoLink @entity(immutable: true) {
   auctionInfo: AtomicAuctionInfo!
   title: String!
   url: String!
+}
+
+type AtomicAuctionInfoAllowlistEntry @entity(immutable: true) {
+  id: ID! # IPFS hash-array index
+  auctionInfo: AtomicAuctionInfo!
+  values: [String!]! # Number of elements depends on the allowlist type
 }
 
 ### Batch Auctions
@@ -404,6 +411,7 @@ type BatchAuctionInfo @entity(immutable: true) {
 
   # Reverse lookups
   links: [BatchAuctionInfoLink!]! @derivedFrom(field: "auctionInfo")
+  allowlist: [BatchAuctionInfoAllowlistEntry!]! @derivedFrom(field: "auctionInfo")
 }
 
 type BatchAuctionInfoLink @entity(immutable: true) {
@@ -411,6 +419,12 @@ type BatchAuctionInfoLink @entity(immutable: true) {
   auctionInfo: BatchAuctionInfo!
   title: String!
   url: String!
+}
+
+type BatchAuctionInfoAllowlistEntry @entity(immutable: true) {
+  id: ID! # IPFS hash-array index
+  auctionInfo: BatchAuctionInfo!
+  values: [String!]! # Number of elements depends on the allowlist type
 }
 
 ### Shared types

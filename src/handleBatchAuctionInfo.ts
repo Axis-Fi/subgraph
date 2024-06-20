@@ -1,6 +1,10 @@
 import { Bytes, dataSource, json, log } from "@graphprotocol/graph-ts";
 
-import { BatchAuctionInfo, BatchAuctionInfoLink } from "../generated/schema";
+import {
+  BatchAuctionInfo,
+  BatchAuctionInfoAllowlistEntry,
+  BatchAuctionInfoLink,
+} from "../generated/schema";
 import { KEY_AUCTION_LOT_ID } from "./constants";
 
 export function handleBatchAuctionInfo(content: Bytes): void {
@@ -22,8 +26,6 @@ export function handleBatchAuctionInfo(content: Bytes): void {
     if (description) {
       auctionInfoRecord.description = description.toString();
     }
-
-    // Skip allowlist for now
 
     auctionInfoRecord.save();
 
@@ -47,6 +49,42 @@ export function handleBatchAuctionInfo(content: Bytes): void {
         linkRecord.save();
 
         log.info("BatchAuctionInfoLink saved for hash: {}", [linkRecordId]);
+      }
+    }
+
+    // Iterate over the allowlist
+    const allowlist = value.get("allowlist");
+    if (allowlist) {
+      // Format: string[][]
+      const allowlistArray = allowlist.toArray();
+      for (let i = 0; i < allowlistArray.length; i++) {
+        // Format: string[]
+        const allowlistEntry = allowlistArray[i].toArray();
+
+        // Create a new record
+        const allowlistRecordId = ipfsHash + "-" + i.toString();
+        const allowlistRecord = new BatchAuctionInfoAllowlistEntry(
+          allowlistRecordId,
+        );
+        allowlistRecord.auctionInfo = ipfsHash;
+
+        const valuesArray = new Array<string>(0);
+
+        // Iterate over the allowlist entry
+        // There is a flexible number of values in the allowlist entry, so we iterate over all of them
+        for (let j = 0; j < allowlistEntry.length; j++) {
+          const allowlistEntryValue = allowlistEntry[j].toString();
+          valuesArray.push(allowlistEntryValue);
+        }
+
+        allowlistRecord.values = valuesArray;
+
+        allowlistRecord.save();
+
+        log.info(
+          "BatchAuctionInfoAllowlistEntry saved for hash {} at index {}",
+          [ipfsHash, i.toString()],
+        );
       }
     }
   }

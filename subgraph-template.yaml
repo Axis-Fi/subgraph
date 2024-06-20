@@ -148,6 +148,7 @@ templates:
       entities:
         - AtomicAuctionInfo
         - AtomicAuctionInfoLink
+        - AtomicAuctionInfoAllowlistEntry
       abis:
         - name: ERC20
           file: ./abis/ERC20.json
@@ -161,6 +162,7 @@ templates:
       entities:
         - BatchAuctionInfo
         - BatchAuctionInfoLink
+        - BatchAuctionInfoAllowlistEntry
       abis:
         - name: ERC20
           file: ./abis/ERC20.json
