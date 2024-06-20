@@ -23,7 +23,6 @@ import {
   BatchBidDecrypted,
   BatchBidRefunded,
   BatchEncryptedMarginalPriceLot,
-  BatchLinearVestingRedeemed,
 } from "../generated/schema";
 import {
   handleAbort,
