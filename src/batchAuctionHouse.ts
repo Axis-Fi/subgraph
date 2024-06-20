@@ -4,6 +4,7 @@ import {
   BigInt,
   Bytes,
   dataSource,
+  DataSourceContext,
   ethereum,
   log,
 } from "@graphprotocol/graph-ts";
@@ -34,7 +35,8 @@ import {
   BatchBidClaimed,
   BatchBidRefunded,
 } from "../generated/schema";
-import { AuctionInfo } from "../generated/templates";
+import { BatchAuctionInfo } from "../generated/templates";
+import { KEY_AUCTION_LOT_ID } from "./constants";
 import {
   getAuctionCuration,
   getAuctionHouse,
@@ -204,7 +206,13 @@ export function handleAuctionCreated(event: AuctionCreatedEvent): void {
 
   // Load IPFS data if the hash is set
   if (event.params.infoHash != "") {
-    AuctionInfo.create(event.params.infoHash);
+    const dataSourceContext = new DataSourceContext();
+    dataSourceContext.setString(KEY_AUCTION_LOT_ID, auctionLot.id.toString());
+
+    BatchAuctionInfo.createWithContext(
+      event.params.infoHash,
+      dataSourceContext,
+    );
   }
 
   // If using EncryptedMarginalPrice, save details

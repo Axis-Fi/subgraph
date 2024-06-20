@@ -141,15 +141,28 @@ dataSources:
       file: ./src/handleEncryptedMarginalPrice.ts
 templates:
   - kind: file/ipfs
-    name: AuctionInfo
+    name: AtomicAuctionInfo
     mapping:
       apiVersion: 0.0.7
       language: wasm/assemblyscript
       entities:
-        - AuctionInfo
-        - AuctionInfoLink
+        - AtomicAuctionInfo
+        - AtomicAuctionInfoLink
       abis:
         - name: ERC20
           file: ./abis/ERC20.json
-      handler: handleAuctionInfo
-      file: ./src/handleAuctionInfo.ts
+      handler: handleAtomicAuctionInfo
+      file: ./src/handleAtomicAuctionInfo.ts
+  - kind: file/ipfs
+    name: BatchAuctionInfo
+    mapping:
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - BatchAuctionInfo
+        - BatchAuctionInfoLink
+      abis:
+        - name: ERC20
+          file: ./abis/ERC20.json
+      handler: handleBatchAuctionInfo
+      file: ./src/handleBatchAuctionInfo.ts

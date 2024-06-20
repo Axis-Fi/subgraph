@@ -2,12 +2,22 @@
 
 import { DataSourceTemplate, DataSourceContext } from "@graphprotocol/graph-ts";
 
-export class AuctionInfo extends DataSourceTemplate {
+export class AtomicAuctionInfo extends DataSourceTemplate {
   static create(cid: string): void {
-    DataSourceTemplate.create("AuctionInfo", [cid]);
+    DataSourceTemplate.create("AtomicAuctionInfo", [cid]);
   }
 
   static createWithContext(cid: string, context: DataSourceContext): void {
-    DataSourceTemplate.createWithContext("AuctionInfo", [cid], context);
+    DataSourceTemplate.createWithContext("AtomicAuctionInfo", [cid], context);
+  }
+}
+
+export class BatchAuctionInfo extends DataSourceTemplate {
+  static create(cid: string): void {
+    DataSourceTemplate.create("BatchAuctionInfo", [cid]);
+  }
+
+  static createWithContext(cid: string, context: DataSourceContext): void {
+    DataSourceTemplate.createWithContext("BatchAuctionInfo", [cid], context);
   }
 }

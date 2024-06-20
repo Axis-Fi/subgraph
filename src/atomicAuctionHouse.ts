@@ -3,6 +3,7 @@ import {
   BigInt,
   Bytes,
   dataSource,
+  DataSourceContext,
   ethereum,
   log,
 } from "@graphprotocol/graph-ts";
@@ -26,7 +27,8 @@ import {
   AuctionHouseModuleSunset,
   AuctionHouseOwnershipTransferred,
 } from "../generated/schema";
-import { AuctionInfo } from "../generated/templates";
+import { AtomicAuctionInfo } from "../generated/templates";
+import { KEY_AUCTION_LOT_ID } from "./constants";
 import {
   getAuctionCuration,
   getAuctionHouse,
@@ -154,7 +156,13 @@ export function handleAuctionCreated(event: AuctionCreatedEvent): void {
 
   // Load IPFS data if the hash is set
   if (event.params.infoHash != "") {
-    AuctionInfo.create(event.params.infoHash);
+    const dataSourceContext = new DataSourceContext();
+    dataSourceContext.setString(KEY_AUCTION_LOT_ID, auctionLot.id.toString());
+
+    AtomicAuctionInfo.createWithContext(
+      event.params.infoHash,
+      dataSourceContext,
+    );
   }
 
   // If using FixedPriceSale, save details

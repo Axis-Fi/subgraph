@@ -1,12 +1,17 @@
 import { Bytes, dataSource, json, log } from "@graphprotocol/graph-ts";
 
-import { AuctionInfo, AuctionInfoLink } from "../generated/schema";
+import { AtomicAuctionInfo, AtomicAuctionInfoLink } from "../generated/schema";
+import { KEY_AUCTION_LOT_ID } from "./constants";
 
-export function handleAuctionInfo(content: Bytes): void {
-  const auctionInfoRecord = new AuctionInfo(dataSource.stringParam());
+export function handleAtomicAuctionInfo(content: Bytes): void {
+  const ipfsHash = dataSource.stringParam();
+  const auctionLotId = dataSource.context().getString(KEY_AUCTION_LOT_ID);
+  const auctionInfoRecord = new AtomicAuctionInfo(ipfsHash);
+
   const value = json.fromBytes(content).toObject();
   if (value) {
-    auctionInfoRecord.hash = dataSource.stringParam();
+    auctionInfoRecord.hash = ipfsHash;
+    auctionInfoRecord.lot = auctionLotId;
 
     const name = value.get("name");
     if (name) {
@@ -22,7 +27,7 @@ export function handleAuctionInfo(content: Bytes): void {
 
     auctionInfoRecord.save();
 
-    log.info("AuctionInfo saved for hash: {}", [dataSource.stringParam()]);
+    log.info("AtomicAuctionInfo saved for hash: {}", [ipfsHash]);
 
     // Iterate over the links
     const links = value.get("links");
@@ -34,17 +39,14 @@ export function handleAuctionInfo(content: Bytes): void {
         const linkValue = link.value.toString();
 
         // Create a new record
-        const linkRecord = new AuctionInfoLink(
-          dataSource.stringParam() + "-" + linkKey,
-        );
-        linkRecord.auctionInfo = dataSource.stringParam();
+        const linkRecordId = ipfsHash + "-" + linkKey;
+        const linkRecord = new AtomicAuctionInfoLink(linkRecordId);
+        linkRecord.auctionInfo = ipfsHash;
         linkRecord.title = linkKey;
         linkRecord.url = linkValue;
         linkRecord.save();
 
-        log.info("AuctionInfoLink saved for hash: {}", [
-          dataSource.stringParam() + "-" + linkKey,
-        ]);
+        log.info("AtomicAuctionInfoLink saved for hash: {}", [linkRecordId]);
       }
     }
   }

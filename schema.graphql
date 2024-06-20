@@ -50,6 +50,7 @@ type AtomicAuctionLot @entity {
   purchases: [AtomicPurchase!]! @derivedFrom(field: "lot")
   fixedPriceSale: AtomicFixedPriceSaleLot @derivedFrom(field: "lot")
   linearVesting: AtomicLinearVestingLot @derivedFrom(field: "lot")
+  info: AtomicAuctionInfo @derivedFrom(field: "lot")
 }
 
 type AtomicAuctionCreated @entity(immutable: true) {
@@ -121,6 +122,24 @@ type AtomicLinearVestingLot @entity(immutable: true) {
   # TODO consider timeseries data for redemption/vesting
 }
 
+type AtomicAuctionInfo @entity(immutable: true) {
+  id: ID! # IPFS hash
+  lot: AtomicAuctionLot!
+  hash: String! # IPFS hash
+  name: String
+  description: String
+
+  # Reverse lookups
+  links: [AtomicAuctionInfoLink!]! @derivedFrom(field: "auctionInfo")
+}
+
+type AtomicAuctionInfoLink @entity(immutable: true) {
+  id: ID! # IPFS hash-link name
+  auctionInfo: AtomicAuctionInfo!
+  title: String!
+  url: String!
+}
+
 ### Batch Auctions
 
 type BatchAuctionLot @entity {
@@ -182,6 +201,7 @@ type BatchAuctionLot @entity {
   encryptedMarginalPrice: BatchEncryptedMarginalPriceLot @derivedFrom(field: "lot")
   fixedPrice: BatchFixedPriceLot @derivedFrom(field: "lot")
   linearVesting: BatchLinearVestingLot @derivedFrom(field: "lot")
+  info: BatchAuctionInfo @derivedFrom(field: "lot")
 }
 
 type BatchAuctionCreated @entity(immutable: true) {
@@ -375,6 +395,24 @@ type BatchLinearVestingLot @entity(immutable: true) {
   # TODO consider timeseries data for redemption/vesting
 }
 
+type BatchAuctionInfo @entity(immutable: true) {
+  id: ID! # IPFS hash
+  lot: BatchAuctionLot!
+  hash: String! # IPFS hash
+  name: String
+  description: String
+
+  # Reverse lookups
+  links: [BatchAuctionInfoLink!]! @derivedFrom(field: "auctionInfo")
+}
+
+type BatchAuctionInfoLink @entity(immutable: true) {
+  id: ID! # IPFS hash-link name
+  auctionInfo: BatchAuctionInfo!
+  title: String!
+  url: String!
+}
+
 ### Shared types
 
 type Token @entity(immutable: true) {
@@ -420,21 +458,4 @@ type AuctionHouseModuleSunset @entity(immutable: true) {
   blockTimestamp: BigInt!
   date: String!
   transactionHash: Bytes!
-}
-
-type AuctionInfo @entity(immutable: true) {
-  id: ID! # IPFS hash
-  hash: String! # IPFS hash
-  name: String
-  description: String
-
-  # Reverse lookups
-  links: [AuctionInfoLink!]! @derivedFrom(field: "auctionInfo")
-}
-
-type AuctionInfoLink @entity(immutable: true) {
-  id: ID! # IPFS hash-link name
-  auctionInfo: AuctionInfo!
-  title: String!
-  url: String!
 }
