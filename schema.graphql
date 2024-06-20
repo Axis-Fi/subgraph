@@ -429,7 +429,7 @@ type AuctionInfo @entity(immutable: true) {
   description: String
 
   # Reverse lookups
-  links: AuctionInfoLink @derivedFrom(field: "auctionInfo")
+  links: [AuctionInfoLink!]! @derivedFrom(field: "auctionInfo")
 }
 
 type AuctionInfoLink @entity(immutable: true) {

@@ -147,6 +147,7 @@ templates:
       language: wasm/assemblyscript
       entities:
         - AuctionInfo
+        - AuctionInfoLink
       abis:
         - name: ERC20
           file: ./abis/ERC20.json
