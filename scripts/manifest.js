@@ -18,7 +18,16 @@ console.log(`Generating subgraph.yaml for ${config.TARGET_NETWORK}\n`);
 const subgraphTemplate = readFileSync("subgraph-template.yaml").toString();
 
 // Render the template with the network values
-const templatedSubgraphManifest = Mustache.render(subgraphTemplate, networkValues);
+let templatedSubgraphManifest = Mustache.render(subgraphTemplate, networkValues);
+
+// If using the Graph Protocol, ensure the network name is correct
+if (config.USE_GRAPH_PROTOCOL) {
+  // mode-testnet becomes mode-sepolia
+  templatedSubgraphManifest = templatedSubgraphManifest.replace(/mode-testnet/g, "mode-sepolia");
+
+  // blast-sepolia becomes blast-testnet
+  templatedSubgraphManifest = templatedSubgraphManifest.replace(/blast-sepolia/g, "blast-testnet");
+}
 
 // Write to file
 writeFileSync("subgraph.yaml", templatedSubgraphManifest);
