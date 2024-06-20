@@ -5,6 +5,7 @@ type AtomicAuctionLot @entity {
   chain: String!
   auctionHouse: Bytes! # address
   lotId: BigInt!
+  infoHash: String! # IPFS info hash
 
   createdBlockNumber: BigInt!
   createdBlockTimestamp: BigInt!
@@ -127,6 +128,7 @@ type BatchAuctionLot @entity {
   chain: String!
   auctionHouse: Bytes! # address
   lotId: BigInt!
+  infoHash: String! # IPFS info hash
 
   createdBlockNumber: BigInt!
   createdBlockTimestamp: BigInt!
@@ -418,4 +420,11 @@ type AuctionHouseModuleSunset @entity(immutable: true) {
   blockTimestamp: BigInt!
   date: String!
   transactionHash: Bytes!
+}
+
+type AuctionInfo @entity(immutable: true) {
+  id: ID! # IPFS hash
+  hash: String! # IPFS hash
+  name: String
+  description: String
 }

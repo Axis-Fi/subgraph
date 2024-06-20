@@ -93,6 +93,19 @@ export class AtomicAuctionLot extends Entity {
     this.set("lotId", Value.fromBigInt(value));
   }
 
+  get infoHash(): string {
+    let value = this.get("infoHash");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set infoHash(value: string) {
+    this.set("infoHash", Value.fromString(value));
+  }
+
   get createdBlockNumber(): BigInt {
     let value = this.get("createdBlockNumber");
     if (!value || value.kind == ValueKind.NULL) {
@@ -1307,6 +1320,19 @@ export class BatchAuctionLot extends Entity {
 
   set lotId(value: BigInt) {
     this.set("lotId", Value.fromBigInt(value));
+  }
+
+  get infoHash(): string {
+    let value = this.get("infoHash");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set infoHash(value: string) {
+    this.set("infoHash", Value.fromString(value));
   }
 
   get createdBlockNumber(): BigInt {
@@ -4105,6 +4131,95 @@ export class AuctionHouseModuleSunset extends Entity {
 
   set transactionHash(value: Bytes) {
     this.set("transactionHash", Value.fromBytes(value));
+  }
+}
+
+export class AuctionInfo extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save AuctionInfo entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type AuctionInfo must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+      );
+      store.set("AuctionInfo", id.toString(), this);
+    }
+  }
+
+  static loadInBlock(id: string): AuctionInfo | null {
+    return changetype<AuctionInfo | null>(
+      store.get_in_block("AuctionInfo", id),
+    );
+  }
+
+  static load(id: string): AuctionInfo | null {
+    return changetype<AuctionInfo | null>(store.get("AuctionInfo", id));
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get hash(): string {
+    let value = this.get("hash");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set hash(value: string) {
+    this.set("hash", Value.fromString(value));
+  }
+
+  get name(): string | null {
+    let value = this.get("name");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set name(value: string | null) {
+    if (!value) {
+      this.unset("name");
+    } else {
+      this.set("name", Value.fromString(<string>value));
+    }
+  }
+
+  get description(): string | null {
+    let value = this.get("description");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set description(value: string | null) {
+    if (!value) {
+      this.unset("description");
+    } else {
+      this.set("description", Value.fromString(<string>value));
+    }
   }
 }
 

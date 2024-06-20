@@ -4,7 +4,6 @@ import {
   Bytes,
   dataSource,
   ethereum,
-  ipfs,
   log,
 } from "@graphprotocol/graph-ts";
 
@@ -27,6 +26,7 @@ import {
   AuctionHouseModuleSunset,
   AuctionHouseOwnershipTransferred,
 } from "../generated/schema";
+import { AuctionInfo } from "../generated/templates";
 import {
   getAuctionCuration,
   getAuctionHouse,
@@ -88,6 +88,7 @@ export function handleAuctionCreated(event: AuctionCreatedEvent): void {
   auctionLot.chain = dataSource.network();
   auctionLot.auctionHouse = event.address;
   auctionLot.lotId = lotId;
+  auctionLot.infoHash = event.params.infoHash;
 
   auctionLot.createdBlockNumber = event.block.number;
   auctionLot.createdBlockTimestamp = event.block.timestamp;
@@ -145,20 +146,16 @@ export function handleAuctionCreated(event: AuctionCreatedEvent): void {
   auctionLot.lastUpdatedDate = toISO8601String(event.block.timestamp);
   auctionLot.lastUpdatedTransactionHash = event.transaction.hash;
 
+  auctionLot.save();
+
+  log.info("AtomicAuctionLot event saved with id: {}", [
+    auctionLot.id.toString(),
+  ]);
+
   // Load IPFS data if the hash is set
   if (event.params.infoHash != "") {
-    const ipfsData = ipfs.cat(event.params.infoHash);
-
-    if (ipfsData !== null) {
-      const ipfsDataString = ipfsData.toString();
-      log.info("IPFS data: {}", [ipfsDataString]);
-    }
-    else {
-      log.warning("IPFS data not found for hash: {}", [event.params.infoHash]);
-    }
+    AuctionInfo.create(event.params.infoHash);
   }
-
-  auctionLot.save();
 
   // If using FixedPriceSale, save details
   if (auctionLot.auctionType.includes(FPS_KEYCODE)) {

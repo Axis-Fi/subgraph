@@ -1,8 +1,6 @@
 specVersion: 1.0.0
 indexerHints:
   prune: auto
-features:
-  - ipfsOnEthereumContracts
 schema:
   file: ./schema.graphql
 dataSources:
@@ -141,3 +139,16 @@ dataSources:
         - event: BidDecrypted(indexed uint96,indexed uint64,uint96,uint96)
           handler: handleBidDecrypted
       file: ./src/handleEncryptedMarginalPrice.ts
+templates:
+  - kind: file/ipfs
+    name: AuctionInfo
+    mapping:
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - AuctionInfo
+      abis:
+        - name: ERC20
+          file: ./abis/ERC20.json
+      handler: handleAuctionInfo
+      file: ./src/handleAuctionInfo.ts
