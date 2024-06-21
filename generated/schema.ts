@@ -1429,8 +1429,8 @@ export class AtomicAuctionInfoLink extends Entity {
     this.set("auctionInfo", Value.fromString(value));
   }
 
-  get title(): string {
-    let value = this.get("title");
+  get linkId(): string {
+    let value = this.get("linkId");
     if (!value || value.kind == ValueKind.NULL) {
       throw new Error("Cannot return null for a required field.");
     } else {
@@ -1438,8 +1438,8 @@ export class AtomicAuctionInfoLink extends Entity {
     }
   }
 
-  set title(value: string) {
-    this.set("title", Value.fromString(value));
+  set linkId(value: string) {
+    this.set("linkId", Value.fromString(value));
   }
 
   get url(): string {
@@ -4287,8 +4287,8 @@ export class BatchAuctionInfoLink extends Entity {
     this.set("auctionInfo", Value.fromString(value));
   }
 
-  get title(): string {
-    let value = this.get("title");
+  get linkId(): string {
+    let value = this.get("linkId");
     if (!value || value.kind == ValueKind.NULL) {
       throw new Error("Cannot return null for a required field.");
     } else {
@@ -4296,8 +4296,8 @@ export class BatchAuctionInfoLink extends Entity {
     }
   }
 
-  set title(value: string) {
-    this.set("title", Value.fromString(value));
+  set linkId(value: string) {
+    this.set("linkId", Value.fromString(value));
   }
 
   get url(): string {

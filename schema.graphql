@@ -137,7 +137,7 @@ type AtomicAuctionInfo @entity(immutable: true) {
 type AtomicAuctionInfoLink @entity(immutable: true) {
   id: ID! # IPFS hash-link name
   auctionInfo: AtomicAuctionInfo!
-  title: String!
+  linkId: String!
   url: String!
 }
 
@@ -441,7 +441,7 @@ type BatchAuctionInfo @entity(immutable: true) {
 type BatchAuctionInfoLink @entity(immutable: true) {
   id: ID! # IPFS hash-link name
   auctionInfo: BatchAuctionInfo!
-  title: String!
+  linkId: String!
   url: String!
 }
 

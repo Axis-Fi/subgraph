@@ -50,7 +50,7 @@ describe("batchAuctionInfo", () => {
     // Assert links
     const recordLinks = auctionInfoRecord.links.load();
     // Ordering is wonky, so we only test a single element
-    assertStringEquals(recordLinks[0].title, "link1", "link1 title");
+    assertStringEquals(recordLinks[0].linkId, "link1", "link1 id");
     assertStringEquals(recordLinks[0].url, "url1", "link1 URL");
 
     // Assert allowlist

@@ -44,7 +44,7 @@ export function handleAtomicAuctionInfo(content: Bytes): void {
         const linkRecordId = ipfsHash + "-" + linkKey;
         const linkRecord = new AtomicAuctionInfoLink(linkRecordId);
         linkRecord.auctionInfo = ipfsHash;
-        linkRecord.title = linkKey;
+        linkRecord.linkId = linkKey;
         linkRecord.url = linkValue;
         linkRecord.save();
 
