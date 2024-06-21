@@ -27,6 +27,16 @@ export function handleAtomicAuctionInfo(content: Bytes): void {
       auctionInfoRecord.description = description.toString();
     }
 
+    const key = value.get("key");
+    if (key) {
+      auctionInfoRecord.key = key.toString();
+    }
+
+    const tagline = value.get("tagline");
+    if (tagline) {
+      auctionInfoRecord.tagline = tagline.toString();
+    }
+
     auctionInfoRecord.save();
 
     log.info("AtomicAuctionInfo saved for hash: {}", [ipfsHash]);

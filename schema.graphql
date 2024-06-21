@@ -126,8 +126,11 @@ type AtomicAuctionInfo @entity(immutable: true) {
   id: ID! # IPFS hash
   lot: AtomicAuctionLot!
   hash: String! # IPFS hash
+
+  key: String
   name: String
   description: String
+  tagline: String
 
   # Reverse lookups
   links: [AtomicAuctionInfoLink!]! @derivedFrom(field: "auctionInfo")
@@ -430,8 +433,11 @@ type BatchAuctionInfo @entity(immutable: true) {
   id: ID! # IPFS hash
   lot: BatchAuctionLot!
   hash: String! # IPFS hash
+
+  key: String
   name: String
   description: String
+  tagline: String
 
   # Reverse lookups
   links: [BatchAuctionInfoLink!]! @derivedFrom(field: "auctionInfo")

@@ -13,8 +13,10 @@ describe("batchAuctionInfo", () => {
   test("should decode the auction info", () => {
     // Create the JSON string
     const jsonString = `{
+      "key": "test key",
       "name": "sample name",
       "description": "sample description",
+      "tagline": "test tagline",
       "allowlist": [
         ["0x1234", "1111"]
       ],
@@ -40,12 +42,15 @@ describe("batchAuctionInfo", () => {
 
     assertStringEquals(auctionInfoRecord.hash, IPFS_HASH, "IPFS hash");
     assertStringEquals(auctionInfoRecord.lot, AUCTION_LOT_ID, "auction lot ID");
+
     assertStringEquals(auctionInfoRecord.name, "sample name", "name");
     assertStringEquals(
       auctionInfoRecord.description,
       "sample description",
       "description",
     );
+    assertStringEquals(auctionInfoRecord.key, "test key", "key");
+    assertStringEquals(auctionInfoRecord.tagline, "test tagline", "tagline");
 
     // Assert links
     const recordLinks = auctionInfoRecord.links.load();

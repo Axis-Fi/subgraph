@@ -1319,6 +1319,23 @@ export class AtomicAuctionInfo extends Entity {
     this.set("hash", Value.fromString(value));
   }
 
+  get key(): string | null {
+    let value = this.get("key");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set key(value: string | null) {
+    if (!value) {
+      this.unset("key");
+    } else {
+      this.set("key", Value.fromString(<string>value));
+    }
+  }
+
   get name(): string | null {
     let value = this.get("name");
     if (!value || value.kind == ValueKind.NULL) {
@@ -1350,6 +1367,23 @@ export class AtomicAuctionInfo extends Entity {
       this.unset("description");
     } else {
       this.set("description", Value.fromString(<string>value));
+    }
+  }
+
+  get tagline(): string | null {
+    let value = this.get("tagline");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set tagline(value: string | null) {
+    if (!value) {
+      this.unset("tagline");
+    } else {
+      this.set("tagline", Value.fromString(<string>value));
     }
   }
 
@@ -4180,6 +4214,23 @@ export class BatchAuctionInfo extends Entity {
     this.set("hash", Value.fromString(value));
   }
 
+  get key(): string | null {
+    let value = this.get("key");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set key(value: string | null) {
+    if (!value) {
+      this.unset("key");
+    } else {
+      this.set("key", Value.fromString(<string>value));
+    }
+  }
+
   get name(): string | null {
     let value = this.get("name");
     if (!value || value.kind == ValueKind.NULL) {
@@ -4211,6 +4262,23 @@ export class BatchAuctionInfo extends Entity {
       this.unset("description");
     } else {
       this.set("description", Value.fromString(<string>value));
+    }
+  }
+
+  get tagline(): string | null {
+    let value = this.get("tagline");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set tagline(value: string | null) {
+    if (!value) {
+      this.unset("tagline");
+    } else {
+      this.set("tagline", Value.fromString(<string>value));
     }
   }
 
