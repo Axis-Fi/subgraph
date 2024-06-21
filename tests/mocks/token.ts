@@ -41,3 +41,18 @@ export function mockToken(
     false,
   );
 }
+
+export function mockBalanceOf(
+  address: Address,
+  owner: Address,
+  balance: BigInt,
+): void {
+  mockFunction(
+    address,
+    "balanceOf",
+    "balanceOf(address):(uint256)",
+    [ethereum.Value.fromAddress(owner)],
+    [ethereum.Value.fromUnsignedBigInt(balance)],
+    false,
+  );
+}

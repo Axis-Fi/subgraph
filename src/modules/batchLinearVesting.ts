@@ -6,7 +6,10 @@ import {
   log,
 } from "@graphprotocol/graph-ts";
 
-import { LinearVesting } from "../../generated/BatchLinearVesting/LinearVesting";
+import {
+  LinearVesting,
+  LinearVesting__tokenMetadataResult,
+} from "../../generated/BatchLinearVesting/LinearVesting";
 import { BatchAuctionLot, BatchLinearVestingLot } from "../../generated/schema";
 import { toISO8601String } from "../helpers/date";
 import { fromSlicedBytes } from "../helpers/number";
@@ -57,6 +60,15 @@ export function getBalanceOf(
   const linearVesting = _getLinearVestingModule(linearVestingModule);
 
   return linearVesting.balanceOf(account, tokenId);
+}
+
+export function getTokenMetadata(
+  linearVestingModule: Address,
+  tokenId: BigInt,
+): LinearVesting__tokenMetadataResult {
+  const linearVesting = _getLinearVestingModule(linearVestingModule);
+
+  return linearVesting.tokenMetadata(tokenId);
 }
 
 export function createLinearVestingLot(

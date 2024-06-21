@@ -415,7 +415,9 @@ type BatchLinearVestingRedeemed @entity(immutable: true) {
   lot: BatchLinearVestingLot!
 
   bidder: Bytes! # address
+  "The amount of tokens that have been redeemed by the bidder."
   redeemed: BigDecimal! # uint256
+  "The remaining amount of tokens that can be redeemed by the bidder, including both unwrapped (ERC6909) and wrapped (ERC20) balances."
   remaining: BigDecimal! # uint256
 
   blockNumber: BigInt!

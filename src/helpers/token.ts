@@ -1,10 +1,16 @@
-import { Address, Bytes } from "@graphprotocol/graph-ts";
+import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
 
 import { ERC20 } from "../../generated/BatchAuctionHouse/ERC20";
 import { Token } from "../../generated/schema";
 
 function _getERC20Contract(address: Bytes): ERC20 {
   return ERC20.bind(Address.fromBytes(address));
+}
+
+export function getTokenBalance(address: Bytes, account: Address): BigInt {
+  const tokenContract: ERC20 = _getERC20Contract(address);
+
+  return tokenContract.balanceOf(account);
 }
 
 export function getOrCreateToken(address: Bytes): Token {

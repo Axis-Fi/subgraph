@@ -81,11 +81,12 @@ import {
   mockEmpPartialFill,
 } from "./mocks/emp";
 import {
-  mockBalanceOf,
-  mockDecimals,
+  mockDerivativeBalanceOf,
+  mockDerivativeDecimals,
   mockTokenId,
+  mockTokenMetadata,
 } from "./mocks/linearVesting";
-import { mockToken } from "./mocks/token";
+import { mockBalanceOf, mockToken } from "./mocks/token";
 
 const auctionModuleVeecode = "01EMPA";
 const linearVestingVeecode = "01LIV";
@@ -121,6 +122,12 @@ const derivativeTokenBalance: BigInt = BigInt.fromString(
   "10000000000000000000000",
 ); // 10
 const derivativeRedeemed: BigInt = BigInt.fromString("1500000000000000000000"); // 1.5
+const derivativeWrappedTokenBalance: BigInt = BigInt.fromString(
+  "15000000000000000000000",
+); // 15
+const derivativeWrappedTokenAddress: Address = Address.fromString(
+  "0x1234567890123456789012345678901234567890",
+);
 
 const SELLER: Address = Address.fromString(
   "0x0000000000000000000000000000000000000001",
@@ -274,17 +281,27 @@ function _createAuctionLot(
       derivativeTokenId,
     );
 
-    mockDecimals(
+    mockDerivativeDecimals(
       derivativeModuleAddress,
       derivativeTokenId,
       lotBaseTokenDecimals,
     );
 
-    mockBalanceOf(
+    mockDerivativeBalanceOf(
       derivativeModuleAddress,
       BIDDER,
       derivativeTokenId,
       derivativeTokenBalance,
+    );
+
+    // token metadata with no wrapped address
+    mockTokenMetadata(
+      derivativeModuleAddress,
+      derivativeTokenId,
+      true,
+      Address.zero(),
+      BASE_TOKEN,
+      derivativeParams,
     );
   }
 
@@ -1927,6 +1944,60 @@ describe("linear vesting redemption", () => {
       batchLinearVestingLotRedeemedLookup[0].id,
       recordId,
       "BatchLinearVestingLot: redemptions lookup",
+    );
+  });
+
+  test("BatchLinearVestingRedemption with wrapped token balance", () => {
+    // Additional mocks
+    mockTokenMetadata(
+      derivativeModuleAddress,
+      derivativeTokenId,
+      true,
+      derivativeWrappedTokenAddress,
+      BASE_TOKEN,
+      linearVestingParams,
+    );
+    mockBalanceOf(
+      derivativeWrappedTokenAddress,
+      BIDDER,
+      derivativeWrappedTokenBalance,
+    );
+    mockToken(
+      derivativeWrappedTokenAddress,
+      "Wrapped Derivative",
+      "WD",
+      lotBaseTokenDecimals,
+      BigInt.fromString("100000000000000000000"),
+    );
+
+    const event = createLinearVestingRedeemEvent(
+      derivativeTokenId,
+      BIDDER,
+      derivativeRedeemed,
+      derivativeModuleAddress,
+    );
+    handleRedeemed(event);
+
+    // BatchLinearVestingRedeemed record is stored
+    const recordId =
+      "mainnet-" +
+      derivativeModuleAddress.toHexString() +
+      "-" +
+      derivativeTokenId.toString() +
+      "-" +
+      event.transaction.hash.toHexString() +
+      "-" +
+      event.logIndex.toString();
+
+    const batchLinearVestingRedemptionRecord =
+      getBatchLinearVestingRedeemed(recordId);
+
+    assertBigDecimalEquals(
+      batchLinearVestingRedemptionRecord.remaining,
+      toDecimal(derivativeTokenBalance, lotBaseTokenDecimals).plus(
+        toDecimal(derivativeWrappedTokenBalance, lotBaseTokenDecimals),
+      ),
+      "BatchLinearVestingRedemption: remaining",
     );
   });
 });
