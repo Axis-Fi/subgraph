@@ -2,7 +2,6 @@ import {
   Address,
   BigInt,
   Bytes,
-  dataSource,
   DataSourceContext,
   ethereum,
   log,
@@ -36,6 +35,7 @@ import {
   getLotRecord,
   getLotRecordId,
 } from "./helpers/atomicAuction";
+import { getChain } from "./helpers/chain";
 import { toISO8601String } from "./helpers/date";
 import { toDecimal } from "./helpers/number";
 import { getOrCreateToken } from "./helpers/token";
@@ -87,7 +87,7 @@ export function handleAuctionCreated(event: AuctionCreatedEvent): void {
 
   // Create an AtomicAuctionLot record
   const auctionLot = new AtomicAuctionLot(getLotRecordId(event.address, lotId));
-  auctionLot.chain = dataSource.network();
+  auctionLot.chain = getChain();
   auctionLot.auctionHouse = event.address;
   auctionLot.lotId = lotId;
   auctionLot.infoHash = event.params.infoHash;

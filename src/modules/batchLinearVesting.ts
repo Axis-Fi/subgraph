@@ -1,16 +1,11 @@
-import {
-  Address,
-  BigInt,
-  Bytes,
-  dataSource,
-  log,
-} from "@graphprotocol/graph-ts";
+import { Address, BigInt, Bytes, log } from "@graphprotocol/graph-ts";
 
 import {
   LinearVesting,
   LinearVesting__tokenMetadataResult,
 } from "../../generated/BatchLinearVesting/LinearVesting";
 import { BatchAuctionLot, BatchLinearVestingLot } from "../../generated/schema";
+import { getChain } from "../helpers/chain";
 import { toISO8601String } from "../helpers/date";
 import { fromSlicedBytes } from "../helpers/number";
 
@@ -21,7 +16,7 @@ function _getLinearVestingLotId(
   tokenId: BigInt,
 ): string {
   return (
-    dataSource.network() +
+    getChain() +
     "-" +
     linearVestingModule.toHexString() +
     "-" +

@@ -3,7 +3,6 @@ import {
   BigDecimal,
   BigInt,
   Bytes,
-  dataSource,
   DataSourceContext,
   ethereum,
   log,
@@ -50,6 +49,7 @@ import {
   updateBidsStatus,
   updateBidStatus,
 } from "./helpers/bid";
+import { getChain } from "./helpers/chain";
 import { toISO8601String } from "./helpers/date";
 import { toDecimal } from "./helpers/number";
 import { getOrCreateToken } from "./helpers/token";
@@ -173,7 +173,7 @@ export function handleAuctionCreated(event: AuctionCreatedEvent): void {
   const recordId = getLotRecordId(event.address, lotId);
 
   const auctionLot = new BatchAuctionLot(recordId);
-  auctionLot.chain = dataSource.network();
+  auctionLot.chain = getChain();
   auctionLot.auctionHouse = event.address;
   auctionLot.lotId = lotId;
   auctionLot.infoHash = event.params.infoHash;
