@@ -2,8 +2,9 @@ import {
   Address,
   BigInt,
   Bytes,
-  dataSource,
+  DataSourceContext,
   ethereum,
+  log,
 } from "@graphprotocol/graph-ts";
 
 import {
@@ -25,6 +26,8 @@ import {
   AuctionHouseModuleSunset,
   AuctionHouseOwnershipTransferred,
 } from "../generated/schema";
+import { AtomicAuctionInfo } from "../generated/templates";
+import { KEY_AUCTION_LOT_ID } from "./constants";
 import {
   getAuctionCuration,
   getAuctionHouse,
@@ -32,6 +35,7 @@ import {
   getLotRecord,
   getLotRecordId,
 } from "./helpers/atomicAuction";
+import { getChain } from "./helpers/chain";
 import { toISO8601String } from "./helpers/date";
 import { toDecimal } from "./helpers/number";
 import { getOrCreateToken } from "./helpers/token";
@@ -83,9 +87,10 @@ export function handleAuctionCreated(event: AuctionCreatedEvent): void {
 
   // Create an AtomicAuctionLot record
   const auctionLot = new AtomicAuctionLot(getLotRecordId(event.address, lotId));
-  auctionLot.chain = dataSource.network();
+  auctionLot.chain = getChain();
   auctionLot.auctionHouse = event.address;
   auctionLot.lotId = lotId;
+  auctionLot.infoHash = event.params.infoHash;
 
   auctionLot.createdBlockNumber = event.block.number;
   auctionLot.createdBlockTimestamp = event.block.timestamp;
@@ -144,6 +149,21 @@ export function handleAuctionCreated(event: AuctionCreatedEvent): void {
   auctionLot.lastUpdatedTransactionHash = event.transaction.hash;
 
   auctionLot.save();
+
+  log.info("AtomicAuctionLot event saved with id: {}", [
+    auctionLot.id.toString(),
+  ]);
+
+  // Load IPFS data if the hash is set
+  if (event.params.infoHash != "") {
+    const dataSourceContext = new DataSourceContext();
+    dataSourceContext.setString(KEY_AUCTION_LOT_ID, auctionLot.id.toString());
+
+    AtomicAuctionInfo.createWithContext(
+      event.params.infoHash,
+      dataSourceContext,
+    );
+  }
 
   // If using FixedPriceSale, save details
   if (auctionLot.auctionType.includes(FPS_KEYCODE)) {

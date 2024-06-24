@@ -93,6 +93,19 @@ export class AtomicAuctionLot extends Entity {
     this.set("lotId", Value.fromBigInt(value));
   }
 
+  get infoHash(): string {
+    let value = this.get("infoHash");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set infoHash(value: string) {
+    this.set("infoHash", Value.fromString(value));
+  }
+
   get createdBlockNumber(): BigInt {
     let value = this.get("createdBlockNumber");
     if (!value || value.kind == ValueKind.NULL) {
@@ -497,6 +510,14 @@ export class AtomicAuctionLot extends Entity {
       "AtomicAuctionLot",
       this.get("id")!.toString(),
       "linearVesting",
+    );
+  }
+
+  get info(): AtomicAuctionInfoLoader {
+    return new AtomicAuctionInfoLoader(
+      "AtomicAuctionLot",
+      this.get("id")!.toString(),
+      "info",
     );
   }
 }
@@ -1229,6 +1250,319 @@ export class AtomicLinearVestingLot extends Entity {
   }
 }
 
+export class AtomicAuctionInfo extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save AtomicAuctionInfo entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type AtomicAuctionInfo must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+      );
+      store.set("AtomicAuctionInfo", id.toString(), this);
+    }
+  }
+
+  static loadInBlock(id: string): AtomicAuctionInfo | null {
+    return changetype<AtomicAuctionInfo | null>(
+      store.get_in_block("AtomicAuctionInfo", id),
+    );
+  }
+
+  static load(id: string): AtomicAuctionInfo | null {
+    return changetype<AtomicAuctionInfo | null>(
+      store.get("AtomicAuctionInfo", id),
+    );
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get lot(): string {
+    let value = this.get("lot");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set lot(value: string) {
+    this.set("lot", Value.fromString(value));
+  }
+
+  get hash(): string {
+    let value = this.get("hash");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set hash(value: string) {
+    this.set("hash", Value.fromString(value));
+  }
+
+  get key(): string | null {
+    let value = this.get("key");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set key(value: string | null) {
+    if (!value) {
+      this.unset("key");
+    } else {
+      this.set("key", Value.fromString(<string>value));
+    }
+  }
+
+  get name(): string | null {
+    let value = this.get("name");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set name(value: string | null) {
+    if (!value) {
+      this.unset("name");
+    } else {
+      this.set("name", Value.fromString(<string>value));
+    }
+  }
+
+  get description(): string | null {
+    let value = this.get("description");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set description(value: string | null) {
+    if (!value) {
+      this.unset("description");
+    } else {
+      this.set("description", Value.fromString(<string>value));
+    }
+  }
+
+  get tagline(): string | null {
+    let value = this.get("tagline");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set tagline(value: string | null) {
+    if (!value) {
+      this.unset("tagline");
+    } else {
+      this.set("tagline", Value.fromString(<string>value));
+    }
+  }
+
+  get links(): AtomicAuctionInfoLinkLoader {
+    return new AtomicAuctionInfoLinkLoader(
+      "AtomicAuctionInfo",
+      this.get("id")!.toString(),
+      "links",
+    );
+  }
+
+  get allowlist(): AtomicAuctionInfoAllowlistEntryLoader {
+    return new AtomicAuctionInfoAllowlistEntryLoader(
+      "AtomicAuctionInfo",
+      this.get("id")!.toString(),
+      "allowlist",
+    );
+  }
+}
+
+export class AtomicAuctionInfoLink extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(
+      id != null,
+      "Cannot save AtomicAuctionInfoLink entity without an ID",
+    );
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type AtomicAuctionInfoLink must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+      );
+      store.set("AtomicAuctionInfoLink", id.toString(), this);
+    }
+  }
+
+  static loadInBlock(id: string): AtomicAuctionInfoLink | null {
+    return changetype<AtomicAuctionInfoLink | null>(
+      store.get_in_block("AtomicAuctionInfoLink", id),
+    );
+  }
+
+  static load(id: string): AtomicAuctionInfoLink | null {
+    return changetype<AtomicAuctionInfoLink | null>(
+      store.get("AtomicAuctionInfoLink", id),
+    );
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get auctionInfo(): string {
+    let value = this.get("auctionInfo");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set auctionInfo(value: string) {
+    this.set("auctionInfo", Value.fromString(value));
+  }
+
+  get linkId(): string {
+    let value = this.get("linkId");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set linkId(value: string) {
+    this.set("linkId", Value.fromString(value));
+  }
+
+  get url(): string {
+    let value = this.get("url");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set url(value: string) {
+    this.set("url", Value.fromString(value));
+  }
+}
+
+export class AtomicAuctionInfoAllowlistEntry extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(
+      id != null,
+      "Cannot save AtomicAuctionInfoAllowlistEntry entity without an ID",
+    );
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type AtomicAuctionInfoAllowlistEntry must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+      );
+      store.set("AtomicAuctionInfoAllowlistEntry", id.toString(), this);
+    }
+  }
+
+  static loadInBlock(id: string): AtomicAuctionInfoAllowlistEntry | null {
+    return changetype<AtomicAuctionInfoAllowlistEntry | null>(
+      store.get_in_block("AtomicAuctionInfoAllowlistEntry", id),
+    );
+  }
+
+  static load(id: string): AtomicAuctionInfoAllowlistEntry | null {
+    return changetype<AtomicAuctionInfoAllowlistEntry | null>(
+      store.get("AtomicAuctionInfoAllowlistEntry", id),
+    );
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get auctionInfo(): string {
+    let value = this.get("auctionInfo");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set auctionInfo(value: string) {
+    this.set("auctionInfo", Value.fromString(value));
+  }
+
+  get values(): Array<string> {
+    let value = this.get("values");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toStringArray();
+    }
+  }
+
+  set values(value: Array<string>) {
+    this.set("values", Value.fromStringArray(value));
+  }
+}
+
 export class BatchAuctionLot extends Entity {
   constructor(id: string) {
     super();
@@ -1307,6 +1641,19 @@ export class BatchAuctionLot extends Entity {
 
   set lotId(value: BigInt) {
     this.set("lotId", Value.fromBigInt(value));
+  }
+
+  get infoHash(): string {
+    let value = this.get("infoHash");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set infoHash(value: string) {
+    this.set("infoHash", Value.fromString(value));
   }
 
   get createdBlockNumber(): BigInt {
@@ -1761,6 +2108,14 @@ export class BatchAuctionLot extends Entity {
       "BatchAuctionLot",
       this.get("id")!.toString(),
       "linearVesting",
+    );
+  }
+
+  get info(): BatchAuctionInfoLoader {
+    return new BatchAuctionInfoLoader(
+      "BatchAuctionLot",
+      this.get("id")!.toString(),
+      "info",
     );
   }
 }
@@ -3790,6 +4145,316 @@ export class BatchLinearVestingRedeemed extends Entity {
   }
 }
 
+export class BatchAuctionInfo extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save BatchAuctionInfo entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type BatchAuctionInfo must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+      );
+      store.set("BatchAuctionInfo", id.toString(), this);
+    }
+  }
+
+  static loadInBlock(id: string): BatchAuctionInfo | null {
+    return changetype<BatchAuctionInfo | null>(
+      store.get_in_block("BatchAuctionInfo", id),
+    );
+  }
+
+  static load(id: string): BatchAuctionInfo | null {
+    return changetype<BatchAuctionInfo | null>(
+      store.get("BatchAuctionInfo", id),
+    );
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get lot(): string {
+    let value = this.get("lot");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set lot(value: string) {
+    this.set("lot", Value.fromString(value));
+  }
+
+  get hash(): string {
+    let value = this.get("hash");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set hash(value: string) {
+    this.set("hash", Value.fromString(value));
+  }
+
+  get key(): string | null {
+    let value = this.get("key");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set key(value: string | null) {
+    if (!value) {
+      this.unset("key");
+    } else {
+      this.set("key", Value.fromString(<string>value));
+    }
+  }
+
+  get name(): string | null {
+    let value = this.get("name");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set name(value: string | null) {
+    if (!value) {
+      this.unset("name");
+    } else {
+      this.set("name", Value.fromString(<string>value));
+    }
+  }
+
+  get description(): string | null {
+    let value = this.get("description");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set description(value: string | null) {
+    if (!value) {
+      this.unset("description");
+    } else {
+      this.set("description", Value.fromString(<string>value));
+    }
+  }
+
+  get tagline(): string | null {
+    let value = this.get("tagline");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set tagline(value: string | null) {
+    if (!value) {
+      this.unset("tagline");
+    } else {
+      this.set("tagline", Value.fromString(<string>value));
+    }
+  }
+
+  get links(): BatchAuctionInfoLinkLoader {
+    return new BatchAuctionInfoLinkLoader(
+      "BatchAuctionInfo",
+      this.get("id")!.toString(),
+      "links",
+    );
+  }
+
+  get allowlist(): BatchAuctionInfoAllowlistEntryLoader {
+    return new BatchAuctionInfoAllowlistEntryLoader(
+      "BatchAuctionInfo",
+      this.get("id")!.toString(),
+      "allowlist",
+    );
+  }
+}
+
+export class BatchAuctionInfoLink extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save BatchAuctionInfoLink entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type BatchAuctionInfoLink must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+      );
+      store.set("BatchAuctionInfoLink", id.toString(), this);
+    }
+  }
+
+  static loadInBlock(id: string): BatchAuctionInfoLink | null {
+    return changetype<BatchAuctionInfoLink | null>(
+      store.get_in_block("BatchAuctionInfoLink", id),
+    );
+  }
+
+  static load(id: string): BatchAuctionInfoLink | null {
+    return changetype<BatchAuctionInfoLink | null>(
+      store.get("BatchAuctionInfoLink", id),
+    );
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get auctionInfo(): string {
+    let value = this.get("auctionInfo");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set auctionInfo(value: string) {
+    this.set("auctionInfo", Value.fromString(value));
+  }
+
+  get linkId(): string {
+    let value = this.get("linkId");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set linkId(value: string) {
+    this.set("linkId", Value.fromString(value));
+  }
+
+  get url(): string {
+    let value = this.get("url");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set url(value: string) {
+    this.set("url", Value.fromString(value));
+  }
+}
+
+export class BatchAuctionInfoAllowlistEntry extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(
+      id != null,
+      "Cannot save BatchAuctionInfoAllowlistEntry entity without an ID",
+    );
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type BatchAuctionInfoAllowlistEntry must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+      );
+      store.set("BatchAuctionInfoAllowlistEntry", id.toString(), this);
+    }
+  }
+
+  static loadInBlock(id: string): BatchAuctionInfoAllowlistEntry | null {
+    return changetype<BatchAuctionInfoAllowlistEntry | null>(
+      store.get_in_block("BatchAuctionInfoAllowlistEntry", id),
+    );
+  }
+
+  static load(id: string): BatchAuctionInfoAllowlistEntry | null {
+    return changetype<BatchAuctionInfoAllowlistEntry | null>(
+      store.get("BatchAuctionInfoAllowlistEntry", id),
+    );
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get auctionInfo(): string {
+    let value = this.get("auctionInfo");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set auctionInfo(value: string) {
+    this.set("auctionInfo", Value.fromString(value));
+  }
+
+  get values(): Array<string> {
+    let value = this.get("values");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toStringArray();
+    }
+  }
+
+  set values(value: Array<string>) {
+    this.set("values", Value.fromStringArray(value));
+  }
+}
+
 export class Token extends Entity {
   constructor(id: Bytes) {
     super();
@@ -4427,6 +5092,60 @@ export class AtomicLinearVestingLotLoader extends Entity {
   }
 }
 
+export class AtomicAuctionInfoLoader extends Entity {
+  _entity: string;
+  _field: string;
+  _id: string;
+
+  constructor(entity: string, id: string, field: string) {
+    super();
+    this._entity = entity;
+    this._id = id;
+    this._field = field;
+  }
+
+  load(): AtomicAuctionInfo[] {
+    let value = store.loadRelated(this._entity, this._id, this._field);
+    return changetype<AtomicAuctionInfo[]>(value);
+  }
+}
+
+export class AtomicAuctionInfoLinkLoader extends Entity {
+  _entity: string;
+  _field: string;
+  _id: string;
+
+  constructor(entity: string, id: string, field: string) {
+    super();
+    this._entity = entity;
+    this._id = id;
+    this._field = field;
+  }
+
+  load(): AtomicAuctionInfoLink[] {
+    let value = store.loadRelated(this._entity, this._id, this._field);
+    return changetype<AtomicAuctionInfoLink[]>(value);
+  }
+}
+
+export class AtomicAuctionInfoAllowlistEntryLoader extends Entity {
+  _entity: string;
+  _field: string;
+  _id: string;
+
+  constructor(entity: string, id: string, field: string) {
+    super();
+    this._entity = entity;
+    this._id = id;
+    this._field = field;
+  }
+
+  load(): AtomicAuctionInfoAllowlistEntry[] {
+    let value = store.loadRelated(this._entity, this._id, this._field);
+    return changetype<AtomicAuctionInfoAllowlistEntry[]>(value);
+  }
+}
+
 export class BatchAuctionCancelledLoader extends Entity {
   _entity: string;
   _field: string;
@@ -4643,6 +5362,24 @@ export class BatchLinearVestingLotLoader extends Entity {
   }
 }
 
+export class BatchAuctionInfoLoader extends Entity {
+  _entity: string;
+  _field: string;
+  _id: string;
+
+  constructor(entity: string, id: string, field: string) {
+    super();
+    this._entity = entity;
+    this._id = id;
+    this._field = field;
+  }
+
+  load(): BatchAuctionInfo[] {
+    let value = store.loadRelated(this._entity, this._id, this._field);
+    return changetype<BatchAuctionInfo[]>(value);
+  }
+}
+
 export class BatchLinearVestingRedeemedLoader extends Entity {
   _entity: string;
   _field: string;
@@ -4658,5 +5395,41 @@ export class BatchLinearVestingRedeemedLoader extends Entity {
   load(): BatchLinearVestingRedeemed[] {
     let value = store.loadRelated(this._entity, this._id, this._field);
     return changetype<BatchLinearVestingRedeemed[]>(value);
+  }
+}
+
+export class BatchAuctionInfoLinkLoader extends Entity {
+  _entity: string;
+  _field: string;
+  _id: string;
+
+  constructor(entity: string, id: string, field: string) {
+    super();
+    this._entity = entity;
+    this._id = id;
+    this._field = field;
+  }
+
+  load(): BatchAuctionInfoLink[] {
+    let value = store.loadRelated(this._entity, this._id, this._field);
+    return changetype<BatchAuctionInfoLink[]>(value);
+  }
+}
+
+export class BatchAuctionInfoAllowlistEntryLoader extends Entity {
+  _entity: string;
+  _field: string;
+  _id: string;
+
+  constructor(entity: string, id: string, field: string) {
+    super();
+    this._entity = entity;
+    this._id = id;
+    this._field = field;
+  }
+
+  load(): BatchAuctionInfoAllowlistEntry[] {
+    let value = store.loadRelated(this._entity, this._id, this._field);
+    return changetype<BatchAuctionInfoAllowlistEntry[]>(value);
   }
 }

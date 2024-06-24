@@ -144,6 +144,7 @@ dataSources:
         - event: PrivateKeySubmitted(indexed uint96)
           handler: handlePrivateKeySubmitted
       file: ./src/handleEncryptedMarginalPrice.ts
+  # TODO AtomicLinearVesting
   - kind: ethereum
     name: BatchLinearVesting
     network: {{network}}
@@ -164,3 +165,32 @@ dataSources:
         - event: Redeemed(indexed uint256,indexed address,uint256)
           handler: handleRedeemed
       file: ./src/handleBatchLinearVesting.ts
+templates:
+  - kind: file/ipfs
+    name: AtomicAuctionInfo
+    mapping:
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - AtomicAuctionInfo
+        - AtomicAuctionInfoLink
+        - AtomicAuctionInfoAllowlistEntry
+      abis:
+        - name: ERC20
+          file: ./abis/ERC20.json
+      handler: handleAtomicAuctionInfo
+      file: ./src/handleAtomicAuctionInfo.ts
+  - kind: file/ipfs
+    name: BatchAuctionInfo
+    mapping:
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - BatchAuctionInfo
+        - BatchAuctionInfoLink
+        - BatchAuctionInfoAllowlistEntry
+      abis:
+        - name: ERC20
+          file: ./abis/ERC20.json
+      handler: handleBatchAuctionInfo
+      file: ./src/handleBatchAuctionInfo.ts

@@ -20,7 +20,7 @@ export function mockTokenId(
   );
 }
 
-export function mockBalanceOf(
+export function mockDerivativeBalanceOf(
   moduleAddress: Address,
   account: Address,
   tokenId: BigInt,
@@ -39,7 +39,7 @@ export function mockBalanceOf(
   );
 }
 
-export function mockDecimals(
+export function mockDerivativeDecimals(
   moduleAddress: Address,
   tokenId: BigInt,
   decimals: i32,
@@ -50,6 +50,29 @@ export function mockDecimals(
     "decimals(uint256):(uint8)",
     [ethereum.Value.fromUnsignedBigInt(tokenId)],
     [ethereum.Value.fromI32(decimals)],
+    false,
+  );
+}
+
+export function mockTokenMetadata(
+  moduleAddress: Address,
+  tokenId: BigInt,
+  exists: boolean,
+  wrappedAddress: Address,
+  underlyingTokenAddress: Address,
+  derivativeParams: Bytes,
+): void {
+  mockFunction(
+    moduleAddress,
+    "tokenMetadata",
+    "tokenMetadata(uint256):(bool,address,address,bytes)",
+    [ethereum.Value.fromUnsignedBigInt(tokenId)],
+    [
+      ethereum.Value.fromBoolean(exists),
+      ethereum.Value.fromAddress(wrappedAddress),
+      ethereum.Value.fromAddress(underlyingTokenAddress),
+      ethereum.Value.fromBytes(derivativeParams),
+    ],
     false,
   );
 }

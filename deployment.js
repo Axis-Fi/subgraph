@@ -4,8 +4,10 @@ require("dotenv").config();
  * Must match files in @see networks.json */
 const TARGET_NETWORK = process.env.TARGET_NETWORK || "blast-sepolia";
 
+const USE_GRAPH_PROTOCOL = process.env.USE_GRAPH_PROTOCOL == "true" || false;
+
 /** The version that will it'll be deployed as */
-const VERSION = "0.5.2";
+const VERSION = "0.6.5";
 
 /**  Deployments to be deployed to Goldsky
  * otherwise they're deployed to Alchemy Subgraphs */
@@ -19,6 +21,7 @@ const SLUG = BASE_NAME + "-" + TARGET_NETWORK;
 
 module.exports = {
   GOLDSKY_DEPLOYMENTS,
+  USE_GRAPH_PROTOCOL,
   TARGET_NETWORK,
   VERSION,
   BASE_NAME,

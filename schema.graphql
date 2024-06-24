@@ -5,6 +5,7 @@ type AtomicAuctionLot @entity {
   chain: String!
   auctionHouse: Bytes! # address
   lotId: BigInt!
+  infoHash: String! # IPFS info hash
 
   createdBlockNumber: BigInt!
   createdBlockTimestamp: BigInt!
@@ -49,6 +50,7 @@ type AtomicAuctionLot @entity {
   purchases: [AtomicPurchase!]! @derivedFrom(field: "lot")
   fixedPriceSale: AtomicFixedPriceSaleLot @derivedFrom(field: "lot")
   linearVesting: AtomicLinearVestingLot @derivedFrom(field: "lot")
+  info: AtomicAuctionInfo @derivedFrom(field: "lot")
 }
 
 type AtomicAuctionCreated @entity(immutable: true) {
@@ -120,6 +122,34 @@ type AtomicLinearVestingLot @entity(immutable: true) {
   # TODO consider timeseries data for redemption/vesting
 }
 
+type AtomicAuctionInfo @entity(immutable: true) {
+  id: ID! # IPFS hash
+  lot: AtomicAuctionLot!
+  hash: String! # IPFS hash
+
+  key: String
+  name: String
+  description: String
+  tagline: String
+
+  # Reverse lookups
+  links: [AtomicAuctionInfoLink!]! @derivedFrom(field: "auctionInfo")
+  allowlist: [AtomicAuctionInfoAllowlistEntry!]! @derivedFrom(field: "auctionInfo")
+}
+
+type AtomicAuctionInfoLink @entity(immutable: true) {
+  id: ID! # IPFS hash-link name
+  auctionInfo: AtomicAuctionInfo!
+  linkId: String!
+  url: String!
+}
+
+type AtomicAuctionInfoAllowlistEntry @entity(immutable: true) {
+  id: ID! # IPFS hash-array index
+  auctionInfo: AtomicAuctionInfo!
+  values: [String!]! # Number of elements depends on the allowlist type
+}
+
 ### Batch Auctions
 
 type BatchAuctionLot @entity {
@@ -127,6 +157,7 @@ type BatchAuctionLot @entity {
   chain: String!
   auctionHouse: Bytes! # address
   lotId: BigInt!
+  infoHash: String! # IPFS info hash
 
   createdBlockNumber: BigInt!
   createdBlockTimestamp: BigInt!
@@ -180,6 +211,7 @@ type BatchAuctionLot @entity {
   encryptedMarginalPrice: BatchEncryptedMarginalPriceLot @derivedFrom(field: "lot")
   fixedPrice: BatchFixedPriceLot @derivedFrom(field: "lot")
   linearVesting: BatchLinearVestingLot @derivedFrom(field: "lot")
+  info: BatchAuctionInfo @derivedFrom(field: "lot")
 }
 
 type BatchAuctionCreated @entity(immutable: true) {
@@ -386,13 +418,43 @@ type BatchLinearVestingRedeemed @entity(immutable: true) {
   lot: BatchLinearVestingLot!
 
   bidder: Bytes! # address
+  "The amount of tokens that have been redeemed by the bidder."
   redeemed: BigDecimal! # uint256
+  "The remaining amount of tokens that can be redeemed by the bidder, including both unwrapped (ERC6909) and wrapped (ERC20) balances."
   remaining: BigDecimal! # uint256
 
   blockNumber: BigInt!
   blockTimestamp: BigInt!
   date: String!
   transactionHash: Bytes!
+}
+
+type BatchAuctionInfo @entity(immutable: true) {
+  id: ID! # IPFS hash
+  lot: BatchAuctionLot!
+  hash: String! # IPFS hash
+
+  key: String
+  name: String
+  description: String
+  tagline: String
+
+  # Reverse lookups
+  links: [BatchAuctionInfoLink!]! @derivedFrom(field: "auctionInfo")
+  allowlist: [BatchAuctionInfoAllowlistEntry!]! @derivedFrom(field: "auctionInfo")
+}
+
+type BatchAuctionInfoLink @entity(immutable: true) {
+  id: ID! # IPFS hash-link name
+  auctionInfo: BatchAuctionInfo!
+  linkId: String!
+  url: String!
+}
+
+type BatchAuctionInfoAllowlistEntry @entity(immutable: true) {
+  id: ID! # IPFS hash-array index
+  auctionInfo: BatchAuctionInfo!
+  values: [String!]! # Number of elements depends on the allowlist type
 }
 
 ### Shared types

@@ -3,7 +3,7 @@ import {
   BigDecimal,
   BigInt,
   Bytes,
-  dataSource,
+  DataSourceContext,
   ethereum,
   log,
 } from "@graphprotocol/graph-ts";
@@ -34,6 +34,8 @@ import {
   BatchBidClaimed,
   BatchBidRefunded,
 } from "../generated/schema";
+import { BatchAuctionInfo } from "../generated/templates";
+import { KEY_AUCTION_LOT_ID } from "./constants";
 import {
   getAuctionCuration,
   getAuctionHouse,
@@ -47,6 +49,7 @@ import {
   updateBidsStatus,
   updateBidStatus,
 } from "./helpers/bid";
+import { getChain } from "./helpers/chain";
 import { toISO8601String } from "./helpers/date";
 import { toDecimal } from "./helpers/number";
 import { getOrCreateToken } from "./helpers/token";
@@ -170,9 +173,10 @@ export function handleAuctionCreated(event: AuctionCreatedEvent): void {
   const recordId = getLotRecordId(event.address, lotId);
 
   const auctionLot = new BatchAuctionLot(recordId);
-  auctionLot.chain = dataSource.network();
+  auctionLot.chain = getChain();
   auctionLot.auctionHouse = event.address;
   auctionLot.lotId = lotId;
+  auctionLot.infoHash = event.params.infoHash;
 
   auctionLot.createdBlockNumber = event.block.number;
   auctionLot.createdBlockTimestamp = event.block.timestamp;
@@ -239,6 +243,17 @@ export function handleAuctionCreated(event: AuctionCreatedEvent): void {
   log.info("BatchAuctionLot event saved with id: {}", [
     auctionLot.id.toString(),
   ]);
+
+  // Load IPFS data if the hash is set
+  if (event.params.infoHash != "") {
+    const dataSourceContext = new DataSourceContext();
+    dataSourceContext.setString(KEY_AUCTION_LOT_ID, auctionLot.id.toString());
+
+    BatchAuctionInfo.createWithContext(
+      event.params.infoHash,
+      dataSourceContext,
+    );
+  }
 
   // If using EncryptedMarginalPrice, save details
   if (auctionLot.auctionType.includes(EMP_KEYCODE)) {

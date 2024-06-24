@@ -1,4 +1,4 @@
-import { Address, BigInt, dataSource } from "@graphprotocol/graph-ts";
+import { Address, BigInt } from "@graphprotocol/graph-ts";
 
 import {
   AtomicAuctionHouse,
@@ -9,6 +9,7 @@ import {
   AtomicAuctionModule__lotDataResult,
 } from "../../generated/AtomicAuctionHouse/AtomicAuctionModule";
 import { AtomicAuctionLot } from "../../generated/schema";
+import { getChain } from "./chain";
 
 export function getAuctionHouse(
   auctionHouseAddress: Address,
@@ -45,7 +46,7 @@ export function getLotRecordId(
   lotId: BigInt,
 ): string {
   return (
-    dataSource.network() +
+    getChain() +
     "-" +
     auctionHouseAddress.toHexString() +
     "-" +
