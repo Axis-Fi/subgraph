@@ -35,7 +35,10 @@ import {
   handleSettle,
 } from "../src/batchAuctionHouse";
 import { handleRedeemed } from "../src/handleBatchLinearVesting";
-import { handleBidDecrypted } from "../src/handleEncryptedMarginalPrice";
+import {
+  handleBidDecrypted,
+  handlePrivateKeySubmitted,
+} from "../src/handleEncryptedMarginalPrice";
 import { toDecimal } from "../src/helpers/number";
 import {
   assertBigDecimalEquals,
@@ -57,7 +60,10 @@ import {
   createRefundBidEvent,
   createSettleEvent,
 } from "./auction-house-utils";
-import { createBidDecryptedEvent } from "./empam-utils";
+import {
+  createBidDecryptedEvent,
+  createPrivateKeySubmittedEvent,
+} from "./empam-utils";
 import { calculatePrice } from "./helpers/price";
 import {
   getBatchAuctionLot,
@@ -1333,6 +1339,55 @@ describe("bid decryption", () => {
       bidTwoRecordId,
       "BatchAuctionLot: bidsDecrypted lookup",
     );
+  });
+});
+
+describe("private key submission", () => {
+  beforeEach(() => {
+    _createAuctionLot();
+
+    // No bids
+    // Private key submission will result in the status changing to decrypted
+
+    // Update mocks
+    mockEmpAuctionData(
+      auctionModuleAddress,
+      LOT_ID,
+      0,
+      0,
+      1, // Decrypted
+      0,
+      BigInt.zero(),
+      empMinPrice,
+      empMinFilled,
+      empMinBidSize,
+      empPublicKeyX,
+      empPublicKeyY,
+      empPrivateKey,
+    );
+  });
+
+  test("BatchEncryptedMarginalPriceLot updated", () => {
+    // Trigger event
+    const privateKeySubmittedEvent = createPrivateKeySubmittedEvent(
+      auctionModuleAddress,
+      LOT_ID,
+    );
+    handlePrivateKeySubmitted(privateKeySubmittedEvent);
+
+    const lotRecordId =
+      "mainnet-" + auctionHouse.toHexString() + "-" + LOT_ID.toString();
+
+    // BatchEncryptedMarginalPriceLot record is updated
+    const empLotRecord = getBatchEncryptedMarginalPriceLot(lotRecordId);
+    if (empLotRecord === null) {
+      throw new Error(
+        "Expected BatchEncryptedMarginalPriceLot to exist for record id " +
+          lotRecordId,
+      );
+    }
+
+    assertStringEquals(empLotRecord.status, "decrypted", "Lot: status");
   });
 });
 
