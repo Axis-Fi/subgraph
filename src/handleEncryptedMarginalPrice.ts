@@ -85,8 +85,12 @@ export function handlePrivateKeySubmitted(
   // No need to handle bid decryption, as a separate event is emitted for that
   // To handle an auction lot without bids, we need to handle the PrivateKeySubmitted event
 
+  // Get the module
+  const empModule = EncryptedMarginalPrice.bind(event.address);
+  const auctionHouseAddress = empModule.PARENT();
+
   // Get the auction lot record
-  const lotRecord = getLotRecord(event.address, lotId);
+  const lotRecord = getLotRecord(auctionHouseAddress, lotId);
 
   // Update the EMP lot record
   updateEncryptedMarginalPriceLot(lotRecord, lotId);

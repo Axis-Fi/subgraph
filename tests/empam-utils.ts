@@ -1,6 +1,9 @@
 import { Address, BigInt, ethereum } from "@graphprotocol/graph-ts";
 
-import { BidDecrypted } from "../generated/BatchAuctionHouse/EncryptedMarginalPrice";
+import {
+  BidDecrypted,
+  PrivateKeySubmitted,
+} from "../generated/BatchAuctionHouse/EncryptedMarginalPrice";
 import { newMockEvent } from "./mocks/event";
 
 export function createBidDecryptedEvent(
@@ -38,4 +41,21 @@ export function createBidDecryptedEvent(
   }
 
   return bidDecryptedEvent;
+}
+
+export function createPrivateKeySubmittedEvent(
+  auctionModule: Address,
+  lotId: BigInt,
+): PrivateKeySubmitted {
+  const privateKeySubmittedEvent = changetype<PrivateKeySubmitted>(
+    newMockEvent(auctionModule),
+  );
+
+  privateKeySubmittedEvent.parameters = [];
+
+  privateKeySubmittedEvent.parameters.push(
+    new ethereum.EventParam("lotId", ethereum.Value.fromUnsignedBigInt(lotId)),
+  );
+
+  return privateKeySubmittedEvent;
 }
