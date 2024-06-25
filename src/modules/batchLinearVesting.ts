@@ -66,6 +66,23 @@ export function getTokenMetadata(
   return linearVesting.tokenMetadata(tokenId);
 }
 
+export function hasLinearVestingLot(
+  batchAuctionLot: BatchAuctionLot,
+  moduleAddress: Address,
+  derivativeParams: Bytes,
+): boolean {
+  const tokenId: BigInt = getTokenId(
+    moduleAddress,
+    Address.fromBytes(batchAuctionLot.baseToken),
+    derivativeParams,
+  );
+
+  const lvLotId: string = _getLinearVestingLotId(moduleAddress, tokenId);
+  const lvLot = BatchLinearVestingLot.load(lvLotId);
+
+  return lvLot !== null;
+}
+
 export function createLinearVestingLot(
   batchAuctionLot: BatchAuctionLot,
   moduleAddress: Address,
