@@ -16,7 +16,6 @@ import {
   BatchAuctionCreated,
   BatchAuctionLot,
   BatchBid,
-  BatchBidClaimed,
   BatchBidCreated,
   BatchBidRefunded,
   BatchFixedPriceLot,

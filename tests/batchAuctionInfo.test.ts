@@ -9,7 +9,6 @@ import {
 } from "../src/constants";
 import { handleBatchAuctionInfo } from "../src/handleBatchAuctionInfo";
 import { assertI32Equals, assertStringEquals } from "./assert";
-import { defaultAddress, defaultLogIndex } from "./mocks/event";
 
 const AUCTION_LOT_ID = "1234";
 const IPFS_HASH = "QmXW5rRfwt9YwWaJ3um57Menfy1UrwZbTbf4y3CztwQcA2";
