@@ -49,6 +49,8 @@ import {
 } from "./modules/atomicLinearVesting";
 import { createFixedPriceSaleLot, FPS_KEYCODE } from "./modules/fixedPriceSale";
 
+// TODO ensure record keys are unique
+
 function _updateAuctionLot(
   auctionHouseAddress: Address,
   lotId: BigInt,
