@@ -15,6 +15,7 @@ export const defaultAddress = Address.fromString(
   "0xA16081F360e3847006dB660bae1c6d1b2e17eC2A",
 );
 const defaultAddressBytes = defaultAddress as Bytes;
+export const defaultTransactionHash = Bytes.fromHexString("0x12345678");
 const defaultIntBytes = Bytes.fromI32(1);
 
 function newLog(): ethereum.Log {
@@ -55,7 +56,7 @@ function newBlock(): ethereum.Block {
 
 function newTransaction(): ethereum.Transaction {
   return new ethereum.Transaction(
-    defaultAddressBytes,
+    defaultTransactionHash,
     defaultBigInt,
     defaultAddress,
     defaultAddress,
@@ -69,7 +70,7 @@ function newTransaction(): ethereum.Transaction {
 
 function newTransactionReceipt(): ethereum.TransactionReceipt {
   return new ethereum.TransactionReceipt(
-    defaultAddressBytes,
+    defaultTransactionHash,
     defaultBigInt,
     defaultAddressBytes,
     defaultBigInt,

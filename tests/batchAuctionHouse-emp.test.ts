@@ -87,6 +87,7 @@ import {
   mockEmpParent,
   mockEmpPartialFill,
 } from "./mocks/emp";
+import { defaultLogIndex, defaultTransactionHash } from "./mocks/event";
 import {
   mockDerivativeBalanceOf,
   mockDerivativeDecimals,
@@ -377,25 +378,28 @@ describe("auction creation", () => {
   test("BatchAuctionCreated created and stored", () => {
     _createAuctionLot();
 
-    const recordId =
+    const lotRecordId =
       "mainnet-" + auctionHouse.toHexString() + "-" + LOT_ID.toString();
+    const recordId = defaultTransactionHash
+      .concatI32(defaultLogIndex.toI32())
+      .concatI32(LOT_ID.toI32());
 
     // BatchAuctionCreated record is created
     assert.entityCount("BatchAuctionCreated", 1);
     const batchAuctionCreatedRecord = BatchAuctionCreated.load(recordId);
     if (batchAuctionCreatedRecord === null) {
       throw new Error(
-        "Expected BatchAuctionCreated to exist for record id " + recordId,
+        "Expected BatchAuctionCreated to exist for lot id " + LOT_ID.toString(),
       );
     }
-    assertStringEquals(
+    assertBytesEquals(
       batchAuctionCreatedRecord.id,
       recordId,
       "BatchAuctionCreated: id",
     );
     assertStringEquals(
       batchAuctionCreatedRecord.lot,
-      recordId,
+      lotRecordId,
       "BatchAuctionCreated: lot",
     );
     assertStringEquals(
@@ -406,11 +410,11 @@ describe("auction creation", () => {
 
     // BatchAuctionLot record is created
     assert.entityCount("BatchAuctionLot", 1);
-    const batchAuctionLotRecord = getBatchAuctionLot(recordId);
+    const batchAuctionLotRecord = getBatchAuctionLot(lotRecordId);
 
     assertStringEquals(
       batchAuctionLotRecord.id,
-      recordId,
+      lotRecordId,
       "BatchAuctionLot: id",
     );
     assertStringEquals(
@@ -525,22 +529,22 @@ describe("auction creation", () => {
 
     // Encrypted marginal price record is created
     assert.entityCount("BatchEncryptedMarginalPriceLot", 1);
-    const empLotRecord = BatchEncryptedMarginalPriceLot.load(recordId);
+    const empLotRecord = BatchEncryptedMarginalPriceLot.load(lotRecordId);
     if (empLotRecord === null) {
       throw new Error(
         "Expected BatchEncryptedMarginalPriceLot to exist for record id " +
-          recordId,
+          lotRecordId,
       );
     }
 
     assertStringEquals(
       empLotRecord.id,
-      recordId,
+      lotRecordId,
       "BatchEncryptedMarginalPriceLot: id",
     );
     assertStringEquals(
       empLotRecord.lot,
-      recordId,
+      lotRecordId,
       "BatchEncryptedMarginalPriceLot: lot",
     );
     assertStringEquals(
@@ -592,7 +596,7 @@ describe("auction creation", () => {
       1,
       "BatchAuctionLot: created lookup length",
     );
-    assertStringEquals(
+    assertBytesEquals(
       batchAuctionLotRecordCreatedLookup[0].id,
       recordId,
       "BatchAuctionLot: created lookup",
@@ -792,7 +796,10 @@ describe("auction cancellation", () => {
   test("BatchAuctionCancelled created and stored", () => {
     handleAuctionCancelled(auctionCancelledEvent);
 
-    const recordId =
+    const recordId = defaultTransactionHash
+      .concatI32(defaultLogIndex.toI32())
+      .concatI32(LOT_ID.toI32());
+    const lotRecordId =
       "mainnet-" + auctionHouse.toHexString() + "-" + LOT_ID.toString();
 
     // BatchAuctionCancelled record is created
@@ -800,17 +807,18 @@ describe("auction cancellation", () => {
     const batchAuctionCancelledRecord = BatchAuctionCancelled.load(recordId);
     if (batchAuctionCancelledRecord === null) {
       throw new Error(
-        "Expected BatchAuctionCancelled to exist for record id " + recordId,
+        "Expected BatchAuctionCancelled to exist for lot id " +
+          LOT_ID.toString(),
       );
     }
-    assertStringEquals(
+    assertBytesEquals(
       batchAuctionCancelledRecord.id,
       recordId,
       "BatchAuctionCancelled: id",
     );
     assertStringEquals(
       batchAuctionCancelledRecord.lot,
-      recordId,
+      lotRecordId,
       "BatchAuctionCancelled: lot",
     );
     assertBytesEquals(
@@ -821,10 +829,10 @@ describe("auction cancellation", () => {
 
     // BatchAuctionLot record is updated
     assert.entityCount("BatchAuctionLot", 1);
-    const batchAuctionLotRecord = BatchAuctionLot.load(recordId);
+    const batchAuctionLotRecord = BatchAuctionLot.load(lotRecordId);
     if (batchAuctionLotRecord === null) {
       throw new Error(
-        "Expected BatchAuctionLot to exist for record id " + recordId,
+        "Expected BatchAuctionLot to exist for record id " + lotRecordId,
       );
     }
     assertBigDecimalEquals(
@@ -840,11 +848,11 @@ describe("auction cancellation", () => {
 
     // BatchEncryptedMarginalPriceLot record is updated
     assert.entityCount("BatchEncryptedMarginalPriceLot", 1);
-    const empLotRecord = BatchEncryptedMarginalPriceLot.load(recordId);
+    const empLotRecord = BatchEncryptedMarginalPriceLot.load(lotRecordId);
     if (empLotRecord === null) {
       throw new Error(
         "Expected BatchEncryptedMarginalPriceLot to exist for record id " +
-          recordId,
+          lotRecordId,
       );
     }
     assertStringEquals(
@@ -879,7 +887,7 @@ describe("auction cancellation", () => {
       1,
       "BatchAuctionLot: cancelled lookup length",
     );
-    assertStringEquals(
+    assertBytesEquals(
       batchAuctionLotRecord.cancelled.load()[0].id,
       recordId,
       "BatchAuctionLot: cancelled lookup",
@@ -918,7 +926,10 @@ describe("auction curation", () => {
   test("BatchAuctionCurated created and stored", () => {
     handleCurated(auctionCuratedEvent);
 
-    const recordId =
+    const recordId = defaultTransactionHash
+      .concatI32(defaultLogIndex.toI32())
+      .concatI32(LOT_ID.toI32());
+    const lotRecordId =
       "mainnet-" + auctionHouse.toHexString() + "-" + LOT_ID.toString();
 
     // BatchAuctionCurated record is stored
@@ -926,18 +937,18 @@ describe("auction curation", () => {
     const batchAuctionCuratedRecord = BatchAuctionCurated.load(recordId);
     if (batchAuctionCuratedRecord === null) {
       throw new Error(
-        "Expected BatchAuctionCurated to exist for record id " + recordId,
+        "Expected BatchAuctionCurated to exist for lot id " + LOT_ID.toString(),
       );
     }
 
-    assertStringEquals(
+    assertBytesEquals(
       batchAuctionCuratedRecord.id,
       recordId,
       "BatchAuctionCurated: id",
     );
     assertStringEquals(
       batchAuctionCuratedRecord.lot,
-      recordId,
+      lotRecordId,
       "BatchAuctionCurated: lot",
     );
     assertBytesEquals(
@@ -948,10 +959,10 @@ describe("auction curation", () => {
 
     // BatchAuctionLot record is updated
     assert.entityCount("BatchAuctionLot", 1);
-    const batchAuctionLotRecord = BatchAuctionLot.load(recordId);
+    const batchAuctionLotRecord = BatchAuctionLot.load(lotRecordId);
     if (batchAuctionLotRecord === null) {
       throw new Error(
-        "Expected BatchAuctionLot to exist for record id " + recordId,
+        "Expected BatchAuctionLot to exist for record id " + lotRecordId,
       );
     }
 
@@ -967,7 +978,7 @@ describe("auction curation", () => {
       1,
       "BatchAuctionLot: curated lookup length",
     );
-    assertStringEquals(
+    assertBytesEquals(
       batchAuctionLotRecord.curated.load()[0].id,
       recordId,
       "BatchAuctionLot: curated lookup",
@@ -989,16 +1000,18 @@ describe("bid", () => {
   test("BatchBid created and stored", () => {
     const lotRecordId =
       "mainnet-" + auctionHouse.toHexString() + "-" + LOT_ID.toString();
-    const recordId = lotRecordId + "-" + BID_ID_ONE.toString();
+    const bidRecordId = lotRecordId + "-" + BID_ID_ONE.toString();
+
+    // TODO BatchBidCreated
 
     // BatchBid record is created
     assert.entityCount("BatchBid", 1);
-    const batchBidRecord = BatchBid.load(recordId);
+    const batchBidRecord = BatchBid.load(bidRecordId);
     if (batchBidRecord === null) {
-      throw new Error("Expected BatchBid to exist for record id " + recordId);
+      throw new Error("Expected BatchBid to exist for lot id " + bidRecordId);
     }
 
-    assertStringEquals(batchBidRecord.id, recordId, "Bid: id");
+    assertStringEquals(batchBidRecord.id, bidRecordId, "Bid: id");
     assertStringEquals(batchBidRecord.lot, lotRecordId, "Bid: lot");
     assertBytesEquals(batchBidRecord.bidder, BIDDER, "Bid: bidder");
     assertBigDecimalEquals(
@@ -1048,7 +1061,7 @@ describe("bid", () => {
     );
     assertStringEquals(
       batchAuctionLotRecordBidsLookup[0].id,
-      recordId,
+      bidRecordId,
       "BatchAuctionLot: bids lookup",
     );
   });
@@ -1090,24 +1103,35 @@ describe("bid refund", () => {
   test("BatchBidRefunded created and stored", () => {
     const lotRecordId =
       "mainnet-" + auctionHouse.toHexString() + "-" + LOT_ID.toString();
-    const recordId = lotRecordId + "-" + BID_ID_ONE.toString();
+    const bidRecordId = lotRecordId + "-" + BID_ID_ONE.toString();
+    const recordId = defaultTransactionHash
+      .concatI32(defaultLogIndex.toI32())
+      .concatI32(LOT_ID.toI32())
+      .concatI32(BID_ID_ONE.toI32());
 
     // BatchBidRefunded record is created
     assert.entityCount("BatchBidRefunded", 1);
     const batchBidRefundedRecord = BatchBidRefunded.load(recordId);
     if (batchBidRefundedRecord === null) {
-      throw new Error("Expected BatchBid to exist for record id " + recordId);
+      throw new Error(
+        "Expected BatchBidRefunded to exist for lot id " +
+          LOT_ID.toString() +
+          " and bid id " +
+          BID_ID_ONE.toString(),
+      );
     }
 
-    assertStringEquals(batchBidRefundedRecord.id, recordId, "Bid: id");
+    assertBytesEquals(batchBidRefundedRecord.id, recordId, "Bid: id");
     assertStringEquals(batchBidRefundedRecord.lot, lotRecordId, "Bid: lot");
-    assertStringEquals(batchBidRefundedRecord.bid, recordId, "Bid: bid");
+    assertStringEquals(batchBidRefundedRecord.bid, bidRecordId, "Bid: bid");
     assertBytesEquals(batchBidRefundedRecord.bidder, BIDDER, "Bid: bidder");
 
     // BatchBid record is updated
-    const batchBidRecord = BatchBid.load(recordId);
+    const batchBidRecord = BatchBid.load(bidRecordId);
     if (batchBidRecord === null) {
-      throw new Error("Expected BatchBid to exist for record id " + recordId);
+      throw new Error(
+        "Expected BatchBid to exist for record id " + bidRecordId,
+      );
     }
 
     assertStringEquals(batchBidRecord.status, "claimed", "Bid: status");
@@ -1122,7 +1146,7 @@ describe("bid refund", () => {
       1,
       "Bid: refunded lookup length",
     );
-    assertStringEquals(
+    assertBytesEquals(
       batchBidRecordRefundedLookup[0].id,
       recordId,
       "Bid: refunded lookup",
@@ -1140,7 +1164,7 @@ describe("bid refund", () => {
       1,
       "BatchAuctionLot: bidsRefunded lookup length",
     );
-    assertStringEquals(
+    assertBytesEquals(
       batchAuctionLotRecordBidsRefundedLookup[0].id,
       recordId,
       "BatchAuctionLot: bidsRefunded lookup",
@@ -1180,19 +1204,28 @@ describe("bid decryption", () => {
     const lotRecordId =
       "mainnet-" + auctionHouse.toHexString() + "-" + LOT_ID.toString();
     const bidOneRecordId = lotRecordId + "-" + BID_ID_ONE.toString();
+    const bidOneDecryptedRecordId = defaultTransactionHash
+      .concatI32(defaultLogIndex.toI32())
+      .concatI32(LOT_ID.toI32())
+      .concatI32(BID_ID_ONE.toI32());
 
     // BatchBidDecrypted record is created
     assert.entityCount("BatchBidDecrypted", 2);
-    const batchBidDecryptedRecord = BatchBidDecrypted.load(bidOneRecordId);
+    const batchBidDecryptedRecord = BatchBidDecrypted.load(
+      bidOneDecryptedRecordId,
+    );
     if (batchBidDecryptedRecord === null) {
       throw new Error(
-        "Expected BatchBidDecrypted to exist for record id " + bidOneRecordId,
+        "Expected BatchBidDecrypted to exist for lot id " +
+          LOT_ID.toString() +
+          " and bid id " +
+          BID_ID_ONE.toString(),
       );
     }
 
-    assertStringEquals(
+    assertBytesEquals(
       batchBidDecryptedRecord.id,
-      bidOneRecordId,
+      bidOneDecryptedRecordId,
       "Bid one: id",
     );
     assertStringEquals(
@@ -1218,16 +1251,25 @@ describe("bid decryption", () => {
 
     // BatchBidDecrypted record is created for the bid that did not decrypt successfully
     const bidTwoRecordId = lotRecordId + "-" + BID_ID_TWO.toString();
-    const batchBidDecryptedRecordTwo = BatchBidDecrypted.load(bidTwoRecordId);
+    const bidTwoDecryptedRecordId = defaultTransactionHash
+      .concatI32(defaultLogIndex.toI32())
+      .concatI32(LOT_ID.toI32())
+      .concatI32(BID_ID_TWO.toI32());
+    const batchBidDecryptedRecordTwo = BatchBidDecrypted.load(
+      bidTwoDecryptedRecordId,
+    );
     if (batchBidDecryptedRecordTwo === null) {
       throw new Error(
-        "Expected BatchBidDecrypted to exist for record id " + bidTwoRecordId,
+        "Expected BatchBidDecrypted to exist for lot id " +
+          LOT_ID.toString() +
+          " and bid id " +
+          BID_ID_TWO.toString(),
       );
     }
 
-    assertStringEquals(
+    assertBytesEquals(
       batchBidDecryptedRecordTwo.id,
-      bidTwoRecordId,
+      bidTwoDecryptedRecordId,
       "Bid two: id",
     );
     assertStringEquals(
@@ -1312,9 +1354,9 @@ describe("bid decryption", () => {
       1,
       "Bid: decrypted lookup length",
     );
-    assertStringEquals(
+    assertBytesEquals(
       batchBidRecordDecryptedLookup[0].id,
-      bidOneRecordId,
+      bidOneDecryptedRecordId,
       "Bid: decrypted lookup",
     );
     const batchAuctionLotRecord = BatchAuctionLot.load(lotRecordId);
@@ -1330,14 +1372,14 @@ describe("bid decryption", () => {
       2,
       "BatchAuctionLot: bidsDecrypted lookup length",
     );
-    assertStringEquals(
+    assertBytesEquals(
       batchAuctionLotRecordBidsDecryptedLookup[0].id,
-      bidOneRecordId,
+      bidOneDecryptedRecordId,
       "BatchAuctionLot: bidsDecrypted lookup",
     );
-    assertStringEquals(
+    assertBytesEquals(
       batchAuctionLotRecordBidsDecryptedLookup[1].id,
-      bidTwoRecordId,
+      bidTwoDecryptedRecordId,
       "BatchAuctionLot: bidsDecrypted lookup",
     );
   });
@@ -1378,13 +1420,16 @@ describe("private key submission", () => {
 
     const lotRecordId =
       "mainnet-" + auctionHouse.toHexString() + "-" + LOT_ID.toString();
+    const recordId = defaultTransactionHash
+      .concatI32(defaultLogIndex.toI32())
+      .concatI32(LOT_ID.toI32());
 
     // BatchEncryptedMarginalPricePrivateKeySubmitted event is created
     const empPrivateKeySubmittedRecord =
-      getBatchEncryptedMarginalPricePrivateKeySubmitted(lotRecordId);
-    assertStringEquals(
+      getBatchEncryptedMarginalPricePrivateKeySubmitted(recordId);
+    assertBytesEquals(
       empPrivateKeySubmittedRecord.id,
-      lotRecordId,
+      recordId,
       "BatchEncryptedMarginalPricePrivateKeySubmitted: id",
     );
 
@@ -1405,7 +1450,7 @@ describe("private key submission", () => {
       1,
       "BatchEncryptedMarginalPriceLot: privateKeySubmitted lookup length",
     );
-    assertStringEquals(
+    assertBytesEquals(
       empLotPrivateKeySubmittedRecordLookup[0].id,
       empPrivateKeySubmittedRecord.id,
       "BatchEncryptedMarginalPriceLot: privateKeySubmitted lookup",
@@ -1461,35 +1506,38 @@ describe("abort", () => {
   });
 
   test("BatchAuctionAborted created and stored", () => {
-    const recordId =
+    const lotRecordId =
       "mainnet-" + auctionHouse.toHexString() + "-" + LOT_ID.toString();
+    const recordId = defaultTransactionHash
+      .concatI32(defaultLogIndex.toI32())
+      .concatI32(LOT_ID.toI32());
 
     // BatchAuctionAborted record is stored
     assert.entityCount("BatchAuctionAborted", 1);
     const batchAuctionAbortedRecord = BatchAuctionAborted.load(recordId);
     if (batchAuctionAbortedRecord === null) {
       throw new Error(
-        "Expected BatchAuctionAborted to exist for record id " + recordId,
+        "Expected BatchAuctionAborted to exist for lot id " + LOT_ID.toString(),
       );
     }
 
-    assertStringEquals(
+    assertBytesEquals(
       batchAuctionAbortedRecord.id,
       recordId,
       "BatchAuctionAborted: id",
     );
     assertStringEquals(
       batchAuctionAbortedRecord.lot,
-      recordId,
+      lotRecordId,
       "BatchAuctionAborted: lot",
     );
 
     // BatchAuctionLot record is updated
     assert.entityCount("BatchAuctionLot", 1);
-    const batchAuctionLotRecord = BatchAuctionLot.load(recordId);
+    const batchAuctionLotRecord = BatchAuctionLot.load(lotRecordId);
     if (batchAuctionLotRecord === null) {
       throw new Error(
-        "Expected BatchAuctionLot to exist for record id " + recordId,
+        "Expected BatchAuctionLot to exist for record id " + lotRecordId,
       );
     }
 
@@ -1500,7 +1548,7 @@ describe("abort", () => {
       1,
       "BatchAuctionLot: aborted lookup length",
     );
-    assertStringEquals(
+    assertBytesEquals(
       batchAuctionLotAbortedLookup[0].id,
       recordId,
       "BatchAuctionLot: aborted lookup",
@@ -1508,7 +1556,7 @@ describe("abort", () => {
 
     // BatchEncryptedMarginalPriceLot record is updated
     assert.entityCount("BatchEncryptedMarginalPriceLot", 1);
-    const empLotRecord = getBatchEncryptedMarginalPriceLot(recordId);
+    const empLotRecord = getBatchEncryptedMarginalPriceLot(lotRecordId);
     assertStringEquals(
       empLotRecord.status,
       "aborted",
@@ -1536,7 +1584,7 @@ describe("abort", () => {
     );
 
     // Check the bid
-    const bidRecordId = recordId + "-" + BID_ID_ONE.toString();
+    const bidRecordId = lotRecordId + "-" + BID_ID_ONE.toString();
     const batchBidRecord = BatchBid.load(bidRecordId);
     if (batchBidRecord === null) {
       throw new Error(
@@ -1571,21 +1619,25 @@ describe("abort", () => {
     handleBidClaimed(bidClaimEvent);
 
     // BatchBidClaimed record is stored
-    const recordId =
+    const lotRecordId =
       "mainnet-" + auctionHouse.toHexString() + "-" + LOT_ID.toString();
-    const bidRecordId = recordId + "-" + BID_ID_ONE.toString();
+    const bidRecordId = lotRecordId + "-" + BID_ID_ONE.toString();
+    const recordId = defaultTransactionHash
+      .concatI32(defaultLogIndex.toI32())
+      .concatI32(LOT_ID.toI32())
+      .concatI32(BID_ID_ONE.toI32());
 
     assert.entityCount("BatchBidClaimed", 1);
-    const batchBidClaimedRecord = getBatchBidClaimed(recordId, BID_ID_ONE);
+    const batchBidClaimedRecord = getBatchBidClaimed(LOT_ID, BID_ID_ONE);
 
-    assertStringEquals(
+    assertBytesEquals(
       batchBidClaimedRecord.id,
-      bidRecordId,
+      recordId,
       "BatchBidClaimed: id",
     );
     assertStringEquals(
       batchBidClaimedRecord.lot,
-      recordId,
+      lotRecordId,
       "BatchBidClaimed: lot",
     );
     assertStringEquals(
@@ -1595,7 +1647,7 @@ describe("abort", () => {
     );
 
     // BatchBid is updated
-    const batchBidRecord = getBatchBid(recordId, BID_ID_ONE);
+    const batchBidRecord = getBatchBid(lotRecordId, BID_ID_ONE);
     assertStringEquals(batchBidRecord.status, "claimed", "Bid: status");
     assertStringEquals(batchBidRecord.outcome, "lost", "Bid: outcome");
 
@@ -1606,9 +1658,9 @@ describe("abort", () => {
       1,
       "Bid: claimed lookup length",
     );
-    assertStringEquals(
+    assertBytesEquals(
       batchBidRecordClaimedLookup[0].id,
-      bidRecordId,
+      recordId,
       "Bid: claimed lookup",
     );
   });
@@ -1692,27 +1744,30 @@ describe("settle", () => {
   });
 
   test("BatchAuctionSettled created and stored", () => {
-    const recordId =
+    const lotRecordId =
       "mainnet-" + auctionHouse.toHexString() + "-" + LOT_ID.toString();
+    const recordId = defaultTransactionHash
+      .concatI32(defaultLogIndex.toI32())
+      .concatI32(LOT_ID.toI32());
 
     // BatchAuctionSettled record is stored
     assert.entityCount("BatchAuctionSettled", 1);
     const batchAuctionSettledRecord = getBatchAuctionSettled(recordId);
 
-    assertStringEquals(
+    assertBytesEquals(
       batchAuctionSettledRecord.id,
       recordId,
       "BatchAuctionSettled: id",
     );
     assertStringEquals(
       batchAuctionSettledRecord.lot,
-      recordId,
+      lotRecordId,
       "BatchAuctionSettled: lot",
     );
 
     // BatchAuctionLot record is updated
     assert.entityCount("BatchAuctionLot", 1);
-    const batchAuctionLotRecord = getBatchAuctionLot(recordId);
+    const batchAuctionLotRecord = getBatchAuctionLot(lotRecordId);
     // Check reverse lookups
     const batchAuctionLotSettledLookup = batchAuctionLotRecord.settled.load();
     assertI32Equals(
@@ -1720,7 +1775,7 @@ describe("settle", () => {
       1,
       "BatchAuctionLot: settled lookup length",
     );
-    assertStringEquals(
+    assertBytesEquals(
       batchAuctionLotSettledLookup[0].id,
       recordId,
       "BatchAuctionLot: settled lookup",
@@ -1728,7 +1783,7 @@ describe("settle", () => {
 
     // BatchEncryptedMarginalPriceLot record is updated
     assert.entityCount("BatchEncryptedMarginalPriceLot", 1);
-    const empLotRecord = getBatchEncryptedMarginalPriceLot(recordId);
+    const empLotRecord = getBatchEncryptedMarginalPriceLot(lotRecordId);
     assertStringEquals(
       empLotRecord.status,
       "settled",
@@ -1757,7 +1812,7 @@ describe("settle", () => {
 
     // Check that the bids are updated
     // TODO re-enable submitted price checks
-    const batchBidRecordOne = getBatchBid(recordId, BID_ID_ONE);
+    const batchBidRecordOne = getBatchBid(lotRecordId, BID_ID_ONE);
     assertStringEquals(
       batchBidRecordOne.status,
       "decrypted",
@@ -1790,7 +1845,7 @@ describe("settle", () => {
       "Bid one: settledAmountOut",
     );
 
-    const batchBidRecordTwo = getBatchBid(recordId, BID_ID_TWO);
+    const batchBidRecordTwo = getBatchBid(lotRecordId, BID_ID_TWO);
     assertStringEquals(
       batchBidRecordTwo.status,
       "decrypted",
@@ -1823,7 +1878,7 @@ describe("settle", () => {
       "Bid two: settledAmountOut",
     );
 
-    const batchBidRecordThree = getBatchBid(recordId, BID_ID_THREE);
+    const batchBidRecordThree = getBatchBid(lotRecordId, BID_ID_THREE);
     assertStringEquals(
       batchBidRecordThree.status,
       "decrypted",
@@ -1896,21 +1951,25 @@ describe("settle", () => {
     handleBidClaimed(bidClaimEvent);
 
     // BatchBidClaimed record is stored
-    const recordId =
+    const lotRecordId =
       "mainnet-" + auctionHouse.toHexString() + "-" + LOT_ID.toString();
-    const bidRecordId = recordId + "-" + BID_ID_ONE.toString();
+    const bidRecordId = lotRecordId + "-" + BID_ID_ONE.toString();
+    const recordId = defaultTransactionHash
+      .concatI32(defaultLogIndex.toI32())
+      .concatI32(LOT_ID.toI32())
+      .concatI32(BID_ID_ONE.toI32());
 
     assert.entityCount("BatchBidClaimed", 1);
-    const batchBidClaimedRecord = getBatchBidClaimed(recordId, BID_ID_ONE);
+    const batchBidClaimedRecord = getBatchBidClaimed(LOT_ID, BID_ID_ONE);
 
-    assertStringEquals(
+    assertBytesEquals(
       batchBidClaimedRecord.id,
-      bidRecordId,
+      recordId,
       "BatchBidClaimed: id",
     );
     assertStringEquals(
       batchBidClaimedRecord.lot,
-      recordId,
+      lotRecordId,
       "BatchBidClaimed: lot",
     );
     assertStringEquals(
@@ -1920,7 +1979,7 @@ describe("settle", () => {
     );
 
     // BatchBid is updated
-    const batchBidRecord = getBatchBid(recordId, BID_ID_ONE);
+    const batchBidRecord = getBatchBid(lotRecordId, BID_ID_ONE);
     assertStringEquals(batchBidRecord.status, "claimed", "Bid: status");
     assertStringEquals(batchBidRecord.outcome, "won", "Bid: outcome");
 
@@ -1931,9 +1990,9 @@ describe("settle", () => {
       1,
       "Bid: claimed lookup length",
     );
-    assertStringEquals(
+    assertBytesEquals(
       batchBidRecordClaimedLookup[0].id,
-      bidRecordId,
+      recordId,
       "Bid: claimed lookup",
     );
   });

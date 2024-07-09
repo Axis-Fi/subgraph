@@ -54,7 +54,7 @@ type AtomicAuctionLot @entity {
 }
 
 type AtomicAuctionCreated @entity(immutable: true) {
-  id: Bytes!
+  id: Bytes! # hash-logIndex
   lot: AtomicAuctionLot!
   infoHash: String! # IPFS info hash
 
@@ -65,7 +65,7 @@ type AtomicAuctionCreated @entity(immutable: true) {
 }
 
 type AtomicAuctionCancelled @entity(immutable: true) {
-  id: Bytes!
+  id: Bytes! # hash-logIndex
   lot: AtomicAuctionLot!
   auctionRef: Bytes! # bytes7
 
@@ -76,7 +76,7 @@ type AtomicAuctionCancelled @entity(immutable: true) {
 }
 
 type AtomicAuctionCurated @entity(immutable: true) {
-  id: Bytes!
+  id: Bytes! # hash-logIndex
   lot: AtomicAuctionLot!
   curator: Bytes! # address
 
@@ -87,7 +87,7 @@ type AtomicAuctionCurated @entity(immutable: true) {
 }
 
 type AtomicPurchase @entity(immutable: true) {
-  id: Bytes!
+  id: Bytes! # hash-logIndex
   lot: AtomicAuctionLot!
   buyer: Bytes! # address
   referrer: Bytes! # address
@@ -103,7 +103,7 @@ type AtomicPurchase @entity(immutable: true) {
 ### Atomic Modules
 
 type AtomicFixedPriceSaleLot @entity(immutable: true) {
-  id: Bytes!
+  id: Bytes! # chain-auctionHouse-lotId
   lot: AtomicAuctionLot!
 
   price: BigDecimal! # uint256
@@ -111,7 +111,7 @@ type AtomicFixedPriceSaleLot @entity(immutable: true) {
 }
 
 type AtomicLinearVestingLot @entity(immutable: true) {
-  id: Bytes!
+  id: Bytes! # chain-linearVesting-tokenId
   lot: AtomicAuctionLot!
 
   startTimestamp: BigInt!
@@ -123,7 +123,7 @@ type AtomicLinearVestingLot @entity(immutable: true) {
 }
 
 type AtomicAuctionInfo @entity(immutable: true) {
-  id: ID! # IPFS hash
+  id: ID! # IPFS hash-hash-logIndex
   lot: AtomicAuctionLot!
   hash: String! # IPFS hash
 
@@ -138,14 +138,14 @@ type AtomicAuctionInfo @entity(immutable: true) {
 }
 
 type AtomicAuctionInfoLink @entity(immutable: true) {
-  id: ID! # IPFS hash-link name
+  id: ID! # IPFS hash-hash-logIndex-link name
   auctionInfo: AtomicAuctionInfo!
   linkId: String!
   url: String!
 }
 
 type AtomicAuctionInfoAllowlistEntry @entity(immutable: true) {
-  id: ID! # IPFS hash-array index
+  id: ID! # IPFS hash-hash-logIndex-array index
   auctionInfo: AtomicAuctionInfo!
   values: [String!]! # Number of elements depends on the allowlist type
 }
@@ -215,7 +215,7 @@ type BatchAuctionLot @entity {
 }
 
 type BatchAuctionCreated @entity(immutable: true) {
-  id: String! # chain-auctionHouse-lotId
+  id: Bytes! # hash-logIndex-lotId
   lot: BatchAuctionLot!
   infoHash: String! # IPFS info hash
 
@@ -226,7 +226,7 @@ type BatchAuctionCreated @entity(immutable: true) {
 }
 
 type BatchAuctionCancelled @entity(immutable: true) {
-  id: String! # chain-auctionHouse-lotId
+  id: Bytes! # hash-logIndex-lotId
   lot: BatchAuctionLot!
   auctionRef: Bytes! # bytes7
 
@@ -237,7 +237,7 @@ type BatchAuctionCancelled @entity(immutable: true) {
 }
 
 type BatchAuctionCurated @entity(immutable: true) {
-  id: String! # chain-auctionHouse-lotId
+  id: Bytes! # hash-logIndex-lotId
   lot: BatchAuctionLot!
   curator: Bytes! # address
 
@@ -248,7 +248,7 @@ type BatchAuctionCurated @entity(immutable: true) {
 }
 
 type BatchAuctionSettled @entity(immutable: true) {
-  id: String! # chain-auctionHouse-lotId
+  id: Bytes! # hash-logIndex-lotId
   lot: BatchAuctionLot!
 
   blockNumber: BigInt!
@@ -258,7 +258,7 @@ type BatchAuctionSettled @entity(immutable: true) {
 }
 
 type BatchAuctionAborted @entity(immutable: true) {
-  id: String! # chain-auctionHouse-lotId
+  id: Bytes! # hash-logIndex-lotId
   lot: BatchAuctionLot!
 
   blockNumber: BigInt!
@@ -268,7 +268,7 @@ type BatchAuctionAborted @entity(immutable: true) {
 }
 
 type BatchBid @entity {
-  id: String! # lot id + bidId
+  id: String! # chain-auctionHouse-lotId-bidId
   lot: BatchAuctionLot!
 
   bidId: BigInt! # uint96
@@ -312,8 +312,19 @@ type BatchBid @entity {
   claimed: BatchBidClaimed @derivedFrom(field: "bid")
 }
 
+type BatchBidCreated @entity(immutable: true) {
+  id: Bytes! # hash-logIndex-lotId-bidId
+  lot: BatchAuctionLot!
+  bid: BatchBid!
+
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  date: String!
+  transactionHash: Bytes!
+}
+
 type BatchBidRefunded @entity(immutable: true) {
-  id: String! # lot id + bidId
+  id: Bytes! # hash-logIndex-lotId-bidId
   lot: BatchAuctionLot!
   bid: BatchBid!
 
@@ -326,7 +337,7 @@ type BatchBidRefunded @entity(immutable: true) {
 }
 
 type BatchBidDecrypted @entity(immutable: true) {
-  id: String! # lot id + bidId
+  id: Bytes! # hash-logIndex-lotId-bidId
   lot: BatchAuctionLot!
   bid: BatchBid!
 
@@ -340,7 +351,7 @@ type BatchBidDecrypted @entity(immutable: true) {
 }
 
 type BatchBidClaimed @entity(immutable: true) {
-  id: String! # lot id + bidId
+  id: Bytes! # hash-logIndex-lotId-bidId
   lot: BatchAuctionLot!
   bid: BatchBid!
 
@@ -380,7 +391,7 @@ type BatchEncryptedMarginalPriceLot @entity {
 }
 
 type BatchEncryptedMarginalPricePrivateKeySubmitted @entity(immutable: true) {
-  id: String! # chain-auctionHouse-lotId
+  id: Bytes! # hash-logIndex-lotId
   empLot: BatchEncryptedMarginalPriceLot!
   module: Bytes! # Address
 
@@ -444,7 +455,7 @@ type BatchLinearVestingRedeemed @entity(immutable: true) {
 }
 
 type BatchAuctionInfo @entity(immutable: true) {
-  id: ID! # IPFS hash
+  id: ID! # IPFS hash-hash-logIndex
   lot: BatchAuctionLot!
   hash: String! # IPFS hash
 
@@ -459,14 +470,14 @@ type BatchAuctionInfo @entity(immutable: true) {
 }
 
 type BatchAuctionInfoLink @entity(immutable: true) {
-  id: ID! # IPFS hash-link name
+  id: ID! # # IPFS hash-hash-logIndex-link name
   auctionInfo: BatchAuctionInfo!
   linkId: String!
   url: String!
 }
 
 type BatchAuctionInfoAllowlistEntry @entity(immutable: true) {
-  id: ID! # IPFS hash-array index
+  id: ID! # # IPFS hash-hash-logIndex-array index
   auctionInfo: BatchAuctionInfo!
   values: [String!]! # Number of elements depends on the allowlist type
 }
@@ -474,7 +485,7 @@ type BatchAuctionInfoAllowlistEntry @entity(immutable: true) {
 ### Shared types
 
 type Token @entity(immutable: true) {
-  id: Bytes!
+  id: Bytes! # address
   address: Bytes!
   name: String!
   symbol: String!
@@ -483,7 +494,7 @@ type Token @entity(immutable: true) {
 }
 
 type AuctionHouseOwnershipTransferred @entity(immutable: true) {
-  id: Bytes!
+  id: Bytes! # hash-logIndex
   auctionHouse: Bytes! # address
   caller: Bytes! # address
   newOwner: Bytes! # address
@@ -495,7 +506,7 @@ type AuctionHouseOwnershipTransferred @entity(immutable: true) {
 }
 
 type AuctionHouseModuleInstalled @entity(immutable: true) {
-  id: Bytes!
+  id: Bytes! # hash-logIndex
   auctionHouse: Bytes! # address
   keycode: Bytes! # bytes5
   version: Int! # uint8
@@ -508,7 +519,7 @@ type AuctionHouseModuleInstalled @entity(immutable: true) {
 }
 
 type AuctionHouseModuleSunset @entity(immutable: true) {
-  id: Bytes!
+  id: Bytes! # hash-logIndex
   auctionHouse: Bytes! # address
   keycode: Bytes! # bytes5
 
