@@ -11,7 +11,7 @@ export const defaultTransactionLogIndex = BigInt.fromI32(1);
 export const defaultEventDataLogType = "default_log_type";
 
 const defaultBigInt = BigInt.fromI32(1);
-const defaultAddress = Address.fromString(
+export const defaultAddress = Address.fromString(
   "0xA16081F360e3847006dB660bae1c6d1b2e17eC2A",
 );
 const defaultAddressBytes = defaultAddress as Bytes;

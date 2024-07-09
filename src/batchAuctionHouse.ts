@@ -35,7 +35,11 @@ import {
   BatchBidRefunded,
 } from "../generated/schema";
 import { BatchAuctionInfo } from "../generated/templates";
-import { KEY_AUCTION_LOT_ID } from "./constants";
+import {
+  KEY_AUCTION_LOT_ID,
+  KEY_LOG_INDEX,
+  KEY_TRANSACTION_HASH,
+} from "./constants";
 import {
   getAuctionCuration,
   getAuctionHouse,
@@ -249,6 +253,11 @@ export function handleAuctionCreated(event: AuctionCreatedEvent): void {
   if (event.params.infoHash != "") {
     const dataSourceContext = new DataSourceContext();
     dataSourceContext.setString(KEY_AUCTION_LOT_ID, auctionLot.id.toString());
+    dataSourceContext.setString(
+      KEY_TRANSACTION_HASH,
+      event.transaction.hash.toString(),
+    );
+    dataSourceContext.setString(KEY_LOG_INDEX, event.logIndex.toString());
 
     BatchAuctionInfo.createWithContext(
       event.params.infoHash,

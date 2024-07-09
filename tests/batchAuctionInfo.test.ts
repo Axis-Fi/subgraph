@@ -2,12 +2,19 @@ import { Bytes, DataSourceContext } from "@graphprotocol/graph-ts";
 import { dataSourceMock, describe, test } from "matchstick-as";
 
 import { BatchAuctionInfo } from "../generated/schema";
-import { KEY_AUCTION_LOT_ID } from "../src/constants";
+import {
+  KEY_AUCTION_LOT_ID,
+  KEY_LOG_INDEX,
+  KEY_TRANSACTION_HASH,
+} from "../src/constants";
 import { handleBatchAuctionInfo } from "../src/handleBatchAuctionInfo";
 import { assertI32Equals, assertStringEquals } from "./assert";
+import { defaultAddress, defaultLogIndex } from "./mocks/event";
 
 const AUCTION_LOT_ID = "1234";
 const IPFS_HASH = "QmXW5rRfwt9YwWaJ3um57Menfy1UrwZbTbf4y3CztwQcA2";
+const TRANSACTION_HASH = "0x1234";
+const LOG_INDEX = "200223";
 
 describe("batchAuctionInfo", () => {
   test("should decode the auction info", () => {
@@ -28,6 +35,9 @@ describe("batchAuctionInfo", () => {
     // Set the context
     const dataSourceContext = new DataSourceContext();
     dataSourceContext.setString(KEY_AUCTION_LOT_ID, AUCTION_LOT_ID);
+    dataSourceContext.setString(KEY_TRANSACTION_HASH, TRANSACTION_HASH);
+    dataSourceContext.setString(KEY_LOG_INDEX, LOG_INDEX);
+
     // dataSource.stringParam() uses the value of dataSource.address()
     dataSourceMock.setReturnValues(IPFS_HASH, "mainnet", dataSourceContext);
 
@@ -35,7 +45,8 @@ describe("batchAuctionInfo", () => {
     handleBatchAuctionInfo(Bytes.fromUTF8(jsonString));
 
     // Assert values
-    const auctionInfoRecord = BatchAuctionInfo.load(IPFS_HASH);
+    const auctionInfoRecordId = `${IPFS_HASH}-${TRANSACTION_HASH}-${LOG_INDEX}`;
+    const auctionInfoRecord = BatchAuctionInfo.load(auctionInfoRecordId);
     if (auctionInfoRecord == null) {
       throw new Error("Expected BatchAuctionInfo to be saved");
     }
@@ -54,12 +65,14 @@ describe("batchAuctionInfo", () => {
 
     // Assert links
     const recordLinks = auctionInfoRecord.links.load();
+    assertI32Equals(recordLinks.length, 1, "links length");
     // Ordering is wonky, so we only test a single element
     assertStringEquals(recordLinks[0].linkId, "link1", "link1 id");
     assertStringEquals(recordLinks[0].url, "url1", "link1 URL");
 
     // Assert allowlist
     const recordAllowlist = auctionInfoRecord.allowlist.load();
+    assertI32Equals(recordAllowlist.length, 1, "allowlist length");
     // Ordering is wonky, so we only test a single element
     assertStringEquals(
       recordAllowlist[0].values[0],
