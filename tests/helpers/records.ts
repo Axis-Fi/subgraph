@@ -6,6 +6,7 @@ import {
   BatchBid,
   BatchBidClaimed,
   BatchEncryptedMarginalPriceLot,
+  BatchEncryptedMarginalPricePrivateKeySubmitted,
   BatchFixedPriceLot,
   BatchLinearVestingLot,
   BatchLinearVestingRedeemed,
@@ -41,6 +42,20 @@ export function getBatchEncryptedMarginalPriceLot(
   }
 
   return record as BatchEncryptedMarginalPriceLot;
+}
+
+export function getBatchEncryptedMarginalPricePrivateKeySubmitted(
+  recordId: string,
+): BatchEncryptedMarginalPricePrivateKeySubmitted {
+  const record = BatchEncryptedMarginalPricePrivateKeySubmitted.load(recordId);
+
+  if (record == null) {
+    throw new Error(
+      "BatchEncryptedMarginalPricePrivateKeySubmitted not found: " + recordId,
+    );
+  }
+
+  return record as BatchEncryptedMarginalPricePrivateKeySubmitted;
 }
 
 export function getBatchFixedPriceLot(recordId: string): BatchFixedPriceLot {

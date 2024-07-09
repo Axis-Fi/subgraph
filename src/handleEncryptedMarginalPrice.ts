@@ -5,7 +5,11 @@ import {
   EncryptedMarginalPrice,
   PrivateKeySubmitted as PrivateKeySubmittedEvent,
 } from "../generated/BatchAuctionHouse/EncryptedMarginalPrice";
-import { BatchAuctionLot, BatchBidDecrypted } from "../generated/schema";
+import {
+  BatchAuctionLot,
+  BatchBidDecrypted,
+  BatchEncryptedMarginalPricePrivateKeySubmitted,
+} from "../generated/schema";
 import { getAuctionLot, getLotRecord } from "./helpers/batchAuction";
 import { getBidId, getBidRecord } from "./helpers/bid";
 import { toISO8601String } from "./helpers/date";
@@ -91,6 +95,23 @@ export function handlePrivateKeySubmitted(
 
   // Get the auction lot record
   const lotRecord = getLotRecord(auctionHouseAddress, lotId);
+
+  // Create a new record
+  const entity = new BatchEncryptedMarginalPricePrivateKeySubmitted(
+    lotRecord.id,
+  );
+  entity.empLot = lotRecord.id; // EMP lot record id is same
+  entity.module = event.address;
+  entity.blockNumber = event.block.number;
+  entity.blockTimestamp = event.block.timestamp;
+  entity.date = toISO8601String(event.block.timestamp);
+  entity.transactionHash = event.transaction.hash;
+  entity.save();
+
+  log.info(
+    "Adding BatchEncryptedMarginalPricePrivateKeySubmitted record with id: {}",
+    [lotRecord.id],
+  );
 
   // Update the EMP lot record
   updateEncryptedMarginalPriceLot(lotRecord, lotId);

@@ -374,6 +374,20 @@ type BatchEncryptedMarginalPriceLot @entity {
   hasPartialFill: Boolean
   # The bidId of the bid that was partially filled. Only set after settlement, null before that.
   partialBidId: BigInt
+
+  # Reverse Lookups
+  privateKeySubmitted: BatchEncryptedMarginalPricePrivateKeySubmitted @derivedFrom(field: "empLot")
+}
+
+type BatchEncryptedMarginalPricePrivateKeySubmitted @entity(immutable: true) {
+  id: String! # chain-auctionHouse-lotId
+  empLot: BatchEncryptedMarginalPriceLot!
+  module: Bytes! # Address
+
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  date: String!
+  transactionHash: Bytes!
 }
 
 type BatchFixedPriceLot @entity {

@@ -71,6 +71,7 @@ import {
   getBatchBid,
   getBatchBidClaimed,
   getBatchEncryptedMarginalPriceLot,
+  getBatchEncryptedMarginalPricePrivateKeySubmitted,
   getBatchLinearVestingLot,
   getBatchLinearVestingRedeemed,
 } from "./helpers/records";
@@ -1378,6 +1379,15 @@ describe("private key submission", () => {
     const lotRecordId =
       "mainnet-" + auctionHouse.toHexString() + "-" + LOT_ID.toString();
 
+    // BatchEncryptedMarginalPricePrivateKeySubmitted event is created
+    const empPrivateKeySubmittedRecord =
+      getBatchEncryptedMarginalPricePrivateKeySubmitted(lotRecordId);
+    assertStringEquals(
+      empPrivateKeySubmittedRecord.id,
+      lotRecordId,
+      "BatchEncryptedMarginalPricePrivateKeySubmitted: id",
+    );
+
     // BatchEncryptedMarginalPriceLot record is updated
     const empLotRecord = getBatchEncryptedMarginalPriceLot(lotRecordId);
     if (empLotRecord === null) {
@@ -1386,6 +1396,20 @@ describe("private key submission", () => {
           lotRecordId,
       );
     }
+
+    // Check reverse lookup
+    const empLotPrivateKeySubmittedRecordLookup =
+      empLotRecord.privateKeySubmitted.load();
+    assertI32Equals(
+      empLotPrivateKeySubmittedRecordLookup.length,
+      1,
+      "BatchEncryptedMarginalPriceLot: privateKeySubmitted lookup length",
+    );
+    assertStringEquals(
+      empLotPrivateKeySubmittedRecordLookup[0].id,
+      empPrivateKeySubmittedRecord.id,
+      "BatchEncryptedMarginalPriceLot: privateKeySubmitted lookup",
+    );
 
     assertStringEquals(empLotRecord.status, "decrypted", "Lot: status");
   });
