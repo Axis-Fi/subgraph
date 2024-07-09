@@ -15,7 +15,9 @@ export const defaultAddress = Address.fromString(
   "0xA16081F360e3847006dB660bae1c6d1b2e17eC2A",
 );
 const defaultAddressBytes = defaultAddress as Bytes;
-export const defaultTransactionHash = Bytes.fromHexString("0x12345678");
+export const defaultTransactionHash = Bytes.fromHexString(
+  "0x48e38bfc43b6802542bfeacff3a13d43ecb04ee43813eccc905a57a37c907848",
+);
 const defaultIntBytes = Bytes.fromI32(1);
 
 function newLog(): ethereum.Log {

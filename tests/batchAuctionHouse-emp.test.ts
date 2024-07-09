@@ -20,6 +20,7 @@ import {
   BatchAuctionCurated,
   BatchAuctionLot,
   BatchBid,
+  BatchBidCreated,
   BatchBidDecrypted,
   BatchBidRefunded,
   BatchEncryptedMarginalPriceLot,
@@ -389,7 +390,10 @@ describe("auction creation", () => {
     const batchAuctionCreatedRecord = BatchAuctionCreated.load(recordId);
     if (batchAuctionCreatedRecord === null) {
       throw new Error(
-        "Expected BatchAuctionCreated to exist for lot id " + LOT_ID.toString(),
+        "Expected BatchAuctionCreated to exist for lot id " +
+          LOT_ID.toString() +
+          " at record id " +
+          recordId.toHexString(),
       );
     }
     assertBytesEquals(
@@ -808,7 +812,9 @@ describe("auction cancellation", () => {
     if (batchAuctionCancelledRecord === null) {
       throw new Error(
         "Expected BatchAuctionCancelled to exist for lot id " +
-          LOT_ID.toString(),
+          LOT_ID.toString() +
+          " at record id " +
+          recordId.toHexString(),
       );
     }
     assertBytesEquals(
@@ -937,7 +943,10 @@ describe("auction curation", () => {
     const batchAuctionCuratedRecord = BatchAuctionCurated.load(recordId);
     if (batchAuctionCuratedRecord === null) {
       throw new Error(
-        "Expected BatchAuctionCurated to exist for lot id " + LOT_ID.toString(),
+        "Expected BatchAuctionCurated to exist for lot id " +
+          LOT_ID.toString() +
+          " at record id " +
+          recordId.toHexString(),
       );
     }
 
@@ -1001,8 +1010,10 @@ describe("bid", () => {
     const lotRecordId =
       "mainnet-" + auctionHouse.toHexString() + "-" + LOT_ID.toString();
     const bidRecordId = lotRecordId + "-" + BID_ID_ONE.toString();
-
-    // TODO BatchBidCreated
+    const recordId = defaultTransactionHash
+      .concatI32(defaultLogIndex.toI32())
+      .concatI32(LOT_ID.toI32())
+      .concatI32(BID_ID_ONE.toI32());
 
     // BatchBid record is created
     assert.entityCount("BatchBid", 1);
@@ -1064,6 +1075,30 @@ describe("bid", () => {
       bidRecordId,
       "BatchAuctionLot: bids lookup",
     );
+
+    // BatchBidCreated record is created
+    const batchBidCreatedRecord = BatchBidCreated.load(recordId);
+    if (batchBidCreatedRecord === null) {
+      throw new Error(
+        "Expected BatchBidCreated to exist for lot id " +
+          LOT_ID.toString() +
+          " and bid id " +
+          BID_ID_ONE.toString() +
+          " at record id: " +
+          recordId.toHexString(),
+      );
+    }
+
+    assertStringEquals(
+      batchBidCreatedRecord.lot,
+      batchAuctionLotRecord.id,
+      "BatchBidCreated: lot",
+    );
+    assertStringEquals(
+      batchBidCreatedRecord.bid,
+      batchBidRecord.id,
+      "BatchBidCreated: bid",
+    );
   });
 
   // TODO referrer not set
@@ -1117,7 +1152,9 @@ describe("bid refund", () => {
         "Expected BatchBidRefunded to exist for lot id " +
           LOT_ID.toString() +
           " and bid id " +
-          BID_ID_ONE.toString(),
+          BID_ID_ONE.toString() +
+          " at record id " +
+          recordId.toHexString(),
       );
     }
 
@@ -1219,7 +1256,9 @@ describe("bid decryption", () => {
         "Expected BatchBidDecrypted to exist for lot id " +
           LOT_ID.toString() +
           " and bid id " +
-          BID_ID_ONE.toString(),
+          BID_ID_ONE.toString() +
+          " at record id " +
+          bidOneDecryptedRecordId.toHexString(),
       );
     }
 
@@ -1263,7 +1302,9 @@ describe("bid decryption", () => {
         "Expected BatchBidDecrypted to exist for lot id " +
           LOT_ID.toString() +
           " and bid id " +
-          BID_ID_TWO.toString(),
+          BID_ID_TWO.toString() +
+          " at record id " +
+          bidTwoDecryptedRecordId.toHexString(),
       );
     }
 
@@ -1517,7 +1558,10 @@ describe("abort", () => {
     const batchAuctionAbortedRecord = BatchAuctionAborted.load(recordId);
     if (batchAuctionAbortedRecord === null) {
       throw new Error(
-        "Expected BatchAuctionAborted to exist for lot id " + LOT_ID.toString(),
+        "Expected BatchAuctionAborted to exist for lot id " +
+          LOT_ID.toString() +
+          " at record id " +
+          recordId.toHexString(),
       );
     }
 

@@ -107,7 +107,9 @@ export function handlePrivateKeySubmitted(
 
   // Create a new record
   const entity = new BatchEncryptedMarginalPricePrivateKeySubmitted(
-    event.transaction.hash.concatI32(event.logIndex.toI32()),
+    event.transaction.hash
+      .concatI32(event.logIndex.toI32())
+      .concatI32(lotId.toI32()),
   );
   entity.empLot = lotRecord.id; // EMP lot record id is same
   entity.module = event.address;

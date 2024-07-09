@@ -96,7 +96,9 @@ export function getBatchBidClaimed(
       "BatchBidClaimed not found for lot id " +
         lotId.toString() +
         " and bid id " +
-        bidId.toString(),
+        bidId.toString() +
+        " at record id: " +
+        recordId.toHexString(),
     );
   }
 

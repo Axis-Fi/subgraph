@@ -309,7 +309,9 @@ export function handleAuctionCreated(event: AuctionCreatedEvent): void {
 
   // Create the event
   const entity = new BatchAuctionCreated(
-    event.transaction.hash.concatI32(event.logIndex.toI32()),
+    event.transaction.hash
+      .concatI32(event.logIndex.toI32())
+      .concatI32(event.params.lotId.toI32()),
   );
   entity.lot = auctionLot.id;
   entity.infoHash = event.params.infoHash;
@@ -320,8 +322,9 @@ export function handleAuctionCreated(event: AuctionCreatedEvent): void {
   entity.transactionHash = event.transaction.hash;
   entity.save();
 
-  log.info("BatchAuctionCreated record saved for lot id: {}", [
+  log.info("BatchAuctionCreated record saved for lot id {} to record id: {}", [
     auctionLot.lotId.toString(),
+    entity.id.toHexString(),
   ]);
 }
 
@@ -331,7 +334,9 @@ export function handleAuctionCancelled(event: AuctionCancelledEvent): void {
   const lotRecord = getLotRecord(event.address, lotId);
 
   const entity = new BatchAuctionCancelled(
-    event.transaction.hash.concatI32(event.logIndex.toI32()),
+    event.transaction.hash
+      .concatI32(event.logIndex.toI32())
+      .concatI32(event.params.lotId.toI32()),
   );
   entity.lot = lotRecord.id;
   entity.auctionRef = event.params.auctionRef;
@@ -342,9 +347,10 @@ export function handleAuctionCancelled(event: AuctionCancelledEvent): void {
   entity.transactionHash = event.transaction.hash;
   entity.save();
 
-  log.info("BatchAuctionCancelled record saved for lot id: {}", [
-    lotRecord.lotId.toString(),
-  ]);
+  log.info(
+    "BatchAuctionCancelled record saved for lot id {} to record id: {}",
+    [lotRecord.lotId.toString(), entity.id.toHexString()],
+  );
 
   _setAuctionStatusCancelled(event.address, lotId);
 
@@ -363,7 +369,9 @@ export function handleCurated(event: CuratedEvent): void {
   const lotRecord = getLotRecord(event.address, lotId);
 
   const entity = new BatchAuctionCurated(
-    event.transaction.hash.concatI32(event.logIndex.toI32()),
+    event.transaction.hash
+      .concatI32(event.logIndex.toI32())
+      .concatI32(event.params.lotId.toI32()),
   );
   entity.lot = lotRecord.id;
   entity.curator = event.params.curator;
@@ -374,8 +382,9 @@ export function handleCurated(event: CuratedEvent): void {
   entity.transactionHash = event.transaction.hash;
   entity.save();
 
-  log.info("BatchAuctionCurated record saved for lot id: {}", [
+  log.info("BatchAuctionCurated record saved for lot id {} to record id: {}", [
     lotRecord.id.toString(),
+    entity.id.toHexString(),
   ]);
 
   _updateAuctionLot(
@@ -393,7 +402,9 @@ export function handleSettle(event: SettleEvent): void {
   const lotRecord = getLotRecord(event.address, lotId);
 
   const entity = new BatchAuctionSettled(
-    event.transaction.hash.concatI32(event.logIndex.toI32()),
+    event.transaction.hash
+      .concatI32(event.logIndex.toI32())
+      .concatI32(event.params.lotId.toI32()),
   );
   entity.lot = lotRecord.id;
   entity.blockNumber = event.block.number;
@@ -402,8 +413,9 @@ export function handleSettle(event: SettleEvent): void {
   entity.transactionHash = event.transaction.hash;
   entity.save();
 
-  log.info("BatchAuctionSettled record saved for lot id: {}", [
+  log.info("BatchAuctionSettled record saved for lot id {} to record id: {}", [
     lotRecord.id.toString(),
+    entity.id.toHexString(),
   ]);
 
   _updateAuctionLot(
@@ -433,7 +445,9 @@ export function handleAbort(event: AbortEvent): void {
   const lotRecord = getLotRecord(event.address, lotId);
 
   const entity = new BatchAuctionAborted(
-    event.transaction.hash.concatI32(event.logIndex.toI32()),
+    event.transaction.hash
+      .concatI32(event.logIndex.toI32())
+      .concatI32(event.params.lotId.toI32()),
   );
   entity.lot = lotRecord.id;
   entity.blockNumber = event.block.number;
@@ -442,8 +456,9 @@ export function handleAbort(event: AbortEvent): void {
   entity.transactionHash = event.transaction.hash;
   entity.save();
 
-  log.info("BatchAuctionAborted record saved for lot id: {}", [
+  log.info("BatchAuctionAborted record saved for lot id {} to record id: {}", [
     lotRecord.id.toString(),
+    entity.id.toHexString(),
   ]);
 
   _setAuctionStatusAborted(event.address, lotId);
@@ -500,10 +515,10 @@ export function handleBid(event: BidEvent): void {
   entity.transactionHash = event.transaction.hash;
   entity.save();
 
-  log.info("BatchBidCreated record saved for lot id {} and bid id {}", [
-    lotId.toString(),
-    bidId.toString(),
-  ]);
+  log.info(
+    "BatchBidCreated record saved for lot id {} and bid id {} to record id: {}",
+    [lotId.toString(), bidId.toString(), entity.id.toHexString()],
+  );
 
   _updateAuctionLot(
     event.address,
@@ -538,10 +553,10 @@ export function handleRefundBid(event: RefundBidEvent): void {
 
   entity.save();
 
-  log.info("BatchBidRefunded record saved for lot id {} and bid id {}", [
-    lotId.toString(),
-    bidId.toString(),
-  ]);
+  log.info(
+    "BatchBidRefunded record saved for lot id {} and bid id {} to record id: {}",
+    [lotId.toString(), bidId.toString(), entity.id.toHexString()],
+  );
 
   // Update the bid record
   updateBidStatus(
@@ -585,10 +600,10 @@ export function handleBidClaimed(event: ClaimBidEvent): void {
 
   entity.save();
 
-  log.info("BatchBidClaimed record saved for lot id {} and bid id", [
-    lotId.toString(),
-    bidId.toString(),
-  ]);
+  log.info(
+    "BatchBidClaimed record saved for lot id {} and bid id {} to record id: {}",
+    [lotId.toString(), bidId.toString(), entity.id.toHexString()],
+  );
 
   const auctionLot: BatchAuctionLot = getLotRecord(event.address, lotId);
 
