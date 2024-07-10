@@ -1,58 +1,58 @@
 {
   "arbitrum-sepolia": {
     "BatchAuctionHouse": {
-      "address": "0xBA00002999aBfa63cA25B3A7aD4c8F3a578aBe28",
-      "startBlock": 54697601
+      "address": "0xBA00003622ee11Ffac8a07cf8D207b19c95F1FFf",
+      "startBlock": 62563869
     },
     "EncryptedMarginalPrice": {
-      "address": "0x2Ca8954B468E2FbfE55240B69db937861c12F0d0",
-      "startBlock": 54697607
+      "address": "0x81661B3CC47218327cE17bAd69d9246FCC321667",
+      "startBlock": 62563877
     },
     "BatchLinearVesting": {
-      "address": "0xFB1113E170CA6d95f3a91121BDD2370a822598E9",
-      "startBlock": 54697617
+      "address": "0x056ed71c999bDdF489d34eD767a50c608Ae16Bf9",
+      "startBlock": 62563888
     }
   },
   "base-sepolia": {
     "BatchAuctionHouse": {
-      "address": "0xBA00002999aBfa63cA25B3A7aD4c8F3a578aBe28",
-      "startBlock": 11315285
+      "address": "0xBA00000D23A0793d5601d1e8E7B32aE88642cbEF",
+      "startBlock": 12395670
     },
     "EncryptedMarginalPrice": {
-      "address": "0x02c63F8aE0a8e9D0F7267AA4d0Af0567858188C2",
-      "startBlock": 11315285
+      "address": "0xA7413717C633175Bc5B669E94625a4d3FE009870",
+      "startBlock": 12395678
     },
     "BatchLinearVesting": {
-      "address": "0x392C629741a0c7350c7181addD5870dE178eeD94",
-      "startBlock": 11315168
+      "address": "0x4042D4F2236D055212d485E028E8FE4939252F88",
+      "startBlock": 12395692
     }
   },
   "blast-sepolia": {
     "BatchAuctionHouse": {
-      "address": "0xBA00007A1868f4AEFdd39041327CbC4Ba5bF1632",
-      "startBlock": 6851881
+      "address": "0xBA0000ac450437406583980336fE93AB2752999F",
+      "startBlock": 7935377
     },
     "EncryptedMarginalPrice": {
-      "address": "0x8F34bBB3edd28017f826FE7a73eb9297384BF0d8",
-      "startBlock": 6851889
+      "address": "0x3ae8dD1ee2752883459C4c33c2f7Aeb8a56669f0",
+      "startBlock": 7935385
     },
     "BatchLinearVesting": {
-      "address": "0xBD0474b8e7b65f3dF35d2817BA09aC864a199e31",
-      "startBlock": 6851903
+      "address": "0xAd21cD6Cea90e46436002e79B12247eCe16110B3",
+      "startBlock": 7935399
     }
   },
   "mode-testnet": {
     "BatchAuctionHouse": {
-      "address": "0xBA00002999aBfa63cA25B3A7aD4c8F3a578aBe28",
-      "startBlock": 15261776
+      "address": "0xBA00000D23A0793d5601d1e8E7B32aE88642cbEF",
+      "startBlock": 16350734
     },
     "EncryptedMarginalPrice": {
-      "address": "0x1A6Ba70B8e5957bCd03C20f9CF42D9e6D3d9b514",
-      "startBlock": 15261783
+      "address": "0x8b47F82a58d8AFBE5167feBf0D3F3Bb509aaf2bd",
+      "startBlock": 16350742
     },
     "BatchLinearVesting": {
-      "address": "0x90608F57161aC771b28fb0adCd2434cfa1463201",
-      "startBlock": 15261797
+      "address": "0xF170C78a493d9245d125e05bBEc35c98735f5277",
+      "startBlock": 16350758
     }
   }
 }

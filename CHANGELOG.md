@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.6.10 (2024-07-10)
+
+- Add contracts for testnet 0.5 release
+
 ## 0.6.9 (2024-07-09)
 
 - Remove pruning of historical entities, as historical blocks are required for ongoing auctions.
