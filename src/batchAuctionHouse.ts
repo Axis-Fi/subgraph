@@ -60,7 +60,8 @@ import { toDecimal } from "./helpers/number";
 import { getOrCreateToken } from "./helpers/token";
 import {
   createLinearVestingLot,
-  hasLinearVestingLot,
+  getLinearVestingLot,
+  getTokenId,
   LV_KEYCODE,
 } from "./modules/batchLinearVesting";
 import {
@@ -288,22 +289,26 @@ export function handleAuctionCreated(event: AuctionCreatedEvent): void {
     );
 
     // In production, it is highly unlikely that there would be a BatchLinearVestingLot already created with the same tokenId, but we protect against that.
-    if (
-      hasLinearVestingLot(
-        auctionLot,
-        moduleAddress,
-        auctionRouting.getDerivativeParams(),
-      )
-    ) {
+    const lvTokenId = getTokenId(
+      moduleAddress,
+      Address.fromBytes(auctionLot.baseToken),
+      auctionRouting.getDerivativeParams(),
+    );
+    const lvLot = getLinearVestingLot(moduleAddress, lvTokenId);
+    if (lvLot !== null) {
       log.warning("BatchLinearVestingLot already exists for lot: {}", [
         auctionLot.id.toString(),
       ]);
+      auctionLot.linearVesting = lvLot.id;
+      auctionLot.save();
     } else {
-      createLinearVestingLot(
+      const newLvLot = createLinearVestingLot(
         auctionLot,
         moduleAddress,
         auctionRouting.getDerivativeParams(),
       );
+      auctionLot.linearVesting = newLvLot.id;
+      auctionLot.save();
     }
   }
 

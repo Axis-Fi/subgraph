@@ -66,28 +66,21 @@ export function getTokenMetadata(
   return linearVesting.tokenMetadata(tokenId);
 }
 
-export function hasLinearVestingLot(
-  batchAuctionLot: BatchAuctionLot,
+export function getLinearVestingLot(
   moduleAddress: Address,
-  derivativeParams: Bytes,
-): boolean {
-  const tokenId: BigInt = getTokenId(
-    moduleAddress,
-    Address.fromBytes(batchAuctionLot.baseToken),
-    derivativeParams,
-  );
-
+  tokenId: BigInt,
+): BatchLinearVestingLot | null {
   const lvLotId: string = _getLinearVestingLotId(moduleAddress, tokenId);
   const lvLot = BatchLinearVestingLot.load(lvLotId);
 
-  return lvLot !== null;
+  return lvLot;
 }
 
 export function createLinearVestingLot(
   batchAuctionLot: BatchAuctionLot,
   moduleAddress: Address,
   derivativeParams: Bytes,
-): void {
+): BatchLinearVestingLot {
   // Determine the tokenId
   const tokenId: BigInt = getTokenId(
     moduleAddress,
@@ -116,14 +109,6 @@ export function createLinearVestingLot(
   lvLot.expiryTimestamp = expiry;
   lvLot.expiryDate = toISO8601String(expiry);
   lvLot.save();
-}
-
-export function getLinearVestingLot(
-  moduleAddress: Address,
-  tokenId: BigInt,
-): BatchLinearVestingLot | null {
-  const lvLotId: string = _getLinearVestingLotId(moduleAddress, tokenId);
-  const lvLot = BatchLinearVestingLot.load(lvLotId);
 
   return lvLot;
 }
