@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.6.11 (2024-07-10)
+
+- Fix an issue with duplicate records of BatchLinearVesting
+
 ## 0.6.10 (2024-07-10)
 
 - Add contracts for testnet 0.5 release
