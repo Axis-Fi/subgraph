@@ -5,12 +5,17 @@ import {
   BatchAuctionInfoAllowlistEntry,
   BatchAuctionInfoLink,
 } from "../generated/schema";
-import { KEY_AUCTION_LOT_ID } from "./constants";
+import {
+  KEY_AUCTION_LOT_ID,
+  KEY_LOG_INDEX,
+  KEY_TRANSACTION_HASH,
+} from "./constants";
 
 export function handleBatchAuctionInfo(content: Bytes): void {
   const ipfsHash = dataSource.stringParam();
   const auctionLotId = dataSource.context().getString(KEY_AUCTION_LOT_ID);
-  const auctionInfoRecord = new BatchAuctionInfo(ipfsHash);
+  const auctionInfoRecordId = `${ipfsHash}-${dataSource.context().getString(KEY_TRANSACTION_HASH)}-${dataSource.context().getString(KEY_LOG_INDEX)}`;
+  const auctionInfoRecord = new BatchAuctionInfo(auctionInfoRecordId);
 
   const value = json.fromBytes(content).toObject();
   if (value) {
@@ -51,9 +56,9 @@ export function handleBatchAuctionInfo(content: Bytes): void {
         const linkValue = link.value.toString();
 
         // Create a new record
-        const linkRecordId = ipfsHash + "-" + linkKey;
+        const linkRecordId = `${auctionInfoRecordId}-${linkKey}`;
         const linkRecord = new BatchAuctionInfoLink(linkRecordId);
-        linkRecord.auctionInfo = ipfsHash;
+        linkRecord.auctionInfo = auctionInfoRecordId;
         linkRecord.linkId = linkKey;
         linkRecord.url = linkValue;
         linkRecord.save();
@@ -72,11 +77,11 @@ export function handleBatchAuctionInfo(content: Bytes): void {
         const allowlistEntry = allowlistArray[i].toArray();
 
         // Create a new record
-        const allowlistRecordId = ipfsHash + "-" + i.toString();
+        const allowlistRecordId = `${auctionInfoRecordId}-${i.toString()}`;
         const allowlistRecord = new BatchAuctionInfoAllowlistEntry(
           allowlistRecordId,
         );
-        allowlistRecord.auctionInfo = ipfsHash;
+        allowlistRecord.auctionInfo = auctionInfoRecordId;
 
         const valuesArray = new Array<string>(0);
 

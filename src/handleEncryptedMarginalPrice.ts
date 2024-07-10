@@ -5,7 +5,11 @@ import {
   EncryptedMarginalPrice,
   PrivateKeySubmitted as PrivateKeySubmittedEvent,
 } from "../generated/BatchAuctionHouse/EncryptedMarginalPrice";
-import { BatchAuctionLot, BatchBidDecrypted } from "../generated/schema";
+import {
+  BatchAuctionLot,
+  BatchBidDecrypted,
+  BatchEncryptedMarginalPricePrivateKeySubmitted,
+} from "../generated/schema";
 import { getAuctionLot, getLotRecord } from "./helpers/batchAuction";
 import { getBidId, getBidRecord } from "./helpers/bid";
 import { toISO8601String } from "./helpers/date";
@@ -17,6 +21,7 @@ import {
 
 export function handleBidDecrypted(event: BidDecryptedEvent): void {
   const lotId = event.params.lotId;
+  const bidId = event.params.bidId;
 
   // Get the module
   const empModule = EncryptedMarginalPrice.bind(event.address);
@@ -26,10 +31,18 @@ export function handleBidDecrypted(event: BidDecryptedEvent): void {
   const lotRecord: BatchAuctionLot = getLotRecord(auctionHouseAddress, lotId);
 
   const bidRecordId = getBidId(lotRecord, event.params.bidId);
-  const entity = new BatchBidDecrypted(bidRecordId);
+  const entity = new BatchBidDecrypted(
+    event.transaction.hash
+      .concatI32(event.logIndex.toI32())
+      .concatI32(lotId.toI32())
+      .concatI32(bidId.toI32()),
+  );
   entity.lot = lotRecord.id;
   entity.bid = bidRecordId;
-  log.info("Adding BatchBidDecrypted record with id: {}", [bidRecordId]);
+  log.info("Adding BatchBidDecrypted record for lot id {} and bid id", [
+    lotId.toString(),
+    bidId.toString(),
+  ]);
 
   const auctionLot = getAuctionLot(auctionHouseAddress, lotId);
   entity.amountIn = toDecimal(
@@ -91,6 +104,25 @@ export function handlePrivateKeySubmitted(
 
   // Get the auction lot record
   const lotRecord = getLotRecord(auctionHouseAddress, lotId);
+
+  // Create a new record
+  const entity = new BatchEncryptedMarginalPricePrivateKeySubmitted(
+    event.transaction.hash
+      .concatI32(event.logIndex.toI32())
+      .concatI32(lotId.toI32()),
+  );
+  entity.empLot = lotRecord.id; // EMP lot record id is same
+  entity.module = event.address;
+  entity.blockNumber = event.block.number;
+  entity.blockTimestamp = event.block.timestamp;
+  entity.date = toISO8601String(event.block.timestamp);
+  entity.transactionHash = event.transaction.hash;
+  entity.save();
+
+  log.info(
+    "Adding BatchEncryptedMarginalPricePrivateKeySubmitted record with id: {}",
+    [lotRecord.id],
+  );
 
   // Update the EMP lot record
   updateEncryptedMarginalPriceLot(lotRecord, lotId);

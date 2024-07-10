@@ -11,10 +11,13 @@ export const defaultTransactionLogIndex = BigInt.fromI32(1);
 export const defaultEventDataLogType = "default_log_type";
 
 const defaultBigInt = BigInt.fromI32(1);
-const defaultAddress = Address.fromString(
+export const defaultAddress = Address.fromString(
   "0xA16081F360e3847006dB660bae1c6d1b2e17eC2A",
 );
 const defaultAddressBytes = defaultAddress as Bytes;
+export const defaultTransactionHash = Bytes.fromHexString(
+  "0x48e38bfc43b6802542bfeacff3a13d43ecb04ee43813eccc905a57a37c907848",
+);
 const defaultIntBytes = Bytes.fromI32(1);
 
 function newLog(): ethereum.Log {
@@ -55,7 +58,7 @@ function newBlock(): ethereum.Block {
 
 function newTransaction(): ethereum.Transaction {
   return new ethereum.Transaction(
-    defaultAddressBytes,
+    defaultTransactionHash,
     defaultBigInt,
     defaultAddress,
     defaultAddress,
@@ -69,7 +72,7 @@ function newTransaction(): ethereum.Transaction {
 
 function newTransactionReceipt(): ethereum.TransactionReceipt {
   return new ethereum.TransactionReceipt(
-    defaultAddressBytes,
+    defaultTransactionHash,
     defaultBigInt,
     defaultAddressBytes,
     defaultBigInt,

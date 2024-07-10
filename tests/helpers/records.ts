@@ -1,4 +1,4 @@
-import { BigInt } from "@graphprotocol/graph-ts";
+import { BigInt, Bytes } from "@graphprotocol/graph-ts";
 
 import {
   BatchAuctionLot,
@@ -6,16 +6,18 @@ import {
   BatchBid,
   BatchBidClaimed,
   BatchEncryptedMarginalPriceLot,
+  BatchEncryptedMarginalPricePrivateKeySubmitted,
   BatchFixedPriceLot,
   BatchLinearVestingLot,
   BatchLinearVestingRedeemed,
 } from "../../generated/schema";
+import { defaultLogIndex, defaultTransactionHash } from "../mocks/event";
 
-export function getBatchAuctionSettled(recordId: string): BatchAuctionSettled {
+export function getBatchAuctionSettled(recordId: Bytes): BatchAuctionSettled {
   const record = BatchAuctionSettled.load(recordId);
 
   if (record == null) {
-    throw new Error("BatchAuctionSettled not found: " + recordId);
+    throw new Error("BatchAuctionSettled not found: " + recordId.toHexString());
   }
 
   return record as BatchAuctionSettled;
@@ -43,6 +45,21 @@ export function getBatchEncryptedMarginalPriceLot(
   return record as BatchEncryptedMarginalPriceLot;
 }
 
+export function getBatchEncryptedMarginalPricePrivateKeySubmitted(
+  recordId: Bytes,
+): BatchEncryptedMarginalPricePrivateKeySubmitted {
+  const record = BatchEncryptedMarginalPricePrivateKeySubmitted.load(recordId);
+
+  if (record == null) {
+    throw new Error(
+      "BatchEncryptedMarginalPricePrivateKeySubmitted not found: " +
+        recordId.toHexString(),
+    );
+  }
+
+  return record as BatchEncryptedMarginalPricePrivateKeySubmitted;
+}
+
 export function getBatchFixedPriceLot(recordId: string): BatchFixedPriceLot {
   const record = BatchFixedPriceLot.load(recordId);
 
@@ -65,14 +82,24 @@ export function getBatchBid(lotId: string, bidId: BigInt): BatchBid {
 }
 
 export function getBatchBidClaimed(
-  lotId: string,
+  lotId: BigInt,
   bidId: BigInt,
 ): BatchBidClaimed {
-  const recordId = lotId.concat("-").concat(bidId.toString());
+  const recordId = defaultTransactionHash
+    .concatI32(defaultLogIndex.toI32())
+    .concatI32(lotId.toI32())
+    .concatI32(bidId.toI32());
   const record = BatchBidClaimed.load(recordId);
 
   if (record == null) {
-    throw new Error("BatchBidClaimed not found: " + recordId);
+    throw new Error(
+      "BatchBidClaimed not found for lot id " +
+        lotId.toString() +
+        " and bid id " +
+        bidId.toString() +
+        " at record id: " +
+        recordId.toHexString(),
+    );
   }
 
   return record as BatchBidClaimed;
