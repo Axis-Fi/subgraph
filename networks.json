@@ -41,6 +41,20 @@
       "startBlock": 7935399
     }
   },
+  "mantle-sepolia": {
+    "BatchAuctionHouse": {
+      "address": "0xBA00000D23A0793d5601d1e8E7B32aE88642cbEF",
+      "startBlock": 9512151
+    },
+    "EncryptedMarginalPrice": {
+      "address": "0xaC9957282BeA578f371078ddc4cD12A135B105d6",
+      "startBlock": 9512158
+    },
+    "BatchLinearVesting": {
+      "address": "0x16D5Aab9d35f8B3ac7BD086eEDcCe5343682D5F0",
+      "startBlock": 9512173
+    }
+  },
   "mode-testnet": {
     "BatchAuctionHouse": {
       "address": "0xBA00000D23A0793d5601d1e8E7B32aE88642cbEF",
