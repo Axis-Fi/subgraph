@@ -2015,6 +2015,23 @@ export class BatchAuctionLot extends Entity {
     this.set("maxBidId", Value.fromBigInt(value));
   }
 
+  get linearVesting(): string | null {
+    let value = this.get("linearVesting");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set linearVesting(value: string | null) {
+    if (!value) {
+      this.unset("linearVesting");
+    } else {
+      this.set("linearVesting", Value.fromString(<string>value));
+    }
+  }
+
   get cancelled(): BatchAuctionCancelledLoader {
     return new BatchAuctionCancelledLoader(
       "BatchAuctionLot",
@@ -2100,14 +2117,6 @@ export class BatchAuctionLot extends Entity {
       "BatchAuctionLot",
       this.get("id")!.toString(),
       "fixedPrice",
-    );
-  }
-
-  get linearVesting(): BatchLinearVestingLotLoader {
-    return new BatchLinearVestingLotLoader(
-      "BatchAuctionLot",
-      this.get("id")!.toString(),
-      "linearVesting",
     );
   }
 
@@ -5612,24 +5621,6 @@ export class BatchFixedPriceLotLoader extends Entity {
   load(): BatchFixedPriceLot[] {
     let value = store.loadRelated(this._entity, this._id, this._field);
     return changetype<BatchFixedPriceLot[]>(value);
-  }
-}
-
-export class BatchLinearVestingLotLoader extends Entity {
-  _entity: string;
-  _field: string;
-  _id: string;
-
-  constructor(entity: string, id: string, field: string) {
-    super();
-    this._entity = entity;
-    this._id = id;
-    this._field = field;
-  }
-
-  load(): BatchLinearVestingLot[] {
-    let value = store.loadRelated(this._entity, this._id, this._field);
-    return changetype<BatchLinearVestingLot[]>(value);
   }
 }
 
