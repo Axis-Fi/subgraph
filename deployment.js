@@ -11,7 +11,8 @@ const VERSION = "0.6.11";
 
 /**  Deployments to be deployed to Goldsky
  * otherwise they're deployed to Alchemy Subgraphs */
-const GOLDSKY_DEPLOYMENTS = ["mode-testnet", "blast-sepolia", "mantle-sepolia"];
+const GOLDSKY_DEPLOYMENTS = ["mode", "mode-testnet", "blast", "blast-sepolia"];
+const MANTLE_DEPLOYMENTS = ["mantle", "mantle-sepolia"];
 
 /** The base subgraph name shared by all chains*/
 const BASE_NAME = "axis-origin";
@@ -21,6 +22,7 @@ const SLUG = BASE_NAME + "-" + TARGET_NETWORK;
 
 module.exports = {
   GOLDSKY_DEPLOYMENTS,
+  MANTLE_DEPLOYMENTS,
   USE_GRAPH_PROTOCOL,
   TARGET_NETWORK,
   VERSION,
