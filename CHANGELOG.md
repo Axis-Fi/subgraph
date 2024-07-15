@@ -3,6 +3,7 @@
 ## 0.6.11 (2024-07-10)
 
 - Fix an issue with duplicate records of BatchLinearVesting
+- Shift subgraph deployments on Mantle to the Mantle Subgraph service
 
 ## 0.6.10 (2024-07-10)
 
