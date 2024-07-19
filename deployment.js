@@ -7,7 +7,7 @@ const TARGET_NETWORK = process.env.TARGET_NETWORK || "blast-sepolia";
 const USE_GRAPH_PROTOCOL = process.env.USE_GRAPH_PROTOCOL == "true" || false;
 
 /** The version that will it'll be deployed as */
-const VERSION = "0.6.11";
+const VERSION = "1.0.0";
 
 /**  Deployments to be deployed to Goldsky
  * otherwise they're deployed to Alchemy Subgraphs */

@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 1.0.0 (2024-07-19)
+
+- Production deployments
+
 ## 0.6.11 (2024-07-10)
 
 - Fix an issue with duplicate records of BatchLinearVesting
