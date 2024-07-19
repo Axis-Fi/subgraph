@@ -1,4 +1,18 @@
 {
+  "arbitrum-one": {
+    "BatchAuctionHouse": {
+      "address": "0xBA00000054C5a2122cD6333054BFDdB90A287Ee3",
+      "startBlock": 233260231
+    },
+    "EncryptedMarginalPrice": {
+      "address": "0x08B87749b379f5BCA1d74A7B3d4e9f3DeD41C706",
+      "startBlock": 233260231
+    },
+    "BatchLinearVesting": {
+      "address": "0x6c80F20C5C0404a3D5349F71F9B25c0654884092",
+      "startBlock": 233260231
+    }
+  },
   "arbitrum-sepolia": {
     "BatchAuctionHouse": {
       "address": "0xBA00003622ee11Ffac8a07cf8D207b19c95F1FFf",
@@ -11,6 +25,20 @@
     "BatchLinearVesting": {
       "address": "0x056ed71c999bDdF489d34eD767a50c608Ae16Bf9",
       "startBlock": 62563888
+    }
+  },
+  "base": {
+    "BatchAuctionHouse": {
+      "address": "0xBA00000054C5a2122cD6333054BFDdB90A287Ee3",
+      "startBlock": 17231179
+    },
+    "EncryptedMarginalPrice": {
+      "address": "0xD55227c0C37C97Fa2619a9C7F658C173883C1E2a",
+      "startBlock": 17231179
+    },
+    "BatchLinearVesting": {
+      "address": "0x68a8d91d9936b5Ef8b65f516F8a5AAB6c7b1E43e",
+      "startBlock": 17231179
     }
   },
   "base-sepolia": {
@@ -27,6 +55,20 @@
       "startBlock": 12395692
     }
   },
+  "blast": {
+    "BatchAuctionHouse": {
+      "address": "0xBA00000008b2B9CC31b98ed27628F714D12D9c7F",
+      "startBlock": 6227989
+    },
+    "EncryptedMarginalPrice": {
+      "address": "0x053219a03D5Bb08B8EeC2BB9743F723b312A1cE3",
+      "startBlock": 6227989
+    },
+    "BatchLinearVesting": {
+      "address": "0xE292cF4e316191CbFEbD74909356DF3cd9455e96",
+      "startBlock": 6227989
+    }
+  },
   "blast-sepolia": {
     "BatchAuctionHouse": {
       "address": "0xBA0000ac450437406583980336fE93AB2752999F",
@@ -39,6 +81,20 @@
     "BatchLinearVesting": {
       "address": "0xAd21cD6Cea90e46436002e79B12247eCe16110B3",
       "startBlock": 7935399
+    }
+  },
+  "mantle": {
+    "BatchAuctionHouse": {
+      "address": "0xBA00000054C5a2122cD6333054BFDdB90A287Ee3",
+      "startBlock": 66559677
+    },
+    "EncryptedMarginalPrice": {
+      "address": "0x053219a03D5Bb08B8EeC2BB9743F723b312A1cE3",
+      "startBlock": 66559677
+    },
+    "BatchLinearVesting": {
+      "address": "0xE292cF4e316191CbFEbD74909356DF3cd9455e96",
+      "startBlock": 66559677
     }
   },
   "mantle-sepolia": {
