@@ -11,6 +11,23 @@ Subgraph definition for Axis Origin contracts
 > - authenticate first, [see how here](https://docs.goldsky.com/subgraphs/deploying-subgraphs)
 > - add the network name to `GOLDSKY_DEPLOYMENTS`
 
+## Hosting Services
+
+There isn't a single hosting platform that supports all of the required chains. We deploy across multiple hosting services as a result.
+
+| Subgraph                 | Hosting Service         |
+|--------------------------|-------------------------|
+| arbitrum-one             | Alchemy                 |
+| arbitrum-sepolia         | Alchemy                 |
+| base                     | Alchemy                 |
+| base-sepolia             | Alchemy                 |
+| blast                    | Goldsky                 |
+| blast-sepolia            | Goldsky                 |
+| mantle                   | Goldsky                 |
+| mantle-sepolia           | Goldsky                 |
+| mode                     | Goldsky                 |
+| mode-testnet             | Goldsky                 |
+
 ## Deployment Configuration
 
 ### Approach
