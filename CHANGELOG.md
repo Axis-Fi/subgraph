@@ -3,6 +3,7 @@
 ## 1.0.1 (2024-08-22)
 
 - Update to use [axis-core 1.0.1](https://github.com/Axis-Fi/axis-core/releases/tag/1.0.1) deployments
+- Handle a change in how percentages are represented ([Axis-Fi/axis-core#216](https://github.com/Axis-Fi/axis-core/pull/216))
 
 ## 1.0.0 (2024-07-19)
 
