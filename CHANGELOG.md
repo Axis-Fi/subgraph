@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 1.0.1 (2024-08-22)
+
+- Update to use [axis-core 1.0.1](https://github.com/Axis-Fi/axis-core/releases/tag/1.0.1) deployments
+
 ## 1.0.0 (2024-07-19)
 
 - Production deployments
