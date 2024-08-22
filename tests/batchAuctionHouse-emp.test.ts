@@ -155,9 +155,9 @@ const lotFeesCurator = Address.fromString(
   "0x1234567890123456789012345678901234567890",
 );
 const lotFeesCuratorApproved: boolean = false;
-const lotFeesCuratorFee: i32 = 100;
-const lotFeesProtocolFee: i32 = 90;
-const lotFeesReferrerFee: i32 = 80;
+const lotFeesCuratorFee: i32 = 100; // 1%
+const lotFeesProtocolFee: i32 = 90; // 0.9%
+const lotFeesReferrerFee: i32 = 80; // 0.8%
 const lotMarginalPrice: BigInt = BigInt.fromU64(5_000_000);
 const UINT256_MAX = BigInt.fromUnsignedBytes(
   Bytes.fromHexString(
@@ -496,17 +496,17 @@ describe("auction creation", () => {
     );
     assertBigDecimalEquals(
       batchAuctionLotRecord.curatorFee,
-      BigDecimal.fromString("0.001"),
+      BigDecimal.fromString("0.01"),
       "BatchAuctionLot: curatorFee",
     );
     assertBigDecimalEquals(
       batchAuctionLotRecord.protocolFee,
-      BigDecimal.fromString("0.0009"),
+      BigDecimal.fromString("0.009"),
       "BatchAuctionLot: protocolFee",
     );
     assertBigDecimalEquals(
       batchAuctionLotRecord.referrerFee,
-      BigDecimal.fromString("0.0008"),
+      BigDecimal.fromString("0.008"),
       "BatchAuctionLot: referrerFee",
     );
     // Initial values

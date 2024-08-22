@@ -179,10 +179,25 @@ type BatchAuctionLot @entity {
   callbacks: Bytes! #address
 
   # Fee details
+  """
+  The address of the curator. If null, the lot is not curated.
+  """
   curator: Bytes # address
+  """
+  Whether the curator has approved the lot. If false, the lot is not curated.
+  """
   curatorApproved: Boolean!
+  """
+  The curator fee as a percentage, where 1 = 100%
+  """
   curatorFee: BigDecimal! # uint256
+  """
+  The protocol fee as a percentage, where 1 = 100%
+  """
   protocolFee: BigDecimal! # uint256
+  """
+  The referrer fee as a percentage, where 1 = 100%
+  """
   referrerFee: BigDecimal! # uint256
 
   # These values are updated when events occur
