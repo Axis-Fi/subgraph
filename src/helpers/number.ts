@@ -44,7 +44,6 @@ export function fromSlicedBytes(value: Bytes, start: i32, length: i32): BigInt {
  * @param value
  * @return the percentual number
  */
-
 export function fromBasisPoints(value: BigInt): BigDecimal {
-  return value.div(BigInt.fromI32(100)).toBigDecimal();
+  return toDecimal(value, 0).div(BigDecimal.fromString("10000"));
 }
