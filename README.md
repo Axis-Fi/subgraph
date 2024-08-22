@@ -25,7 +25,7 @@ There isn't a single hosting platform that supports all of the required chains. 
 | blast-sepolia            | Goldsky                 |
 | mantle                   | Goldsky                 |
 | mantle-sepolia           | Goldsky                 |
-| mode                     | Goldsky                 |
+| mode-mainnet             | Goldsky                 |
 | mode-testnet             | Goldsky                 |
 
 ## Deployment Configuration

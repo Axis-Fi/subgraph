@@ -111,7 +111,7 @@
       "startBlock": 11372343
     }
   },
-  "mode": {
+  "mode-mainnet": {
     "BatchAuctionHouse": {
       "address": "0xBA0000c59d144f2a9aEa064dcb2f963e1a0B3212",
       "startBlock": 12051681
