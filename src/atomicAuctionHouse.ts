@@ -1,5 +1,6 @@
 import {
   Address,
+  BigDecimal,
   BigInt,
   Bytes,
   DataSourceContext,
@@ -41,7 +42,7 @@ import {
 } from "./helpers/atomicAuction";
 import { getChain } from "./helpers/chain";
 import { toISO8601String } from "./helpers/date";
-import { toDecimal } from "./helpers/number";
+import { fromBasisPoints, toDecimal } from "./helpers/number";
 import { getOrCreateToken } from "./helpers/token";
 import {
   createLinearVestingLot,
@@ -135,9 +136,12 @@ export function handleAuctionCreated(event: AuctionCreatedEvent): void {
     ? null
     : auctionFees.getCurator();
   auctionLot.curatorApproved = false;
-  auctionLot.curatorFee = toDecimal(auctionFees.getCuratorFee(), 5);
-  auctionLot.protocolFee = toDecimal(auctionFees.getProtocolFee(), 5);
-  auctionLot.referrerFee = toDecimal(auctionFees.getReferrerFee(), 5);
+  auctionLot.curatorFee =
+    auctionFees.getCurator() == Address.zero()
+      ? BigDecimal.zero()
+      : fromBasisPoints(auctionFees.getCuratorFee());
+  auctionLot.protocolFee = fromBasisPoints(auctionFees.getProtocolFee());
+  auctionLot.referrerFee = fromBasisPoints(auctionFees.getReferrerFee());
 
   // Set initial values
   auctionLot.capacity = auctionLot.capacityInitial;

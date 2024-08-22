@@ -7,12 +7,12 @@ const TARGET_NETWORK = process.env.TARGET_NETWORK || "blast-sepolia";
 const USE_GRAPH_PROTOCOL = process.env.USE_GRAPH_PROTOCOL == "true" || false;
 
 /** The version that will it'll be deployed as */
-const VERSION = "1.0.0";
+const VERSION = "1.0.1";
 
 /**  Deployments to be deployed to Goldsky
  * otherwise they're deployed to Alchemy Subgraphs */
-const GOLDSKY_DEPLOYMENTS = ["mode", "mode-testnet", "blast", "blast-sepolia"];
-const MANTLE_DEPLOYMENTS = ["mantle", "mantle-sepolia"];
+const GOLDSKY_DEPLOYMENTS = ["blast", "blast-sepolia", "mantle", "mantle-sepolia", "mode-mainnet", "mode-testnet"];
+const MANTLE_DEPLOYMENTS = [];
 
 /** The base subgraph name shared by all chains*/
 const BASE_NAME = "axis-origin";

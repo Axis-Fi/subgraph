@@ -38,3 +38,12 @@ export function fromSlicedBytes(value: Bytes, start: i32, length: i32): BigInt {
   // Convert the reversed bytes into a BigInt
   return BigInt.fromByteArray(reversedBytes);
 }
+/**
+ * Converts a number in basis points format into a percentual decimal
+ *
+ * @param value
+ * @return the percentual number
+ */
+export function fromBasisPoints(value: BigInt): BigDecimal {
+  return toDecimal(value, 0).div(BigDecimal.fromString("10000"));
+}
