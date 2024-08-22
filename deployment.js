@@ -11,8 +11,8 @@ const VERSION = "1.0.1";
 
 /**  Deployments to be deployed to Goldsky
  * otherwise they're deployed to Alchemy Subgraphs */
-const GOLDSKY_DEPLOYMENTS = ["mode", "mode-testnet", "blast", "blast-sepolia"];
-const MANTLE_DEPLOYMENTS = ["mantle", "mantle-sepolia"];
+const GOLDSKY_DEPLOYMENTS = ["blast", "blast-sepolia", "mantle", "mantle-sepolia", "mode", "mode-testnet"];
+const MANTLE_DEPLOYMENTS = [];
 
 /** The base subgraph name shared by all chains*/
 const BASE_NAME = "axis-origin";
