@@ -15,18 +15,18 @@ Subgraph definition for Axis Origin contracts
 
 There isn't a single hosting platform that supports all of the required chains. We deploy across multiple hosting services as a result.
 
-| Subgraph                 | Hosting Service         |
-|--------------------------|-------------------------|
-| arbitrum-one             | Alchemy                 |
-| arbitrum-sepolia         | Alchemy                 |
-| base                     | Alchemy                 |
-| base-sepolia             | Alchemy                 |
-| blast                    | Goldsky                 |
-| blast-sepolia            | Goldsky                 |
-| mantle                   | Goldsky                 |
-| mantle-sepolia           | Goldsky                 |
-| mode-mainnet             | Goldsky                 |
-| mode-testnet             | Goldsky                 |
+| Subgraph         | Hosting Service |
+| ---------------- | --------------- |
+| arbitrum-one     | Alchemy         |
+| arbitrum-sepolia | Alchemy         |
+| base             | Alchemy         |
+| base-sepolia     | Alchemy         |
+| blast            | Goldsky         |
+| blast-sepolia    | Goldsky         |
+| mantle           | Goldsky         |
+| mantle-sepolia   | Goldsky         |
+| mode-mainnet     | Goldsky         |
+| mode-testnet     | Goldsky         |
 
 ## Deployment Configuration
 
