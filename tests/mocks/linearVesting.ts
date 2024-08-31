@@ -60,17 +60,19 @@ export function mockTokenMetadata(
   exists: boolean,
   wrappedAddress: Address,
   underlyingTokenAddress: Address,
+  supply: BigInt,
   derivativeParams: Bytes,
 ): void {
   mockFunction(
     moduleAddress,
     "tokenMetadata",
-    "tokenMetadata(uint256):(bool,address,address,bytes)",
+    "tokenMetadata(uint256):(bool,address,address,uint256,bytes)",
     [ethereum.Value.fromUnsignedBigInt(tokenId)],
     [
       ethereum.Value.fromBoolean(exists),
       ethereum.Value.fromAddress(wrappedAddress),
       ethereum.Value.fromAddress(underlyingTokenAddress),
+      ethereum.Value.fromUnsignedBigInt(supply),
       ethereum.Value.fromBytes(derivativeParams),
     ],
     false,

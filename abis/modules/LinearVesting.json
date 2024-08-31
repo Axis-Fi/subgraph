@@ -165,30 +165,6 @@
     },
     {
       "type": "function",
-      "name": "convertsTo",
-      "inputs": [
-        {
-          "name": "",
-          "type": "bytes",
-          "internalType": "bytes"
-        },
-        {
-          "name": "",
-          "type": "uint256",
-          "internalType": "uint256"
-        }
-      ],
-      "outputs": [
-        {
-          "name": "",
-          "type": "uint256",
-          "internalType": "uint256"
-        }
-      ],
-      "stateMutability": "view"
-    },
-    {
-      "type": "function",
       "name": "decimals",
       "inputs": [
         {
@@ -264,8 +240,8 @@
       "inputs": [
         {
           "name": "",
-          "type": "bytes",
-          "internalType": "bytes"
+          "type": "uint256",
+          "internalType": "uint256"
         },
         {
           "name": "",
@@ -296,7 +272,7 @@
         {
           "name": "",
           "type": "tuple",
-          "internalType": "struct Derivative.Token",
+          "internalType": "struct IDerivative.Token",
           "components": [
             {
               "name": "exists",
@@ -314,9 +290,45 @@
               "internalType": "address"
             },
             {
+              "name": "supply",
+              "type": "uint256",
+              "internalType": "uint256"
+            },
+            {
               "name": "data",
               "type": "bytes",
               "internalType": "bytes"
+            }
+          ]
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "getTokenVestingParams",
+      "inputs": [
+        {
+          "name": "tokenId_",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "tuple",
+          "internalType": "struct ILinearVesting.VestingParams",
+          "components": [
+            {
+              "name": "start",
+              "type": "uint48",
+              "internalType": "uint48"
+            },
+            {
+              "name": "expiry",
+              "type": "uint48",
+              "internalType": "uint48"
             }
           ]
         }
@@ -616,9 +628,52 @@
           "internalType": "address"
         },
         {
+          "name": "supply",
+          "type": "uint256",
+          "internalType": "uint256"
+        },
+        {
           "name": "data",
           "type": "bytes",
           "internalType": "bytes"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "tokenURI",
+      "inputs": [
+        {
+          "name": "tokenId_",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "string",
+          "internalType": "string"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "totalSupply",
+      "inputs": [
+        {
+          "name": "tokenId",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256",
+          "internalType": "uint256"
         }
       ],
       "stateMutability": "view"
@@ -773,7 +828,7 @@
           "internalType": "bool"
         }
       ],
-      "stateMutability": "view"
+      "stateMutability": "pure"
     },
     {
       "type": "function",

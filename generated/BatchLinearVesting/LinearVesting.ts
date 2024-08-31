@@ -276,8 +276,22 @@ export class LinearVesting__getTokenMetadataResultValue0Struct extends ethereum.
     return this[2].toAddress();
   }
 
+  get supply(): BigInt {
+    return this[3].toBigInt();
+  }
+
   get data(): Bytes {
-    return this[3].toBytes();
+    return this[4].toBytes();
+  }
+}
+
+export class LinearVesting__getTokenVestingParamsResultValue0Struct extends ethereum.Tuple {
+  get start(): BigInt {
+    return this[0].toBigInt();
+  }
+
+  get expiry(): BigInt {
+    return this[1].toBigInt();
   }
 }
 
@@ -349,18 +363,21 @@ export class LinearVesting__tokenMetadataResult {
   value0: boolean;
   value1: Address;
   value2: Address;
-  value3: Bytes;
+  value3: BigInt;
+  value4: Bytes;
 
   constructor(
     value0: boolean,
     value1: Address,
     value2: Address,
-    value3: Bytes,
+    value3: BigInt,
+    value4: Bytes,
   ) {
     this.value0 = value0;
     this.value1 = value1;
     this.value2 = value2;
     this.value3 = value3;
+    this.value4 = value4;
   }
 
   toMap(): TypedMap<string, ethereum.Value> {
@@ -368,7 +385,8 @@ export class LinearVesting__tokenMetadataResult {
     map.set("value0", ethereum.Value.fromBoolean(this.value0));
     map.set("value1", ethereum.Value.fromAddress(this.value1));
     map.set("value2", ethereum.Value.fromAddress(this.value2));
-    map.set("value3", ethereum.Value.fromBytes(this.value3));
+    map.set("value3", ethereum.Value.fromUnsignedBigInt(this.value3));
+    map.set("value4", ethereum.Value.fromBytes(this.value4));
     return map;
   }
 
@@ -384,8 +402,12 @@ export class LinearVesting__tokenMetadataResult {
     return this.value2;
   }
 
-  getData(): Bytes {
+  getSupply(): BigInt {
     return this.value3;
+  }
+
+  getData(): Bytes {
+    return this.value4;
   }
 }
 
@@ -566,35 +588,6 @@ export class LinearVesting extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
-  convertsTo(param0: Bytes, param1: BigInt): BigInt {
-    let result = super.call(
-      "convertsTo",
-      "convertsTo(bytes,uint256):(uint256)",
-      [
-        ethereum.Value.fromBytes(param0),
-        ethereum.Value.fromUnsignedBigInt(param1),
-      ],
-    );
-
-    return result[0].toBigInt();
-  }
-
-  try_convertsTo(param0: Bytes, param1: BigInt): ethereum.CallResult<BigInt> {
-    let result = super.tryCall(
-      "convertsTo",
-      "convertsTo(bytes,uint256):(uint256)",
-      [
-        ethereum.Value.fromBytes(param0),
-        ethereum.Value.fromUnsignedBigInt(param1),
-      ],
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBigInt());
-  }
-
   decimals(tokenId_: BigInt): i32 {
     let result = super.call("decimals", "decimals(uint256):(uint8)", [
       ethereum.Value.fromUnsignedBigInt(tokenId_),
@@ -661,12 +654,12 @@ export class LinearVesting extends ethereum.SmartContract {
     );
   }
 
-  exerciseCost(param0: Bytes, param1: BigInt): BigInt {
+  exerciseCost(param0: BigInt, param1: BigInt): BigInt {
     let result = super.call(
       "exerciseCost",
-      "exerciseCost(bytes,uint256):(uint256)",
+      "exerciseCost(uint256,uint256):(uint256)",
       [
-        ethereum.Value.fromBytes(param0),
+        ethereum.Value.fromUnsignedBigInt(param0),
         ethereum.Value.fromUnsignedBigInt(param1),
       ],
     );
@@ -674,12 +667,15 @@ export class LinearVesting extends ethereum.SmartContract {
     return result[0].toBigInt();
   }
 
-  try_exerciseCost(param0: Bytes, param1: BigInt): ethereum.CallResult<BigInt> {
+  try_exerciseCost(
+    param0: BigInt,
+    param1: BigInt,
+  ): ethereum.CallResult<BigInt> {
     let result = super.tryCall(
       "exerciseCost",
-      "exerciseCost(bytes,uint256):(uint256)",
+      "exerciseCost(uint256,uint256):(uint256)",
       [
-        ethereum.Value.fromBytes(param0),
+        ethereum.Value.fromUnsignedBigInt(param0),
         ethereum.Value.fromUnsignedBigInt(param1),
       ],
     );
@@ -695,7 +691,7 @@ export class LinearVesting extends ethereum.SmartContract {
   ): LinearVesting__getTokenMetadataResultValue0Struct {
     let result = super.call(
       "getTokenMetadata",
-      "getTokenMetadata(uint256):((bool,address,address,bytes))",
+      "getTokenMetadata(uint256):((bool,address,address,uint256,bytes))",
       [ethereum.Value.fromUnsignedBigInt(tokenId)],
     );
 
@@ -709,7 +705,7 @@ export class LinearVesting extends ethereum.SmartContract {
   ): ethereum.CallResult<LinearVesting__getTokenMetadataResultValue0Struct> {
     let result = super.tryCall(
       "getTokenMetadata",
-      "getTokenMetadata(uint256):((bool,address,address,bytes))",
+      "getTokenMetadata(uint256):((bool,address,address,uint256,bytes))",
       [ethereum.Value.fromUnsignedBigInt(tokenId)],
     );
     if (result.reverted) {
@@ -718,6 +714,39 @@ export class LinearVesting extends ethereum.SmartContract {
     let value = result.value;
     return ethereum.CallResult.fromValue(
       changetype<LinearVesting__getTokenMetadataResultValue0Struct>(
+        value[0].toTuple(),
+      ),
+    );
+  }
+
+  getTokenVestingParams(
+    tokenId_: BigInt,
+  ): LinearVesting__getTokenVestingParamsResultValue0Struct {
+    let result = super.call(
+      "getTokenVestingParams",
+      "getTokenVestingParams(uint256):((uint48,uint48))",
+      [ethereum.Value.fromUnsignedBigInt(tokenId_)],
+    );
+
+    return changetype<LinearVesting__getTokenVestingParamsResultValue0Struct>(
+      result[0].toTuple(),
+    );
+  }
+
+  try_getTokenVestingParams(
+    tokenId_: BigInt,
+  ): ethereum.CallResult<LinearVesting__getTokenVestingParamsResultValue0Struct> {
+    let result = super.tryCall(
+      "getTokenVestingParams",
+      "getTokenVestingParams(uint256):((uint48,uint48))",
+      [ethereum.Value.fromUnsignedBigInt(tokenId_)],
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(
+      changetype<LinearVesting__getTokenVestingParamsResultValue0Struct>(
         value[0].toTuple(),
       ),
     );
@@ -983,7 +1012,7 @@ export class LinearVesting extends ethereum.SmartContract {
   tokenMetadata(tokenId: BigInt): LinearVesting__tokenMetadataResult {
     let result = super.call(
       "tokenMetadata",
-      "tokenMetadata(uint256):(bool,address,address,bytes)",
+      "tokenMetadata(uint256):(bool,address,address,uint256,bytes)",
       [ethereum.Value.fromUnsignedBigInt(tokenId)],
     );
 
@@ -991,7 +1020,8 @@ export class LinearVesting extends ethereum.SmartContract {
       result[0].toBoolean(),
       result[1].toAddress(),
       result[2].toAddress(),
-      result[3].toBytes(),
+      result[3].toBigInt(),
+      result[4].toBytes(),
     );
   }
 
@@ -1000,7 +1030,7 @@ export class LinearVesting extends ethereum.SmartContract {
   ): ethereum.CallResult<LinearVesting__tokenMetadataResult> {
     let result = super.tryCall(
       "tokenMetadata",
-      "tokenMetadata(uint256):(bool,address,address,bytes)",
+      "tokenMetadata(uint256):(bool,address,address,uint256,bytes)",
       [ethereum.Value.fromUnsignedBigInt(tokenId)],
     );
     if (result.reverted) {
@@ -1012,9 +1042,50 @@ export class LinearVesting extends ethereum.SmartContract {
         value[0].toBoolean(),
         value[1].toAddress(),
         value[2].toAddress(),
-        value[3].toBytes(),
+        value[3].toBigInt(),
+        value[4].toBytes(),
       ),
     );
+  }
+
+  tokenURI(tokenId_: BigInt): string {
+    let result = super.call("tokenURI", "tokenURI(uint256):(string)", [
+      ethereum.Value.fromUnsignedBigInt(tokenId_),
+    ]);
+
+    return result[0].toString();
+  }
+
+  try_tokenURI(tokenId_: BigInt): ethereum.CallResult<string> {
+    let result = super.tryCall("tokenURI", "tokenURI(uint256):(string)", [
+      ethereum.Value.fromUnsignedBigInt(tokenId_),
+    ]);
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toString());
+  }
+
+  totalSupply(tokenId: BigInt): BigInt {
+    let result = super.call("totalSupply", "totalSupply(uint256):(uint256)", [
+      ethereum.Value.fromUnsignedBigInt(tokenId),
+    ]);
+
+    return result[0].toBigInt();
+  }
+
+  try_totalSupply(tokenId: BigInt): ethereum.CallResult<BigInt> {
+    let result = super.tryCall(
+      "totalSupply",
+      "totalSupply(uint256):(uint256)",
+      [ethereum.Value.fromUnsignedBigInt(tokenId)],
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
   transfer(param0: Address, param1: BigInt, param2: BigInt): boolean {
