@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 1.0.2 (2024-08-31)
+
+- Fix incorrect return signature for `LinearVesting.tokenMetadata` that was leading to an indexing error
+
 ## 1.0.1 (2024-08-22)
 
 - Update to use [axis-core 1.0.1](https://github.com/Axis-Fi/axis-core/releases/tag/1.0.1) deployments

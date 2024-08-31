@@ -311,6 +311,7 @@ function _createAuctionLot(
       true,
       Address.zero(),
       BASE_TOKEN,
+      BigInt.fromU64(1_000_000_000_000_000_000),
       derivativeParams,
     );
   }
@@ -2204,6 +2205,7 @@ describe("linear vesting redemption", () => {
       true,
       derivativeWrappedTokenAddress,
       BASE_TOKEN,
+      BigInt.fromU64(1_000_000_000_000_000_000),
       linearVestingParams,
     );
     mockBalanceOf(
