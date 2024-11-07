@@ -55,6 +55,20 @@
       "startBlock": 14260193
     }
   },
+  "berachain-bartio": {
+    "BatchAuctionHouse": {
+      "address": "0xBA0000c28179CE533233a943d432eddD154E62A3",
+      "startBlock": 6530000
+    },
+    "EncryptedMarginalPrice": {
+      "address": "0x2C7aE1A3989f17a6d9935382bDe7F1b021055083",
+      "startBlock": 6530000
+    },
+    "BatchLinearVesting": {
+      "address": "0xD55227c0C37C97Fa2619a9C7F658C173883C1E2a",
+      "startBlock": 6530000
+    }
+  },
   "blast": {
     "BatchAuctionHouse": {
       "address": "0xBA000055DF41Da8584e1251Bcdf45e91aCb61108",
