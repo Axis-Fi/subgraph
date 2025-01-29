@@ -22,7 +22,7 @@ export function handleBatchAuctionInfo(content: Bytes): void {
   ]);
 
   const valueResult = json.try_fromBytes(content);
-  if (valueResult.error) {
+  if (valueResult.isError) {
     log.error("Error parsing BatchAuctionInfo content", []);
     return;
   }
