@@ -253,11 +253,15 @@ export function handleAuctionCreated(event: AuctionCreatedEvent): void {
 
   // Load IPFS data if the hash is set
   if (event.params.infoHash != "") {
+    log.info("Batch auction with id {} has IPFS hash {}. Initiating indexing of IPFS data.", [
+      auctionLot.id.toString(),
+      event.params.infoHash,
+    ]);
     const dataSourceContext = new DataSourceContext();
     dataSourceContext.setString(KEY_AUCTION_LOT_ID, auctionLot.id.toString());
     dataSourceContext.setString(
       KEY_TRANSACTION_HASH,
-      event.transaction.hash.toString(),
+      event.transaction.hash.toHexString(),
     );
     dataSourceContext.setString(KEY_LOG_INDEX, event.logIndex.toString());
 
