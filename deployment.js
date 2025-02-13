@@ -2,7 +2,8 @@ require("dotenv").config();
 
 /** The network to deploy the subgraph to
  * Must match files in @see networks.json */
-const TARGET_NETWORK = process.env.TARGET_NETWORK || "base-sepolia";
+const TARGET_NETWORK = process.env.TARGET_NETWORK || "berachain-mainnet";
+
 const USE_GRAPH_PROTOCOL = process.env.USE_GRAPH_PROTOCOL == "true" || false;
 
 /** The version that will it'll be deployed as */
@@ -14,6 +15,7 @@ const GOLDSKY_DEPLOYMENTS = [
   "base-sepolia",
   "base",
   "berachain-bartio",
+  "berachain-mainnet",
   "blast",
   "blast-sepolia",
   "mantle",
