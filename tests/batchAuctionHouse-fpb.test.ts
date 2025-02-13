@@ -78,9 +78,9 @@ const QUOTE_TOKEN = Address.fromString(
 const BASE_TOKEN = Address.fromString(
   "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
 );
-const LOT_ID = BigInt.fromI32(234);
+export const LOT_ID = BigInt.fromI32(234);
 const infoHash = "infoHashValueGoesHere";
-const auctionHouse: Address = Address.fromString(
+export const auctionHouse: Address = Address.fromString(
   "0xBA00003Cc5713c5339f4fD5cA0339D54A88BC87b",
 );
 const auctionModuleAddress: Address = Address.fromString(
@@ -125,7 +125,7 @@ function setChain(chain: string): void {
   dataSourceMock.setNetwork(chain);
 }
 
-function _createAuctionLot(): void {
+export function _createAuctionLot(): void {
   const auctionCreatedEvent = createAuctionCreatedEvent(
     LOT_ID,
     auctionRef,

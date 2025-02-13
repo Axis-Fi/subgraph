@@ -106,6 +106,14 @@ export class AtomicAuctionLot extends Entity {
     this.set("infoHash", Value.fromString(value));
   }
 
+  get info(): AtomicAuctionInfoLoader {
+    return new AtomicAuctionInfoLoader(
+      "AtomicAuctionLot",
+      this.get("id")!.toString(),
+      "info",
+    );
+  }
+
   get createdBlockNumber(): BigInt {
     let value = this.get("createdBlockNumber");
     if (!value || value.kind == ValueKind.NULL) {
@@ -510,14 +518,6 @@ export class AtomicAuctionLot extends Entity {
       "AtomicAuctionLot",
       this.get("id")!.toString(),
       "linearVesting",
-    );
-  }
-
-  get info(): AtomicAuctionInfoLoader {
-    return new AtomicAuctionInfoLoader(
-      "AtomicAuctionLot",
-      this.get("id")!.toString(),
-      "info",
     );
   }
 }
@@ -1656,6 +1656,14 @@ export class BatchAuctionLot extends Entity {
     this.set("infoHash", Value.fromString(value));
   }
 
+  get info(): BatchAuctionInfoLoader {
+    return new BatchAuctionInfoLoader(
+      "BatchAuctionLot",
+      this.get("id")!.toString(),
+      "info",
+    );
+  }
+
   get createdBlockNumber(): BigInt {
     let value = this.get("createdBlockNumber");
     if (!value || value.kind == ValueKind.NULL) {
@@ -2117,14 +2125,6 @@ export class BatchAuctionLot extends Entity {
       "BatchAuctionLot",
       this.get("id")!.toString(),
       "fixedPrice",
-    );
-  }
-
-  get info(): BatchAuctionInfoLoader {
-    return new BatchAuctionInfoLoader(
-      "BatchAuctionLot",
-      this.get("id")!.toString(),
-      "info",
     );
   }
 }
@@ -4468,6 +4468,19 @@ export class BatchAuctionInfo extends Entity {
     this.set("id", Value.fromString(value));
   }
 
+  get hash(): string {
+    let value = this.get("hash");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set hash(value: string) {
+    this.set("hash", Value.fromString(value));
+  }
+
   get lot(): string {
     let value = this.get("lot");
     if (!value || value.kind == ValueKind.NULL) {
@@ -4481,17 +4494,17 @@ export class BatchAuctionInfo extends Entity {
     this.set("lot", Value.fromString(value));
   }
 
-  get hash(): string {
-    let value = this.get("hash");
+  get createdAt(): BigInt {
+    let value = this.get("createdAt");
     if (!value || value.kind == ValueKind.NULL) {
       throw new Error("Cannot return null for a required field.");
     } else {
-      return value.toString();
+      return value.toBigInt();
     }
   }
 
-  set hash(value: string) {
-    this.set("hash", Value.fromString(value));
+  set createdAt(value: BigInt) {
+    this.set("createdAt", Value.fromBigInt(value));
   }
 
   get key(): string | null {
@@ -5264,6 +5277,24 @@ export class AuctionHouseModuleSunset extends Entity {
   }
 }
 
+export class AtomicAuctionInfoLoader extends Entity {
+  _entity: string;
+  _field: string;
+  _id: string;
+
+  constructor(entity: string, id: string, field: string) {
+    super();
+    this._entity = entity;
+    this._id = id;
+    this._field = field;
+  }
+
+  load(): AtomicAuctionInfo[] {
+    let value = store.loadRelated(this._entity, this._id, this._field);
+    return changetype<AtomicAuctionInfo[]>(value);
+  }
+}
+
 export class AtomicAuctionCancelledLoader extends Entity {
   _entity: string;
   _field: string;
@@ -5372,24 +5403,6 @@ export class AtomicLinearVestingLotLoader extends Entity {
   }
 }
 
-export class AtomicAuctionInfoLoader extends Entity {
-  _entity: string;
-  _field: string;
-  _id: string;
-
-  constructor(entity: string, id: string, field: string) {
-    super();
-    this._entity = entity;
-    this._id = id;
-    this._field = field;
-  }
-
-  load(): AtomicAuctionInfo[] {
-    let value = store.loadRelated(this._entity, this._id, this._field);
-    return changetype<AtomicAuctionInfo[]>(value);
-  }
-}
-
 export class AtomicAuctionInfoLinkLoader extends Entity {
   _entity: string;
   _field: string;
@@ -5423,6 +5436,24 @@ export class AtomicAuctionInfoAllowlistEntryLoader extends Entity {
   load(): AtomicAuctionInfoAllowlistEntry[] {
     let value = store.loadRelated(this._entity, this._id, this._field);
     return changetype<AtomicAuctionInfoAllowlistEntry[]>(value);
+  }
+}
+
+export class BatchAuctionInfoLoader extends Entity {
+  _entity: string;
+  _field: string;
+  _id: string;
+
+  constructor(entity: string, id: string, field: string) {
+    super();
+    this._entity = entity;
+    this._id = id;
+    this._field = field;
+  }
+
+  load(): BatchAuctionInfo[] {
+    let value = store.loadRelated(this._entity, this._id, this._field);
+    return changetype<BatchAuctionInfo[]>(value);
   }
 }
 
@@ -5621,24 +5652,6 @@ export class BatchFixedPriceLotLoader extends Entity {
   load(): BatchFixedPriceLot[] {
     let value = store.loadRelated(this._entity, this._id, this._field);
     return changetype<BatchFixedPriceLot[]>(value);
-  }
-}
-
-export class BatchAuctionInfoLoader extends Entity {
-  _entity: string;
-  _field: string;
-  _id: string;
-
-  constructor(entity: string, id: string, field: string) {
-    super();
-    this._entity = entity;
-    this._id = id;
-    this._field = field;
-  }
-
-  load(): BatchAuctionInfo[] {
-    let value = store.loadRelated(this._entity, this._id, this._field);
-    return changetype<BatchAuctionInfo[]>(value);
   }
 }
 

@@ -2,16 +2,26 @@ require("dotenv").config();
 
 /** The network to deploy the subgraph to
  * Must match files in @see networks.json */
-const TARGET_NETWORK = process.env.TARGET_NETWORK || "blast-sepolia";
-
+const TARGET_NETWORK = process.env.TARGET_NETWORK || "base-sepolia";
 const USE_GRAPH_PROTOCOL = process.env.USE_GRAPH_PROTOCOL == "true" || false;
 
 /** The version that will it'll be deployed as */
-const VERSION = "1.0.4";
+const VERSION = "1.0.5";
 
 /**  Deployments to be deployed to Goldsky
  * otherwise they're deployed to Alchemy Subgraphs */
-const GOLDSKY_DEPLOYMENTS = ["berachain-bartio", "blast", "blast-sepolia", "mantle", "mantle-sepolia", "mode-mainnet", "mode-testnet"];
+const GOLDSKY_DEPLOYMENTS = [
+  "base-sepolia",
+  "base",
+  "berachain-bartio",
+  "blast",
+  "blast-sepolia",
+  "mantle",
+  "mantle-sepolia",
+  "mode-mainnet",
+  "mode-testnet",
+];
+
 const MANTLE_DEPLOYMENTS = [];
 
 /** The base subgraph name shared by all chains*/

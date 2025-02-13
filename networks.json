@@ -39,6 +39,10 @@
     "BatchLinearVesting": {
       "address": "0x5C439EAa3F039Bac9Bf1ea4Eb6121d5767C63864",
       "startBlock": 18740692
+    },
+    "MetadataRegistry": {
+      "address": "0xA12307d3cba3F0854cf92faDce07f7bff0B6a2BA",
+      "startBlock": 25170144
     }
   },
   "base-sepolia": {
@@ -53,6 +57,10 @@
     "BatchLinearVesting": {
       "address": "0x909F26919989167d051312fBB0a1Df4CD93Bf70b",
       "startBlock": 14260193
+    },
+    "MetadataRegistry": {
+      "address": "0xc94404218178149ebebfc1f47f0df14b5fd881c5",
+      "startBlock": 19947467
     }
   },
   "berachain-bartio": {

@@ -29,7 +29,7 @@ import {
 } from "../generated/schema";
 import { AtomicAuctionInfo } from "../generated/templates";
 import {
-  KEY_AUCTION_LOT_ID,
+  KEY_AUCTION_RECORD_ID,
   KEY_LOG_INDEX,
   KEY_TRANSACTION_HASH,
 } from "./constants";
@@ -167,7 +167,10 @@ export function handleAuctionCreated(event: AuctionCreatedEvent): void {
   // Load IPFS data if the hash is set
   if (event.params.infoHash != "") {
     const dataSourceContext = new DataSourceContext();
-    dataSourceContext.setString(KEY_AUCTION_LOT_ID, auctionLot.id.toString());
+    dataSourceContext.setString(
+      KEY_AUCTION_RECORD_ID,
+      auctionLot.id.toString(),
+    );
     dataSourceContext.setString(
       KEY_TRANSACTION_HASH,
       event.transaction.hash.toString(),
