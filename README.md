@@ -2,6 +2,10 @@
 
 Subgraph definition for Axis Origin contracts
 
+## Contributing
+
+Please see the [contributing guide](./CONTRIBUTING.md) for more information.
+
 ## Deploy Guide
 
 - Run `TARGET_NETWORK=<chain> pnpm deploy:graph`
