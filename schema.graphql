@@ -6,7 +6,6 @@ type AtomicAuctionLot @entity {
   auctionHouse: Bytes! # address
   lotId: BigInt!
   infoHash: String! # IPFS info hash
-  info: [AtomicAuctionInfo!] @derivedFrom(field: "lot")
   createdBlockNumber: BigInt!
   createdBlockTimestamp: BigInt!
   createdDate: String!
@@ -47,6 +46,7 @@ type AtomicAuctionLot @entity {
   purchases: [AtomicPurchase!]! @derivedFrom(field: "lot")
   fixedPriceSale: AtomicFixedPriceSaleLot @derivedFrom(field: "lot")
   linearVesting: AtomicLinearVestingLot @derivedFrom(field: "lot")
+  info: AtomicAuctionInfo @derivedFrom(field: "lot")
 }
 
 type AtomicAuctionCreated @entity(immutable: true) {

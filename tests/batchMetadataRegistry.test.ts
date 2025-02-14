@@ -35,7 +35,6 @@ const METADATA_REGISTRY_ADDRESS = Address.fromString(
 const AUCTION_HOUSE_ADDRESS = auctionHouse;
 const AUCTION_LOT_ID = LOT_ID;
 const IPFS_CID = "MOCK_NEW_IPFS_CID";
-const BLOCK_TIMESTAMP = BigInt.fromString("1707264000");
 const AUCTION_RECORD_ID =
   NETWORK_CHAIN +
   "-" +
@@ -47,8 +46,6 @@ function createAuctionRegisteredEvent(): AuctionRegistered {
   const event = changetype<AuctionRegistered>(
     newMockEvent(METADATA_REGISTRY_ADDRESS)
   );
-
-  event.block.timestamp = BLOCK_TIMESTAMP;
 
   event.parameters = [
     new ethereum.EventParam(
