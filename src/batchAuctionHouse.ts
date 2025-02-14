@@ -37,7 +37,8 @@ import {
 } from "../generated/schema";
 import { BatchAuctionInfo } from "../generated/templates";
 import {
-  KEY_AUCTION_LOT_ID,
+  KEY_AUCTION_RECORD_ID,
+  KEY_BLOCK_TIMESTAMP,
   KEY_LOG_INDEX,
   KEY_TRANSACTION_HASH,
 } from "./constants";
@@ -178,7 +179,7 @@ export function handleAuctionCreated(event: AuctionCreatedEvent): void {
 
   // Create a BatchAuctionLot record
   const recordId = getLotRecordId(event.address, lotId);
-
+  log.info("handleAuctionCreated recordId {}", [recordId]);
   const auctionLot = new BatchAuctionLot(recordId);
   auctionLot.chain = getChain();
   auctionLot.auctionHouse = event.address;
@@ -251,26 +252,6 @@ export function handleAuctionCreated(event: AuctionCreatedEvent): void {
     auctionLot.id.toString(),
   ]);
 
-  // Load IPFS data if the hash is set
-  if (event.params.infoHash != "") {
-    log.info("Batch auction with id {} has IPFS hash {}. Initiating indexing of IPFS data.", [
-      auctionLot.id.toString(),
-      event.params.infoHash,
-    ]);
-    const dataSourceContext = new DataSourceContext();
-    dataSourceContext.setString(KEY_AUCTION_LOT_ID, auctionLot.id.toString());
-    dataSourceContext.setString(
-      KEY_TRANSACTION_HASH,
-      event.transaction.hash.toHexString(),
-    );
-    dataSourceContext.setString(KEY_LOG_INDEX, event.logIndex.toString());
-
-    BatchAuctionInfo.createWithContext(
-      event.params.infoHash,
-      dataSourceContext,
-    );
-  }
-
   // If using EncryptedMarginalPrice, save details
   if (auctionLot.auctionType.includes(EMP_KEYCODE)) {
     createEncryptedMarginalPriceLot(auctionLot);
@@ -315,6 +296,38 @@ export function handleAuctionCreated(event: AuctionCreatedEvent): void {
       auctionLot.save();
     }
   }
+
+  // Load IPFS data
+  if (event.params.infoHash != "") {
+    log.info(
+      "Batch auction with id {} has IPFS hash {}. Initiating indexing of IPFS data.",
+      [auctionLot.id.toString(), event.params.infoHash],
+    );
+    const dataSourceContext = new DataSourceContext();
+    dataSourceContext.setString(
+      KEY_AUCTION_RECORD_ID,
+      auctionLot.id.toString(),
+    );
+    dataSourceContext.setString(KEY_LOG_INDEX, event.logIndex.toString());
+    dataSourceContext.setString(
+      KEY_BLOCK_TIMESTAMP,
+      event.block.timestamp.toString(),
+    );
+
+    dataSourceContext.setString(
+      KEY_TRANSACTION_HASH,
+      event.transaction.hash.toHexString(),
+    );
+
+    BatchAuctionInfo.createWithContext(
+      event.params.infoHash,
+      dataSourceContext,
+    );
+  }
+
+  log.info("BatchAuctionHouse finished info datasource for lot id {}", [
+    event.params.lotId.toString(),
+  ]);
 
   // Create the event
   const entity = new BatchAuctionCreated(

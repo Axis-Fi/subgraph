@@ -1,4 +1,4 @@
-import { Bytes, dataSource, json, log } from "@graphprotocol/graph-ts";
+import { BigInt, Bytes, dataSource, json, log } from "@graphprotocol/graph-ts";
 
 import {
   BatchAuctionInfo,
@@ -6,19 +6,41 @@ import {
   BatchAuctionInfoLink,
 } from "../generated/schema";
 import {
-  KEY_AUCTION_LOT_ID,
+  KEY_AUCTION_RECORD_ID,
+  KEY_BLOCK_TIMESTAMP,
   KEY_LOG_INDEX,
   KEY_TRANSACTION_HASH,
 } from "./constants";
 
 export function handleBatchAuctionInfo(content: Bytes): void {
   const ipfsHash = dataSource.stringParam();
-  const auctionLotId = dataSource.context().getString(KEY_AUCTION_LOT_ID);
+  log.info("Storing auction info from CID content {}", [ipfsHash]);
+
+  const auctionRecordId = dataSource.context().getString(KEY_AUCTION_RECORD_ID);
   const auctionInfoRecordId = `${ipfsHash}-${dataSource.context().getString(KEY_TRANSACTION_HASH)}-${dataSource.context().getString(KEY_LOG_INDEX)}`;
   const auctionInfoRecord = new BatchAuctionInfo(auctionInfoRecordId);
-  log.info("Parsing BatchAuctionInfo content for lot id {} and IPFS hash {}", [
-    auctionLotId,
-    ipfsHash,
+
+  log.info("auctionInfoRecordId {}", [auctionInfoRecordId]);
+
+  const eventBlockTimestamp = dataSource
+    .context()
+    .getString(KEY_BLOCK_TIMESTAMP);
+
+  if (eventBlockTimestamp == null) {
+    log.error(
+      "Failed to parse BatchAuctionInfo: no blockTimestamp passed on the datacontext",
+      []
+    );
+    return;
+  }
+
+  auctionInfoRecord.createdAt = BigInt.fromString(eventBlockTimestamp);
+
+  auctionInfoRecord.lot = auctionRecordId;
+  auctionInfoRecord.hash = ipfsHash;
+
+  log.info("Parsing BatchAuctionInfo content for auction record {}", [
+    auctionRecordId,
   ]);
 
   const valueResult = json.try_fromBytes(content);
@@ -32,9 +54,6 @@ export function handleBatchAuctionInfo(content: Bytes): void {
     log.warning("No BatchAuctionInfo content found for hash: {}", [ipfsHash]);
     return;
   }
-
-  auctionInfoRecord.hash = ipfsHash;
-  auctionInfoRecord.lot = auctionLotId;
 
   const name = value.get("name");
   if (name) {
@@ -55,10 +74,6 @@ export function handleBatchAuctionInfo(content: Bytes): void {
   if (tagline) {
     auctionInfoRecord.tagline = tagline.toString();
   }
-
-  auctionInfoRecord.save();
-
-  log.info("BatchAuctionInfo saved for hash: {}", [ipfsHash]);
 
   // Iterate over the links
   const links = value.get("links");
@@ -93,7 +108,7 @@ export function handleBatchAuctionInfo(content: Bytes): void {
       // Create a new record
       const allowlistRecordId = `${auctionInfoRecordId}-${i.toString()}`;
       const allowlistRecord = new BatchAuctionInfoAllowlistEntry(
-        allowlistRecordId,
+        allowlistRecordId
       );
       allowlistRecord.auctionInfo = auctionInfoRecordId;
 
@@ -110,10 +125,12 @@ export function handleBatchAuctionInfo(content: Bytes): void {
 
       allowlistRecord.save();
 
-      log.info(
-        "BatchAuctionInfoAllowlistEntry saved for hash {} at index {}",
-        [ipfsHash, i.toString()],
-      );
+      log.info("BatchAuctionInfoAllowlistEntry saved for hash {} at index {}", [
+        ipfsHash,
+        i.toString(),
+      ]);
     }
   }
+
+  auctionInfoRecord.save();
 }

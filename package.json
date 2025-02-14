@@ -8,7 +8,7 @@
   "license": "ISC",
   "workspaces": [],
   "scripts": {
-    "codegen": "TARGET_NETWORK='berachain-mainnet' node scripts/manifest.js && rm -rf generated/ && graph codegen && pnpm run lint",
+    "codegen": "node scripts/manifest.js && rm -rf generated/ && graph codegen && pnpm run lint",
     "lint": "prettier --write \"**/*.{ts,md,json}\" && eslint --config ./.eslintrc.json --fix",
     "test": "graph test --version 0.6.0",
     "test:docker": "pnpm run test --docker",
@@ -16,9 +16,9 @@
     "update:constants": "node scripts/write-constants.js",
     "build": "graph build",
     "deploy:graph": "node scripts/deploy.js",
-    "create-local": "graph create --node http://localhost:8020/ axis-origin",
-    "remove-local": "graph remove --node http://localhost:8020/ axis-origin",
-    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 axis-origin"
+    "create-local": "graph create --node http://localhost:5648/ axis-origin",
+    "remove-local": "graph remove --node http://localhost:5648/ axis-origin",
+    "deploy-local": "graph deploy --node http://localhost:5648/ --ipfs http://localhost:5011 axis-origin"
   },
   "dependencies": {
     "@goldskycom/cli": "^8.7.0",

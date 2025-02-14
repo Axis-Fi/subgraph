@@ -165,6 +165,28 @@ dataSources:
         - event: Redeemed(indexed uint256,indexed address,uint256)
           handler: handleRedeemed
       file: ./src/handleBatchLinearVesting.ts
+  {{#MetadataRegistry}}
+  - kind: ethereum
+    name: MetadataRegistry
+    network: {{network}}
+    source:
+      abi: MetadataRegistry
+      address: "{{MetadataRegistry.address}}"
+      startBlock: {{MetadataRegistry.startBlock}}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - BatchAuctionLot
+      abis:
+        - name: MetadataRegistry
+          file: ./abis/MetadataRegistry.json
+      eventHandlers:
+        - event: AuctionRegistered(address,uint96,string)
+          handler: handleAuctionRegistered
+      file: ./src/batchMetadataRegistry.ts
+  {{/MetadataRegistry}}
 templates:
   - kind: file/ipfs
     name: AtomicAuctionInfo
