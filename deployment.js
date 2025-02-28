@@ -12,10 +12,12 @@ const VERSION = "1.0.5";
 /**  Deployments to be deployed to Goldsky
  * otherwise they're deployed to Alchemy Subgraphs */
 const GOLDSKY_DEPLOYMENTS = [
-  "base-sepolia",
+  "arbitrum-one",
+  "arbitrum-sepolia",
   "base",
-  "berachain-bartio",
+  "base-sepolia",
   "berachain-mainnet",
+  "berachain-bartio",
   "blast",
   "blast-sepolia",
   "mantle",

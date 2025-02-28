@@ -106,14 +106,6 @@ export class AtomicAuctionLot extends Entity {
     this.set("infoHash", Value.fromString(value));
   }
 
-  get info(): AtomicAuctionInfoLoader {
-    return new AtomicAuctionInfoLoader(
-      "AtomicAuctionLot",
-      this.get("id")!.toString(),
-      "info",
-    );
-  }
-
   get createdBlockNumber(): BigInt {
     let value = this.get("createdBlockNumber");
     if (!value || value.kind == ValueKind.NULL) {
@@ -518,6 +510,14 @@ export class AtomicAuctionLot extends Entity {
       "AtomicAuctionLot",
       this.get("id")!.toString(),
       "linearVesting",
+    );
+  }
+
+  get info(): AtomicAuctionInfoLoader {
+    return new AtomicAuctionInfoLoader(
+      "AtomicAuctionLot",
+      this.get("id")!.toString(),
+      "info",
     );
   }
 }
@@ -5277,24 +5277,6 @@ export class AuctionHouseModuleSunset extends Entity {
   }
 }
 
-export class AtomicAuctionInfoLoader extends Entity {
-  _entity: string;
-  _field: string;
-  _id: string;
-
-  constructor(entity: string, id: string, field: string) {
-    super();
-    this._entity = entity;
-    this._id = id;
-    this._field = field;
-  }
-
-  load(): AtomicAuctionInfo[] {
-    let value = store.loadRelated(this._entity, this._id, this._field);
-    return changetype<AtomicAuctionInfo[]>(value);
-  }
-}
-
 export class AtomicAuctionCancelledLoader extends Entity {
   _entity: string;
   _field: string;
@@ -5400,6 +5382,24 @@ export class AtomicLinearVestingLotLoader extends Entity {
   load(): AtomicLinearVestingLot[] {
     let value = store.loadRelated(this._entity, this._id, this._field);
     return changetype<AtomicLinearVestingLot[]>(value);
+  }
+}
+
+export class AtomicAuctionInfoLoader extends Entity {
+  _entity: string;
+  _field: string;
+  _id: string;
+
+  constructor(entity: string, id: string, field: string) {
+    super();
+    this._entity = entity;
+    this._id = id;
+    this._field = field;
+  }
+
+  load(): AtomicAuctionInfo[] {
+    let value = store.loadRelated(this._entity, this._id, this._field);
+    return changetype<AtomicAuctionInfo[]>(value);
   }
 }
 

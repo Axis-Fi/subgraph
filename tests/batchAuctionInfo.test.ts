@@ -48,7 +48,7 @@ describe("batchAuctionInfo", () => {
 
     dataSourceContext.setString(
       KEY_BLOCK_TIMESTAMP,
-      BLOCK_TIMESTAMP.toString()
+      BLOCK_TIMESTAMP.toString(),
     );
     dataSourceContext.setString(KEY_AUCTION_RECORD_ID, lotRecordId);
     dataSourceContext.setString(KEY_TRANSACTION_HASH, TRANSACTION_HASH);
@@ -74,7 +74,7 @@ describe("batchAuctionInfo", () => {
     assertStringEquals(
       auctionInfoRecord.description,
       "sample description",
-      "description"
+      "description",
     );
     assertStringEquals(auctionInfoRecord.key, "test key", "key");
     assertStringEquals(auctionInfoRecord.tagline, "test tagline", "tagline");
@@ -93,17 +93,17 @@ describe("batchAuctionInfo", () => {
     assertStringEquals(
       recordAllowlist[0].values[0],
       "0x1234",
-      "allowlist address 1"
+      "allowlist address 1",
     );
     assertStringEquals(
       recordAllowlist[0].values[1],
       "1111",
-      "allowlist amount 1"
+      "allowlist amount 1",
     );
     assertI32Equals(
       recordAllowlist[0].values.length,
       2,
-      "allowlist entry 1 length"
+      "allowlist entry 1 length",
     );
 
     assertI32Equals(recordAllowlist.length, 1, "allowlist length");
@@ -111,7 +111,7 @@ describe("batchAuctionInfo", () => {
     assertBigIntEquals(
       auctionInfoRecord.createdAt,
       BLOCK_TIMESTAMP,
-      "info createdAt should match block timestamp"
+      "info createdAt should match block timestamp",
     );
   });
 });
