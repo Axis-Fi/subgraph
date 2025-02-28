@@ -30,7 +30,7 @@ import {
 
 const NETWORK_CHAIN = "mainnet";
 const METADATA_REGISTRY_ADDRESS = Address.fromString(
-  "0x3ae8dD1ee2752883459C4c33c2f7Aeb8a56669f0"
+  "0x3ae8dD1ee2752883459C4c33c2f7Aeb8a56669f0",
 );
 const AUCTION_HOUSE_ADDRESS = auctionHouse;
 const AUCTION_LOT_ID = LOT_ID;
@@ -44,17 +44,17 @@ const AUCTION_RECORD_ID =
 
 function createAuctionRegisteredEvent(): AuctionRegistered {
   const event = changetype<AuctionRegistered>(
-    newMockEvent(METADATA_REGISTRY_ADDRESS)
+    newMockEvent(METADATA_REGISTRY_ADDRESS),
   );
 
   event.parameters = [
     new ethereum.EventParam(
       "auctionHouse",
-      ethereum.Value.fromAddress(AUCTION_HOUSE_ADDRESS)
+      ethereum.Value.fromAddress(AUCTION_HOUSE_ADDRESS),
     ),
     new ethereum.EventParam(
       "lotId",
-      ethereum.Value.fromUnsignedBigInt(AUCTION_LOT_ID)
+      ethereum.Value.fromUnsignedBigInt(AUCTION_LOT_ID),
     ),
     new ethereum.EventParam("ipfsCID", ethereum.Value.fromString(IPFS_CID)),
   ];
@@ -94,7 +94,7 @@ describe("MetadataRegistry", () => {
           "Expected BatchAuctionCreated to exist for lot id " +
             AUCTION_LOT_ID.toString() +
             " at record id " +
-            recordId.toHexString()
+            recordId.toHexString(),
         );
       }
       assert.entityCount("BatchAuctionLot", 1);
@@ -107,7 +107,7 @@ describe("MetadataRegistry", () => {
       if (fpbLotRecord === null) {
         throw new Error(
           "Expected BatchFixedPriceLot to exist for record id " +
-            auctionRecordId
+            auctionRecordId,
         );
       }
 
@@ -124,7 +124,7 @@ describe("MetadataRegistry", () => {
       assertStringEquals(
         updatedLot.infoHash,
         IPFS_CID,
-        "lot infoHash should be updated"
+        "lot infoHash should be updated",
       );
     });
   });

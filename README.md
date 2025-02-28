@@ -8,7 +8,8 @@ Please see the [contributing guide](./CONTRIBUTING.md) for more information.
 
 ## Deploy Guide
 
-- Run `TARGET_NETWORK=<chain> pnpm deploy:graph`
+- 1. Codegen your subgraph: `TARGET_NETWORK=<chain> pnpm codegen`
+- 2. Deploy your subgraph: `TARGET_NETWORK=<chain> pnpm deploy:graph`
 
 > **Note**: If the provider is Goldsky, you must
 >
@@ -17,14 +18,12 @@ Please see the [contributing guide](./CONTRIBUTING.md) for more information.
 
 ## Hosting Services
 
-There isn't a single hosting platform that supports all of the required chains. We deploy across multiple hosting services as a result.
-
 | Subgraph         | Hosting Service |
 | ---------------- | --------------- |
-| arbitrum-one     | Alchemy         |
-| arbitrum-sepolia | Alchemy         |
-| base             | Alchemy         |
-| base-sepolia     | Alchemy         |
+| arbitrum-one     | Goldsky         |
+| arbitrum-sepolia | Goldsky         |
+| base             | Goldsky         |
+| base-sepolia     | Goldsky         |
 | blast            | Goldsky         |
 | blast-sepolia    | Goldsky         |
 | mantle           | Goldsky         |

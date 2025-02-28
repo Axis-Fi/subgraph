@@ -1,4 +1,11 @@
-import { BigInt, Bytes, dataSource, json, log } from "@graphprotocol/graph-ts";
+import {
+  BigInt,
+  Bytes,
+  dataSource,
+  json,
+  JSONValueKind,
+  log,
+} from "@graphprotocol/graph-ts";
 
 import {
   BatchAuctionInfo,
@@ -29,7 +36,7 @@ export function handleBatchAuctionInfo(content: Bytes): void {
   if (eventBlockTimestamp == null) {
     log.error(
       "Failed to parse BatchAuctionInfo: no blockTimestamp passed on the datacontext",
-      []
+      [],
     );
     return;
   }
@@ -96,39 +103,107 @@ export function handleBatchAuctionInfo(content: Bytes): void {
     }
   }
 
-  // Iterate over the allowlist
   const allowlist = value.get("allowlist");
-  if (allowlist) {
-    // Format: string[][]
-    const allowlistArray = allowlist.toArray();
-    for (let i = 0; i < allowlistArray.length; i++) {
-      // Format: string[]
-      const allowlistEntry = allowlistArray[i].toArray();
 
-      // Create a new record
-      const allowlistRecordId = `${auctionInfoRecordId}-${i.toString()}`;
-      const allowlistRecord = new BatchAuctionInfoAllowlistEntry(
-        allowlistRecordId
+  // Early exit if allowlist is missing or null
+  if (!allowlist || allowlist.isNull()) {
+    log.warning("No allowlist found for auctionInfoRecordId {}", [
+      auctionInfoRecordId,
+    ]);
+    auctionInfoRecord.save();
+    return;
+  }
+
+  // Check if allowlist is an array using JSONValueKind
+  if (!allowlist.kind || allowlist.kind !== JSONValueKind.ARRAY) {
+    log.error(
+      "Allowlist is not an array for auctionInfoRecordId {}, got kind {}",
+      [
+        auctionInfoRecordId,
+        allowlist.kind ? allowlist.kind.toString() : "unknown",
+      ],
+    );
+    auctionInfoRecord.save();
+    return;
+  }
+
+  const allowlistArray = allowlist.toArray();
+  if (allowlistArray.length === 0) {
+    log.info("Allowlist is empty for auctionInfoRecordId {}", [
+      auctionInfoRecordId,
+    ]);
+    auctionInfoRecord.save();
+    return;
+  }
+
+  // Iterate over the allowlist array and handle variable-length inner arrays
+  for (let i = 0; i < allowlistArray.length; i++) {
+    const allowlistEntry = allowlistArray[i];
+
+    // Check if the entry exists, is not null, and is an array
+    if (
+      !allowlistEntry ||
+      allowlistEntry.isNull() ||
+      allowlistEntry.kind !== JSONValueKind.ARRAY
+    ) {
+      log.warning(
+        "Invalid or non-array allowlist entry at index {} for hash {}",
+        [i.toString(), ipfsHash],
       );
-      allowlistRecord.auctionInfo = auctionInfoRecordId;
+      continue;
+    }
 
-      const valuesArray = new Array<string>(0);
+    const allowlistSubArray = allowlistEntry.toArray();
+    if (allowlistSubArray.length === 0) {
+      log.warning("Empty allowlist entry at index {} for hash {}", [
+        i.toString(),
+        ipfsHash,
+      ]);
+      continue;
+    }
 
-      // Iterate over the allowlist entry
-      // There is a flexible number of values in the allowlist entry, so we iterate over all of them
-      for (let j = 0; j < allowlistEntry.length; j++) {
-        const allowlistEntryValue = allowlistEntry[j].toString();
-        valuesArray.push(allowlistEntryValue);
+    // Create a new record
+    const allowlistRecordId = auctionInfoRecordId + "-" + i.toString();
+    const allowlistRecord = new BatchAuctionInfoAllowlistEntry(
+      allowlistRecordId,
+    );
+    allowlistRecord.auctionInfo = auctionInfoRecordId;
+
+    const valuesArray = new Array<string>(0);
+
+    // Process the inner array, handling both [addr] and [addr, amount]
+    for (let j = 0; j < allowlistSubArray.length; j++) {
+      const allowlistEntryValue = allowlistSubArray[j];
+
+      // Handle null or invalid values
+      if (!allowlistEntryValue || allowlistEntryValue.isNull()) {
+        log.warning(
+          "Null or undefined value at index {} in entry {} for hash {}",
+          [j.toString(), i.toString(), ipfsHash],
+        );
+        valuesArray.push(""); // Fallback to empty string
+        continue;
       }
 
-      allowlistRecord.values = valuesArray;
+      // Convert to string safely (assuming addresses and amounts are strings or can be converted)
+      const stringValue = allowlistEntryValue.toString();
+      valuesArray.push(stringValue);
+    }
 
+    // Only save if we have valid values
+    if (valuesArray.length > 0) {
+      allowlistRecord.values = valuesArray;
       allowlistRecord.save();
 
       log.info("BatchAuctionInfoAllowlistEntry saved for hash {} at index {}", [
         ipfsHash,
         i.toString(),
       ]);
+    } else {
+      log.warning(
+        "No valid values in allowlist entry at index {} for hash {}, skipping save",
+        [i.toString(), ipfsHash],
+      );
     }
   }
 
