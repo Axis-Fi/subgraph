@@ -125,7 +125,7 @@ type AtomicAuctionInfo @entity(immutable: true) {
 
   # Reverse lookups
   links: [AtomicAuctionInfoLink!]! @derivedFrom(field: "auctionInfo")
-  allowlist: [AtomicAuctionInfoAllowlistEntry!]!
+  allowlist: [AtomicAuctionInfoAllowlistEntry!]
     @derivedFrom(field: "auctionInfo")
 }
 
@@ -452,7 +452,7 @@ type BatchAuctionInfo @entity(immutable: true) {
 
   # Reverse lookups
   links: [BatchAuctionInfoLink!]! @derivedFrom(field: "auctionInfo")
-  allowlist: [BatchAuctionInfoAllowlistEntry!]!
+  allowlist: [BatchAuctionInfoAllowlistEntry!]
     @derivedFrom(field: "auctionInfo")
 }
 
