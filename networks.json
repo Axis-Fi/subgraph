@@ -174,5 +174,33 @@
       "address": "0xE292cF4e316191CbFEbD74909356DF3cd9455e96",
       "startBlock": 782047
     }
+  },
+  "mainnet": {
+    "BatchAuctionHouse": {
+      "address": "0xBA000020Fed3cf3bF473f09Ca0A72Ba123e20926",
+      "startBlock": 21275070
+    },
+    "EncryptedMarginalPrice": {
+      "address": "0xB5973CabD553F34C32ae2FbC91c94b3bf76DB62e",
+      "startBlock": 22090936
+    },
+    "BatchLinearVesting": {
+      "address": "0x605A7105CA51FD5F107258362f52d8269eeA851A",
+      "startBlock": 21275114
+    }
+  },
+  "sepolia": {
+    "BatchAuctionHouse": {
+      "address": "0xBA000002400309EfAdeee661426F5183338e5382",
+      "startBlock": 7979256
+    },
+    "EncryptedMarginalPrice": {
+      "address": "0x63Fb97Dd80060cFd70c87Aa54F594F3988B6Fc66",
+      "startBlock": 7979258
+    },
+    "BatchLinearVesting": {
+      "address": "0xC11a71a304aB4c147e926342BA4CcCFd62d7368e",
+      "startBlock": 7979266
+    }
   }
 }
