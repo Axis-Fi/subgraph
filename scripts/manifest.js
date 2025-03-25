@@ -25,20 +25,27 @@ let templatedSubgraphManifest = Mustache.render(
   networkValues
 );
 
-// If using the Graph Protocol, ensure the network name is correct
-if (config.USE_GRAPH_PROTOCOL) {
-  // mode-testnet becomes mode-sepolia
-  templatedSubgraphManifest = templatedSubgraphManifest.replace(
-    /mode-testnet/g,
-    "mode-sepolia"
-  );
+let replacements = [];
 
-  // blast-sepolia becomes blast-testnet
-  templatedSubgraphManifest = templatedSubgraphManifest.replace(
-    /blast-sepolia/g,
-    "blast-testnet"
-  );
+// If using the Graph Protocol, ensure the network name is correct
+if (config.TARGET_PROVIDER === "graph") {
+  // mode-testnet becomes mode-sepolia etc.
+  replacements = [
+    [/mode-testnet/g, "mode-sepolia"],
+    [/blast-sepolia/g, "blast-testnet"],
+  ];
+} else if (config.TARGET_PROVIDER === "alchemy") {
+  // blast becomes blast-mainnet etc.
+  replacements = [
+    [/blast(?!-)/g, "blast-mainnet"],
+    [/mantle(?!-)/g, "mantle-mainnet"],
+  ];
 }
+
+replacements.forEach(
+  ([s, r]) =>
+    (templatedSubgraphManifest = templatedSubgraphManifest.replace(s, r))
+);
 
 // Write to file
 writeFileSync("subgraph.yaml", templatedSubgraphManifest);

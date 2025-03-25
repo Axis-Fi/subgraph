@@ -10,25 +10,18 @@ console.log(`Building subgraph for ${config.TARGET_NETWORK}\n`);
 
 execute(buildCommand);
 
-const isGraphProtocol = config.USE_GRAPH_PROTOCOL;
-const isGoldsky = config.GOLDSKY_DEPLOYMENTS.includes(config.TARGET_NETWORK);
-const isMantle = config.MANTLE_DEPLOYMENTS.includes(config.TARGET_NETWORK);
-
 let deployCommand;
 let deployType;
-if (isGraphProtocol) {
+if (config.TARGET_PROVIDER === "graph") {
   deployCommand = require("./deploy-graph-protocol");
   deployType = "Graph Protocol";
-}
-else if (isGoldsky) {
+} else if (config.TARGET_PROVIDER === "goldsky") {
   deployCommand = require("./deploy-goldsky");
   deployType = "GoldSky";
-}
-else if (isMantle) {
+} else if (config.TARGET_PROVIDER === "mantle") {
   deployCommand = require("./deploy-mantle");
   deployType = "Mantle";
-}
-else {
+} else if (config.TARGET_PROVIDER === "alchemy") {
   deployCommand = require("./deploy-alchemy");
   deployType = "Alchemy";
 }
