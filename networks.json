@@ -187,6 +187,10 @@
     "BatchLinearVesting": {
       "address": "0x605A7105CA51FD5F107258362f52d8269eeA851A",
       "startBlock": 21275114
+    },
+    "MetadataRegistry": {
+      "address": "0x7020638419355ae9FB5a124c580a05226AEa9158",
+      "startBlock": 22135366
     }
   },
   "sepolia": {
