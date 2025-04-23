@@ -11,12 +11,12 @@ Please see the [contributing guide](./CONTRIBUTING.md) for more information.
 1. Codegen your subgraph: `TARGET_PROVIDER=provider TARGET_NETWORK=network pnpm codegen`
 2. Deploy your subgraph: `TARGET_PROVIDER=provider TARGET_NETWORK=network pnpm deploy:graph`
 
-See [networks.json](./networks.json) for the list of supported networks.
+```
+TARGET_PROVIDER:  graph  | alchemy | goldsky | mantle
+ TARGET_NETWORK: mainnet |   base  |  blast  | etc.
+```
 
-```
-provider:    graph  | alchemy | goldsky | mantle
- network:   mainnet |   base  |  blast  | ...etc.
-```
+See [networks.json](./networks.json) for the list of supported networks.
 
 > **Note**
 > If the provider is Goldsky, you must authenticate first, [see how here](https://docs.goldsky.com/subgraphs/deploying-subgraphs)

@@ -206,5 +206,47 @@
       "address": "0xC11a71a304aB4c147e926342BA4CcCFd62d7368e",
       "startBlock": 7979266
     }
+  },
+  "sonic-mainnet": {
+    "BatchAuctionHouse": {
+      "address": "0xBA0000907c7812AEC8F7e9e27AefF4Ea7565A8bA",
+      "startBlock": 19640407
+    },
+    "EncryptedMarginalPrice": {
+      "address": "0x30c356DFBAc808BC62c860A9B285f024b40dF1fc",
+      "startBlock": 19640416
+    },
+    "BatchLinearVesting": {
+      "address": "0x87fe34053bfBF5B278988bd150e9F8da72ca1bC3",
+      "startBlock": 19640455
+    }
+  },
+  "monad-testnet": {
+    "BatchAuctionHouse": {
+      "address": "0xBA00004B4aD15Cc4d7e10c3C961f15Dc43B625bE",
+      "startBlock": 9593294
+    },
+    "EncryptedMarginalPrice": {
+      "address": "0x63Fb97Dd80060cFd70c87Aa54F594F3988B6Fc66",
+      "startBlock": 9593294
+    },
+    "BatchLinearVesting": {
+      "address": "0xC11a71a304aB4c147e926342BA4CcCFd62d7368e",
+      "startBlock": 9593300
+    }
+  },
+  "bsc": {
+    "BatchAuctionHouse": {
+      "address": "0xBA0000907c7812AEC8F7e9e27AefF4Ea7565A8bA",
+      "startBlock": 48271295
+    },
+    "EncryptedMarginalPrice": {
+      "address": "0xB5973CabD553F34C32ae2FbC91c94b3bf76DB62e",
+      "startBlock": 48271297
+    },
+    "BatchLinearVesting": {
+      "address": "0x8Db46375e73545226E99b5e8cBfe2794ac835D38",
+      "startBlock": 48271308
+    }
   }
 }
