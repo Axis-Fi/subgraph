@@ -68,7 +68,7 @@ export function handleBidDecrypted(event: BidDecryptedEvent): void {
 
   if (event.params.amountOut.gt(BigInt.fromI32(0))) {
     const rawSubmittedPrice = bidEntity.rawAmountIn
-      .times(BigInt.fromI32(10).pow(<u8>auctionLot.getQuoteTokenDecimals()))
+      .times(BigInt.fromI32(10).pow(<u8>auctionLot.getBaseTokenDecimals()))
       .div(event.params.amountOut)
       .plus(BigInt.fromI32(1)); // TODO: CHECK ROUNDUP
 
