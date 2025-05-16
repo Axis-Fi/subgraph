@@ -2,7 +2,7 @@
  * Script for Mantle subgraph deployment
  * */
 require("dotenv").config();
-const config = require("../deployment");
+const config = require("../config");
 
 const node = "https://subgraph-api.mantle.xyz/deploy";
 const ipfs = "https://subgraph-api.mantle.xyz/ipfs";

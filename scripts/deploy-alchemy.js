@@ -4,7 +4,7 @@
  * Example: pnpm deploy-graph base-sepolia 0.0.7 d3710yk31
  * */
 require("dotenv").config();
-const config = require("../deployment");
+const config = require("../config");
 
 const node = "https://subgraphs.alchemy.com/api/subgraphs/deploy";
 const ipfs = "https://ipfs.satsuma.xyz";

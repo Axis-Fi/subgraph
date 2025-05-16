@@ -1,15 +1,15 @@
 /**
  * This script overwrites src/constants.ts with the
- * addresses matching the TARGET_NETWORK from '../deployment.js'
+ * addresses matching the NETWORK from '../config.js'
  */
 const fs = require("fs");
 const networks = require("../networks.json");
-const config = require("../deployment");
+const config = require("../config");
 
-const network = networks[config.TARGET_NETWORK];
+const network = networks[config.NETWORK];
 
 if (!network) {
-  console.error("No network config found for: ", networkName);
+  console.error("No network config found for: ", config.NETWORK);
   process.exit(1);
 }
 

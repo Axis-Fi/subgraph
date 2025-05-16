@@ -64,7 +64,7 @@ chore: update dependency versions
 
 ## Deployment Flow
 
-Run `TARGET_NETWORK=<chain> pnpm deploy:graph` (e.g. `TARGET_NETWORK=base-sepolia pnpm deploy:graph`)
+Run `NETWORK=<chain> pnpm deploy:graph` (e.g. `NETWORK=base-sepolia pnpm deploy:graph`)
 This will deploy the subgraph to the specified network.
 
 ## Pull Request Requirements
