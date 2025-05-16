@@ -1,20 +1,20 @@
-const config = require("../deployment");
+const config = require("../config");
 const Mustache = require("mustache");
 const allNetworkValues = require("../networks.json");
 const { readFileSync, writeFileSync } = require("fs");
 
 // Read the values from the networks.json file
-const networkValues = allNetworkValues[config.TARGET_NETWORK];
+const networkValues = allNetworkValues[config.NETWORK];
 if (!networkValues) {
   throw new Error(
-    `No network values found in networks.json for ${config.TARGET_NETWORK}`
+    `No network values found in networks.json for ${config.NETWORK}`
   );
 }
 
 // Add a "network" key
-networkValues.network = config.TARGET_NETWORK;
+networkValues.network = config.NETWORK;
 
-console.log(`Generating subgraph.yaml for ${config.TARGET_NETWORK}\n`);
+console.log(`Generating subgraph.yaml for ${config.NETWORK}\n`);
 
 // Read the subgraph template
 const subgraphTemplate = readFileSync("subgraph-template.yaml").toString();
@@ -27,14 +27,17 @@ let templatedSubgraphManifest = Mustache.render(
 
 let replacements = [];
 
+/**
+ * Providers use differing chain names.
+ **/
 // If using the Graph Protocol, ensure the network name is correct
-if (config.TARGET_PROVIDER === "graph") {
+if (config.PROVIDER === "graph") {
   // mode-testnet becomes mode-sepolia etc.
   replacements = [
     [/mode-testnet/g, "mode-sepolia"],
     [/blast-sepolia/g, "blast-testnet"],
   ];
-} else if (config.TARGET_PROVIDER === "alchemy") {
+} else if (config.PROVIDER === "alchemy") {
   // blast becomes blast-mainnet etc.
   replacements = [
     [/blast(?!-)/g, "blast-mainnet"],

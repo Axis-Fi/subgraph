@@ -1,5 +1,5 @@
 require("dotenv").config();
-const config = require("../deployment");
+const config = require("../config");
 
 const deployKey = process.env.GRAPH_STUDIO_TOKEN;
 

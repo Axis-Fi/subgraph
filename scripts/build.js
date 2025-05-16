@@ -1,4 +1,4 @@
 const execute = require("./execute");
-const config = require("../deployment");
+const config = require("../config");
 
-execute(`graph build --network ${config.TARGET_NETWORK}`);
+execute(`graph build --network ${config.NETWORK}`);
