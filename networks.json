@@ -8,6 +8,10 @@
       "address": "0xA06A0A5D22E31D8d19c49FFd65c8FC37477077e2",
       "startBlock": 245289720
     },
+    "FixedPriceBatch": {
+      "address": "0x04974BcFC715c148818724d9Caab3Fe8d0391b8b",
+      "startBlock": 284436051
+    },
     "BatchLinearVesting": {
       "address": "0xCaAE490470305a9d6f58b026cdD36cc747F8F0b9",
       "startBlock": 245289720
@@ -21,6 +25,10 @@
     "EncryptedMarginalPrice": {
       "address": "0x9099dd8Db39B8aD5D31d9865F013F1d2278c3506",
       "startBlock": 73032291
+    },
+    "FixedPriceBatch": {
+      "address": "0xAF4AaFC046FB329EB1181c0094a95DA7Cee38211",
+      "startBlock": 106612227
     },
     "BatchLinearVesting": {
       "address": "0x14726B9D69d4Fb957e4F3C736bda029Fd96e1FFb",
@@ -36,9 +44,25 @@
       "address": "0x408fB738592232372069B592022F03BF3a241613",
       "startBlock": 18740692
     },
+    "FixedPriceBatch": {
+      "address": "0x4042D4F2236D055212d485E028E8FE4939252F88",
+      "startBlock": 23665991
+    },
     "BatchLinearVesting": {
       "address": "0x5C439EAa3F039Bac9Bf1ea4Eb6121d5767C63864",
       "startBlock": 18740692
+    },
+    "AtomicAuctionHouse": {
+      "address": "0xAAaD42003E5383B32753F3d98FC9f33F02CaEd2d",
+      "startBlock": 31519849
+    },
+    "FixedPriceSale": {
+      "address": "0x85c0A59A492C084d84eDcD7a8b785eaF620a9B0d",
+      "startBlock": 31519853
+    },
+    "AtomicLinearVesting": {
+      "address": "0xF119eA6B28F9D97839DDF3d0Ad9daB3D97577de7",
+      "startBlock": 31519858
     },
     "MetadataRegistry": {
       "address": "0xA12307d3cba3F0854cf92faDce07f7bff0B6a2BA",
@@ -54,9 +78,25 @@
       "address": "0xf0a4d1f805312438ea146E5df873bD8d64D9dBe4",
       "startBlock": 14260193
     },
+    "FixedPriceBatch": {
+      "address": "0x1A6Ba70B8e5957bCd03C20f9CF42D9e6D3d9b514",
+      "startBlock": 19176347
+    },
     "BatchLinearVesting": {
       "address": "0x909F26919989167d051312fBB0a1Df4CD93Bf70b",
       "startBlock": 14260193
+    },
+    "AtomicAuctionHouse": {
+      "address": "0xAAA2bf001C89857C1ba6B30b2bC090d0b8aB09Ed",
+      "startBlock": 27030055
+    },
+    "FixedPriceSale": {
+      "address": "0x5429c792c684c11dFd5c9186610DA1faDE4CFfDe",
+      "startBlock": 27030059
+    },
+    "AtomicLinearVesting": {
+      "address": "0x3eBBF984DcA21cC0393D49F82b233b1330C5da07",
+      "startBlock": 27030065
     },
     "MetadataRegistry": {
       "address": "0xc94404218178149ebebfc1f47f0df14b5fd881c5",
@@ -184,6 +224,10 @@
       "address": "0xB5973CabD553F34C32ae2FbC91c94b3bf76DB62e",
       "startBlock": 22090936
     },
+    "FixedPriceBatch": {
+      "address": "0x4ED7160dA0020070ADf1AB149c730E8A4bD73d15",
+      "startBlock": 21396841
+    },
     "BatchLinearVesting": {
       "address": "0x605A7105CA51FD5F107258362f52d8269eeA851A",
       "startBlock": 21275114
@@ -202,6 +246,10 @@
       "address": "0x63Fb97Dd80060cFd70c87Aa54F594F3988B6Fc66",
       "startBlock": 7979258
     },
+    "FixedPriceBatch": {
+      "address": "0x08B87749b379f5BCA1d74A7B3d4e9f3DeD41C706",
+      "startBlock": 7979262
+    },
     "BatchLinearVesting": {
       "address": "0xC11a71a304aB4c147e926342BA4CcCFd62d7368e",
       "startBlock": 7979266
@@ -215,6 +263,10 @@
     "EncryptedMarginalPrice": {
       "address": "0x30c356DFBAc808BC62c860A9B285f024b40dF1fc",
       "startBlock": 19640416
+    },
+    "FixedPriceBatch": {
+      "address": "0xA9AEAe1d42bbfa591F4a06945a895d75011bE6e8",
+      "startBlock": 19640438
     },
     "BatchLinearVesting": {
       "address": "0x87fe34053bfBF5B278988bd150e9F8da72ca1bC3",
@@ -230,6 +282,10 @@
       "address": "0x63Fb97Dd80060cFd70c87Aa54F594F3988B6Fc66",
       "startBlock": 9593294
     },
+    "FixedPriceBatch": {
+      "address": "0x08B87749b379f5BCA1d74A7B3d4e9f3DeD41C706",
+      "startBlock": 9593313
+    },
     "BatchLinearVesting": {
       "address": "0xC11a71a304aB4c147e926342BA4CcCFd62d7368e",
       "startBlock": 9593300
@@ -243,6 +299,10 @@
     "EncryptedMarginalPrice": {
       "address": "0xB5973CabD553F34C32ae2FbC91c94b3bf76DB62e",
       "startBlock": 48271297
+    },
+    "FixedPriceBatch": {
+      "address": "0x2C7aE1A3989f17a6d9935382bDe7F1b021055083",
+      "startBlock": 48271303
     },
     "BatchLinearVesting": {
       "address": "0x8Db46375e73545226E99b5e8cBfe2794ac835D38",
